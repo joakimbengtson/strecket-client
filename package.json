@@ -1,0 +1,43 @@
+{
+  "name": "strecket-client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+	"watch": "watchify ./src/app.js -v -d -t [babelify --presets [ es2015 react stage-2] ] -t node-lessify -t imgurify -o index.js",
+	"build": "browserify ./src/app.js -v -d  -t  -t [babelify --presets [ es2015 react stage-2] ] -t node-lessify -t imgurify | uglifyjs -c > index.js",
+	"upload": "scp index.html index.js admin@nestor:www/jbn/strecket",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joakimbengtson/strecket-client.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joakimbengtson/strecket-client/issues"
+  },
+  "homepage": "https://github.com/joakimbengtson/strecket-client#readme",
+  "dependencies": {
+    "babel-preset-es2015": "^6.13.2",
+    "babel-preset-react": "^6.11.1",
+    "babel-preset-stage-2": "^6.13.0",
+    "babelify": "^7.3.0",
+    "bluebird": "^3.4.1",
+    "client-request": "^1.0.1",
+    "cssify": "^1.0.3",
+    "imgurify": "^2.0.0",
+    "moment": "^2.14.1",
+    "node-lessify": "^0.1.4",
+    "react": "^15.3.1",
+    "react-bootstrap": "^0.30.3",
+    "react-dom": "^15.3.1",
+    "react-router": "^2.7.0",
+    "react-spinkit": "^1.1.10",
+    "rest-request": "^1.0.7",
+    "uglify-js": "^2.7.3",
+    "urify": "^2.0.2",
+    "yow": "^1.0.26"
+  }
+}
