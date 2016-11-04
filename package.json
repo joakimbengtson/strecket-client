@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-	"watch": "watchify ./src/app.js -v -d -t [babelify --presets [ es2015 react stage-2] ] -t node-lessify -t imgurify -o index.js",
-	"build": "browserify ./src/app.js -v -d  -t  -t [babelify --presets [ es2015 react stage-2] ] -t node-lessify -t imgurify | uglifyjs -c > index.js",
-	"upload": "scp index.html index.js admin@nestor:www/jbn/strecket",
+    "watch": "watchify ./src/app.js -v -d -t [babelify --presets [ es2015 react stage-2] ] -t node-lessify -t imgurify -o index.js",
+    "build": "browserify ./src/app.js -v -d  -t  -t [babelify --presets [ es2015 react stage-2] ] -t node-lessify -t imgurify | uglifyjs -c > index.js",
+    "upload": "scp index.html index.js admin@nestor:www/jbn/strecket",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
