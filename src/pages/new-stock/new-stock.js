@@ -18,7 +18,9 @@ module.exports = class Home extends React.Component {
 
 	// Virtuell function som anropas då sidan visas
 	componentDidMount() {
-		.findDOMNode('stock_name').focus();
+		const ReactDOM = require('react-dom');
+		
+		ReactDOM.findDOMNode('stock_name').focus();
 	}
 
 	render() {
@@ -38,7 +40,7 @@ module.exports = class Home extends React.Component {
 					        Namn
 					      </Col>
 					      <Col sm={10}>
-					        <FormControl type="text" placeholder="Namnet på aktien" />
+					        <FormControl type="text" id="stock_name" placeholder="Namnet på aktien" />
 					      </Col>
 					    </FormGroup>
 					
