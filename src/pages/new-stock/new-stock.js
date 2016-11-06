@@ -6,6 +6,7 @@ import Request from 'rest-request';
 
 require('./new-stock.less');
 
+const ReactDOM = require('react-dom');
 
 module.exports = class Home extends React.Component {
 
@@ -15,11 +16,11 @@ module.exports = class Home extends React.Component {
 		this.state = {};
 		
 	};
-
+	
 	// Virtuell function som anropas då sidan visas
 	componentDidMount() {
 		// Sätt fokus på första fältet
-		this.refs.stockname.getDOMNode().focus();
+		ReactDOM.findDOMNode(this.refs.stockname).focus(); 
 	}
 
 	render() {
