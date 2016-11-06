@@ -83,13 +83,13 @@ module.exports = class Home extends React.Component {
 								</Col>
 							</Row>						
 							  
-							  <br/>
+							<br/>
 							  
-							  <p>
-								  <Button bsStyle='success' bsSize='large' href='#new-stock'>
-									  Nytt köp
-								  </Button>
-							  </p>
+							<p>
+							  <Button bsStyle='success' bsSize='large' href='#new-stock'>
+								  Nytt köp
+							  </Button>
+							</p>
 							  
 						</Col>
 					</Row>

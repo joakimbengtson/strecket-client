@@ -14,13 +14,11 @@ module.exports = class Home extends React.Component {
 
 		this.state = {};
 		
-		//self.findDOMNode('stock_name').focus();
-
 	};
 
 	// Virtuell function som anropas då sidan visas
 	componentDidMount() {
-		// this.fetchStocks();
+		.findDOMNode('stock_name').focus();
 	}
 
 	render() {
