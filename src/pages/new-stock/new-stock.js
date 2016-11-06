@@ -22,6 +22,14 @@ module.exports = class Home extends React.Component {
 		// Sätt fokus på första fältet
 		ReactDOM.findDOMNode(this.refs.stockname).focus(); 
 	}
+	
+	onSave() {
+		window.history.back();
+	}
+
+	onCancel() {
+		window.history.back();
+	}
 
 	render() {
 		var style = {};
@@ -30,10 +38,12 @@ module.exports = class Home extends React.Component {
 			<div id="new_stock">
 					
 				<Col sm={10} smOffset={1} md={8} mdOffset={2}>
-
-					<PageHeader>Ny aktie</PageHeader>
 					
 					<Form horizontal>
+
+					    <Col sm={10} smOffset={1}>
+							<PageHeader>Ny aktie</PageHeader>
+						</Col>
 					  
 					    <FormGroup controlId="stock_name">
 					      <Col componentClass={ControlLabel} sm={2}>
@@ -70,21 +80,25 @@ module.exports = class Home extends React.Component {
 					        <FormControl type="text" placeholder="Köpt till kursen?" />
 					      </Col>
 					    </FormGroup>
+
+						<FormGroup>
+					    <Col sm={10} smOffset={1}>
+
+						<ButtonToolbar>
+
+							<Button bsStyle='success' onClick={this.onSave.bind(this)}>
+							  Spara
+							</Button>
+							
+							<Button onClick={this.onCancel.bind(this)}>
+							  Avbryt
+							</Button>
+						</ButtonToolbar>		
+						</Col>			
+					    </FormGroup>				
 					
 					</Form>
-				
-					<ButtonToolbar>
-
-						<Button bsStyle='success' href='#new-stock'>
-						  Spara
-						</Button>
-						
-						<Button href='#new-stock'>
-						  Avbryt
-						</Button>
-
-					</ButtonToolbar>					
-	
+					
 				</Col>
 				
 			</div>

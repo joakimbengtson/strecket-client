@@ -1,6 +1,6 @@
 import React from 'react';
 import {Jumbotron, Button, Grid, Row, Col} from 'react-bootstrap';
-import {ListGroup, ListGroupItem, PageHeader} from 'react-bootstrap';
+import {ListGroup, ListGroupItem, PageHeader, Table, thead, td, tr, th} from 'react-bootstrap';
 import Request from 'rest-request';
 require('./home.less');
 
@@ -42,24 +42,36 @@ module.exports = class Home extends React.Component {
 	renderStocks() {
 		var items = this.state.stocks.map(function(stock, index) {
 			return (
-				<ListGroupItem key={index} href='#'>
-					{stock.namn + ' ' + stock.antal}
-				</ListGroupItem>
+				<tr key={index}>
+				<td>{stock.namn}</td>
+				<td>{stock.ticker}</td>
+				<td>{stock.antal}</td>
+				<td>{stock.kurs}</td>
+				</tr>
 			);
 		});
 
 		if (items.length == 0) {
-			return <div/>;
+				<td colSpan="4">{'Inga aktier'}</td>
 		}
 
 		return(
-			<div>
-				<PageHeader>Aktier</PageHeader>
-
-				<ListGroup>
-					{items}
-				</ListGroup>
-			</div>
+			<Table striped={true} bordered={true} condensed={true} responsive={true}>
+			
+		    <thead>
+		      <tr>
+		        <th>Namn</th>
+		        <th>Ticker</th>
+		        <th>Antal</th>
+		        <th>Kurs</th>
+		      </tr>
+		    </thead>
+		    
+		    <tbody>
+				{items}
+			</tbody>
+			
+			</Table>
 		);
 		
 	}
