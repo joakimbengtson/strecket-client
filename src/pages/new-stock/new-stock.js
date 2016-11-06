@@ -19,7 +19,7 @@ module.exports = class Home extends React.Component {
 	// Virtuell function som anropas då sidan visas
 	componentDidMount() {
 		// Sätt fokus på första fältet
-		this.refs.stockname.focus();
+		this.refs.stockname.getDOMNode().focus();
 	}
 
 	render() {
