@@ -22,7 +22,10 @@ var App = React.createClass({
 ReactDOM.render((
 	<Router history={hashHistory}>
 		<Route path="/" component={App}>
+		
 			<IndexRoute component={require('./pages/home/home.js')} />
+			<Route path="home"          component={require('./pages/home/home.js')} />
+			<Route path="new-stock"         component={require('./pages/new-stock/new-stock.js')} />
 		</Route>
 	</Router>
 ), document.getElementById('app'))

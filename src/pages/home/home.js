@@ -5,6 +5,8 @@ import Request from 'rest-request';
 require('./home.less');
 
 
+
+
 module.exports = class Home extends React.Component {
 
 	constructor(props) {
@@ -19,8 +21,7 @@ module.exports = class Home extends React.Component {
 
 	// Virtuell function som anropas då sidan visas
 	componentDidMount() {
-		// this.fetchStocks();
-
+		this.fetchStocks.bind(this);
 	}
 
 	fetchStocks() {
@@ -42,7 +43,7 @@ module.exports = class Home extends React.Component {
 		var items = this.state.stocks.map(function(stock, index) {
 			return (
 				<ListGroupItem key={index} href='#'>
-					{stock.namn}
+					{stock.namn + ' ' + stock.antal}
 				</ListGroupItem>
 			);
 		});
@@ -60,16 +61,15 @@ module.exports = class Home extends React.Component {
 				</ListGroup>
 			</div>
 		);
-
+		
 	}
-
-
 
 
 	render() {
 		var style = {};
 
 		return (
+			
 			<div id="home">
 				<Grid>
 					<Row>
@@ -77,21 +77,21 @@ module.exports = class Home extends React.Component {
 					</Row>
 					<Row>
 						<Col sm={10} smOffset={1} md={8} mdOffset={2}>
-							<Jumbotron>
-						      <h1>Hello, world!</h1>
-						      <p>This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
-
+						
+							<Row>
+								<Col sm={10} smOffset={1} md={8} mdOffset={2}>
+									{this.renderStocks()}
+								</Col>
+							</Row>						
+							  
+							  <br/>
+							  
 							  <p>
-								  <Button bsStyle='primary' onClick={this.fetchStocks.bind(this)}>
-									  Hämta aktiekurser
+								  <Button bsStyle='success' bsSize='large' href='#new-stock'>
+									  Nytt köp
 								  </Button>
 							  </p>
-						    </Jumbotron>
-						</Col>
-					</Row>
-					<Row>
-						<Col sm={10} smOffset={1} md={8} mdOffset={2}>
-							{this.renderStocks()}
+							  
 						</Col>
 					</Row>
 				</Grid>
