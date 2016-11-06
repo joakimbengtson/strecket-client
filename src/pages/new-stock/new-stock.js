@@ -18,9 +18,8 @@ module.exports = class Home extends React.Component {
 
 	// Virtuell function som anropas då sidan visas
 	componentDidMount() {
-		const ReactDOM = require('react-dom');
-		
-		ReactDOM.findDOMNode('stock_name').focus();
+		// Sätt fokus på första fältet
+		this.refs.stockname.focus();
 	}
 
 	render() {
@@ -40,7 +39,7 @@ module.exports = class Home extends React.Component {
 					        Namn
 					      </Col>
 					      <Col sm={10}>
-					        <FormControl type="text" id="stock_name" placeholder="Namnet på aktien" />
+					        <FormControl type="text" ref='stockname' placeholder="Namnet på aktien" />
 					      </Col>
 					    </FormGroup>
 					
