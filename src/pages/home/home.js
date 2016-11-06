@@ -21,7 +21,7 @@ module.exports = class Home extends React.Component {
 
 	// Virtuell function som anropas då sidan visas
 	componentDidMount() {
-		this.fetchStocks.bind(this);
+		this.fetchStocks();
 	}
 
 	fetchStocks() {
@@ -66,7 +66,6 @@ module.exports = class Home extends React.Component {
 
 
 	render() {
-		var style = {};
 
 		return (
 			
