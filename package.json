@@ -25,7 +25,7 @@
     "babel-preset-stage-2": "^6.13.0",
     "babelify": "^7.3.0",
     "bluebird": "^3.4.1",
-    "client-request": "^1.0.1",
+    "client-request": "^1.1.0",
     "cssify": "^1.0.3",
     "imgurify": "^2.0.0",
     "moment": "^2.14.1",

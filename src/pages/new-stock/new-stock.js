@@ -8,10 +8,17 @@ require('./new-stock.less');
 
 const ReactDOM = require('react-dom');
 
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
 module.exports = class Home extends React.Component {
 
 	constructor(props) {
 		super(props);
+
+		this.url = 'http://localhost:3000';
+		this.api = new Request(this.url);
 
 		this.state = {};
 		
@@ -20,19 +27,79 @@ module.exports = class Home extends React.Component {
 	// Virtuell function som anropas då sidan visas
 	componentDidMount() {
 		// Sätt fokus på första fältet
-		ReactDOM.findDOMNode(this.refs.stockname).focus(); 
+		ReactDOM.findDOMNode(this.refs.stockticker).focus(); 
 	}
-	
+		
 	onSave() {
-		window.history.back();
-	}
+		
+		
+		
+		if (ReactDOM.findDOMNode(this.refs.stockticker).value.length == 0) {
+			ReactDOM.findDOMNode(this.refs.stockticker).focus(); 
+			return;			
+		}
 
+		if (ReactDOM.findDOMNode(this.refs.stockname).value.length == 0) {
+			ReactDOM.findDOMNode(this.refs.stockname).focus(); 
+			return;			
+		}
+
+		if (!(ReactDOM.findDOMNode(this.refs.stockcount).value.length > 0 && isNumeric(ReactDOM.findDOMNode(this.refs.stockcount).value))) {
+			ReactDOM.findDOMNode(this.refs.stockcount).focus(); 
+			return;			
+		}
+
+		if (!(ReactDOM.findDOMNode(this.refs.stockprice).value.length > 0 && isNumeric(ReactDOM.findDOMNode(this.refs.stockprice).value))) {
+			ReactDOM.findDOMNode(this.refs.stockprice).focus(); 
+			return;			
+		}
+		
+		var sname = ReactDOM.findDOMNode(this.refs.stockname).value;
+		var request = require("client-request");
+
+		var blubba = {};
+		blubba.sname = sname;
+
+
+		
+var options = {
+  uri: "http://localhost:3000/save",
+  method: "POST",
+  body: blubba,
+  timeout: 100,
+  json: true,
+   headers: {
+    "content-type": "application/json"   // setting headers is up to *you* 
+  }
+};
+
+var req = request(options, function callback(err, response, body) {
+  console.log(response.statusCode)
+  if (body) {
+    console.log(body)
+  }
+});
+
+/*
+
+   var headers =  {
+    "content-type": "application/json"   // setting headers is up to *you* 
+  };
+			
+		
+		
+		this.api.post('save', blubba, headers).then(function(response) {
+			window.history.back();
+		})
+		
+*/
+
+	}
 	onCancel() {
 		window.history.back();
 	}
 
 	render() {
-		var style = {};
 
 		return (
 			<div id="new_stock">
@@ -45,6 +112,15 @@ module.exports = class Home extends React.Component {
 							<PageHeader>Ny aktie</PageHeader>
 						</Col>
 					  
+					    <FormGroup controlId="stock_ticker">
+					      <Col componentClass={ControlLabel} sm={2}>
+					        Ticker
+					      </Col>
+					      <Col sm={4}>
+					        <FormControl type="text" ref='stockticker' placeholder="Kortnamn för aktien" />
+					      </Col>
+					    </FormGroup>
+
 					    <FormGroup controlId="stock_name">
 					      <Col componentClass={ControlLabel} sm={2}>
 					        Namn
@@ -54,21 +130,12 @@ module.exports = class Home extends React.Component {
 					      </Col>
 					    </FormGroup>
 					
-					    <FormGroup controlId="stock_ticker">
-					      <Col componentClass={ControlLabel} sm={2}>
-					        Ticker
-					      </Col>
-					      <Col sm={4}>
-					        <FormControl type="text" placeholder="Kortnamn för aktien" />
-					      </Col>
-					    </FormGroup>
-
 					    <FormGroup controlId="stock_count">
 					      <Col componentClass={ControlLabel} sm={2}>
 					        Antal
 					      </Col>
 					      <Col sm={2}>
-					        <FormControl type="text" placeholder="Hur många?" />
+					        <FormControl type="text" ref='stockcount' placeholder="Hur många?" />
 					      </Col>
 					    </FormGroup>
 
@@ -77,7 +144,7 @@ module.exports = class Home extends React.Component {
 					        Kurs
 					      </Col>
 					      <Col sm={2}>
-					        <FormControl type="text" placeholder="Köpt till kursen?" />
+					        <FormControl type="text" ref='stockprice' placeholder="Köpt till kursen?" />
 					      </Col>
 					    </FormGroup>
 
@@ -86,13 +153,14 @@ module.exports = class Home extends React.Component {
 
 						<ButtonToolbar>
 
+							<Button onClick={this.onCancel.bind(this)}>
+							  Avbryt
+							</Button>
+							
 							<Button bsStyle='success' onClick={this.onSave.bind(this)}>
 							  Spara
 							</Button>
 							
-							<Button onClick={this.onCancel.bind(this)}>
-							  Avbryt
-							</Button>
 						</ButtonToolbar>		
 						</Col>			
 					    </FormGroup>				
