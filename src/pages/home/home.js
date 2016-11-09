@@ -1,6 +1,6 @@
 import React from 'react';
 import {Jumbotron, Button, Grid, Row, Col} from 'react-bootstrap';
-import {ListGroup, ListGroupItem, PageHeader, Table, thead, td, tr, th} from 'react-bootstrap';
+import {ListGroup, ListGroupItem, PageHeader, Table, thead, td, tr, th, Label} from 'react-bootstrap';
 import Request from 'rest-request';
 require('./home.less');
 
@@ -45,8 +45,9 @@ module.exports = class Home extends React.Component {
 				<tr key={index}>
 				<td>{stock.namn}</td>
 				<td>{stock.ticker}</td>
-				<td>{stock.antal}</td>
 				<td>{stock.kurs}</td>
+				<td>{stock.senaste}</td>
+				{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : <td></td>}
 				</tr>
 			);
 		});
@@ -62,8 +63,9 @@ module.exports = class Home extends React.Component {
 		      <tr>
 		        <th>Namn</th>
 		        <th>Ticker</th>
-		        <th>Antal</th>
-		        <th>Kurs</th>
+		        <th>Köpkurs</th>
+		        <th>Senaste</th>
+		        <th>Larm</th>
 		      </tr>
 		    </thead>
 		    

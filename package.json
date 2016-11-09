@@ -38,6 +38,7 @@
     "rest-request": "^1.0.7",
     "uglify-js": "^2.7.3",
     "urify": "^2.0.2",
+    "yahoo-finance": "^0.2.14",
     "yow": "^1.0.26"
   }
 }

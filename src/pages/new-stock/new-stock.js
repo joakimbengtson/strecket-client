@@ -8,9 +8,11 @@ require('./new-stock.less');
 
 const ReactDOM = require('react-dom');
 
+
 function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
+
 
 module.exports = class Home extends React.Component {
 
@@ -31,8 +33,7 @@ module.exports = class Home extends React.Component {
 	}
 		
 	onSave() {
-		
-		
+		var rec = {};		
 		
 		if (ReactDOM.findDOMNode(this.refs.stockticker).value.length == 0) {
 			ReactDOM.findDOMNode(this.refs.stockticker).focus(); 
@@ -44,28 +45,23 @@ module.exports = class Home extends React.Component {
 			return;			
 		}
 
-		if (!(ReactDOM.findDOMNode(this.refs.stockcount).value.length > 0 && isNumeric(ReactDOM.findDOMNode(this.refs.stockcount).value))) {
-			ReactDOM.findDOMNode(this.refs.stockcount).focus(); 
-			return;			
-		}
-
 		if (!(ReactDOM.findDOMNode(this.refs.stockprice).value.length > 0 && isNumeric(ReactDOM.findDOMNode(this.refs.stockprice).value))) {
 			ReactDOM.findDOMNode(this.refs.stockprice).focus(); 
 			return;			
 		}
 		
-		var sname = ReactDOM.findDOMNode(this.refs.stockname).value;
 		var request = require("client-request");
 
-		var blubba = {};
-		blubba.sname = sname;
+		rec.ticker = ReactDOM.findDOMNode(this.refs.stockticker).value;
+		rec.namn = ReactDOM.findDOMNode(this.refs.stockname).value;
+		rec.kurs = ReactDOM.findDOMNode(this.refs.stockprice).value;
 
 
 		
 var options = {
   uri: "http://localhost:3000/save",
   method: "POST",
-  body: blubba,
+  body: rec,
   timeout: 100,
   json: true,
    headers: {
@@ -95,6 +91,7 @@ var req = request(options, function callback(err, response, body) {
 */
 
 	}
+	
 	onCancel() {
 		window.history.back();
 	}
@@ -130,15 +127,6 @@ var req = request(options, function callback(err, response, body) {
 					      </Col>
 					    </FormGroup>
 					
-					    <FormGroup controlId="stock_count">
-					      <Col componentClass={ControlLabel} sm={2}>
-					        Antal
-					      </Col>
-					      <Col sm={2}>
-					        <FormControl type="text" ref='stockcount' placeholder="Hur många?" />
-					      </Col>
-					    </FormGroup>
-
 					    <FormGroup controlId="stock_price">
 					      <Col componentClass={ControlLabel} sm={2}>
 					        Kurs
