@@ -49,32 +49,37 @@ module.exports = class Home extends React.Component {
 			ReactDOM.findDOMNode(this.refs.stockprice).focus(); 
 			return;			
 		}
+
+		if (!(ReactDOM.findDOMNode(this.refs.stockcount).value.length > 0 && isNumeric(ReactDOM.findDOMNode(this.refs.stockcount).value))) {
+			ReactDOM.findDOMNode(this.refs.stockprice).focus(); 
+			return;			
+		}
 		
 		var request = require("client-request");
 
 		rec.ticker = ReactDOM.findDOMNode(this.refs.stockticker).value;
 		rec.namn = ReactDOM.findDOMNode(this.refs.stockname).value;
 		rec.kurs = ReactDOM.findDOMNode(this.refs.stockprice).value;
+		rec.antal = ReactDOM.findDOMNode(this.refs.stockcount).value;
 
-
+		var options = {
+		  uri: "http://localhost:3000/save",
+		  method: "POST",
+		  body: rec,
+		  timeout: 100,
+		  json: true,
+		   headers: {
+		    "content-type": "application/json"   // setting headers is up to *you* 
+		  }
+		};
 		
-var options = {
-  uri: "http://localhost:3000/save",
-  method: "POST",
-  body: rec,
-  timeout: 100,
-  json: true,
-   headers: {
-    "content-type": "application/json"   // setting headers is up to *you* 
-  }
-};
-
-var req = request(options, function callback(err, response, body) {
-  console.log(response.statusCode)
-  if (body) {
-    console.log(body)
-  }
-});
+		var req = request(options, function callback(err, response, body) {
+		  console.log(response.statusCode)
+		  if (body) {
+		    console.log(body)
+			window.history.back();		    
+		  }
+		});
 
 /*
 
@@ -133,6 +138,15 @@ var req = request(options, function callback(err, response, body) {
 					      </Col>
 					      <Col sm={2}>
 					        <FormControl type="text" ref='stockprice' placeholder="Köpt till kursen?" />
+					      </Col>
+					    </FormGroup>
+
+					    <FormGroup controlId="stock_count">
+					      <Col componentClass={ControlLabel} sm={2}>
+					        Antal
+					      </Col>
+					      <Col sm={2}>
+					        <FormControl type="text" ref='stockcount' placeholder="Antal aktier" />
 					      </Col>
 					    </FormGroup>
 

@@ -24,6 +24,12 @@ module.exports = class Home extends React.Component {
 		this.fetchStocks();
 	}
 
+
+	deleteStock() {
+		alert('JBN');
+	}
+
+
 	fetchStocks() {
 		var self = this;
 
@@ -38,8 +44,9 @@ module.exports = class Home extends React.Component {
 
 		});
 	}
-
+	
 	renderStocks() {
+		
 		var items = this.state.stocks.map(function(stock, index) {
 			return (
 				<tr key={index}>
@@ -47,13 +54,15 @@ module.exports = class Home extends React.Component {
 				<td>{stock.ticker}</td>
 				<td>{stock.kurs}</td>
 				<td>{stock.senaste}</td>
-				{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : <td></td>}
+				<td>{stock.utfall}</td>
+				{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="success">Flyger</Label></center></td> : <td></td>}
+				<td><Button bsStyle="danger" bsSize="xsmall" onClick={this.deleteStock.bind(this)}>Radera</Button></td>
 				</tr>
 			);
 		});
 
 		if (items.length == 0) {
-				<td colSpan="4">{'Inga aktier'}</td>
+				<td colSpan="7">{'Inga aktier'}</td>
 		}
 
 		return(
@@ -65,7 +74,9 @@ module.exports = class Home extends React.Component {
 		        <th>Ticker</th>
 		        <th>Köpkurs</th>
 		        <th>Senaste</th>
-		        <th>Larm</th>
+		        <th>%</th>
+		        <th></th>
+		        <th></th>		        
 		      </tr>
 		    </thead>
 		    
@@ -92,7 +103,7 @@ module.exports = class Home extends React.Component {
 						<Col sm={10} smOffset={1} md={8} mdOffset={2}>
 						
 							<Row>
-								<Col sm={10} smOffset={1} md={8} mdOffset={2}>
+								<Col sm={10} smOffset={1} md={10} mdOffset={2}>
 									{this.renderStocks()}
 								</Col>
 							</Row>						
