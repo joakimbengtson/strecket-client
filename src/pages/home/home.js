@@ -5,8 +5,6 @@ import Request from 'rest-request';
 require('./home.less');
 
 
-
-
 module.exports = class Home extends React.Component {
 
 	constructor(props) {
@@ -25,8 +23,19 @@ module.exports = class Home extends React.Component {
 	}
 
 
-	deleteStock() {
-		alert('JBN');
+	deleteStock(id) {
+		var self = this;
+
+		console.log('Raderar aktie ' + id);
+
+		self.api.put('delete').then(function(id) {
+			console.log(id);
+			self.setState({stocks:stocks});
+		})
+		.catch(function(error) {
+			console.log(error);
+
+		});
 	}
 
 
@@ -56,7 +65,7 @@ module.exports = class Home extends React.Component {
 				<td>{stock.senaste}</td>
 				<td>{stock.utfall}</td>
 				{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="success">Flyger</Label></center></td> : <td></td>}
-				<td><Button bsStyle="danger" bsSize="xsmall" onClick={this.deleteStock.bind(this)}>Radera</Button></td>
+				<td><Button bsStyle="danger" bsSize="xsmall" onClick={this.deleteStock(stock.id).bind(this)}>Radera</Button></td>
 				</tr>
 			);
 		});
