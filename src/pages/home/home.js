@@ -1,7 +1,6 @@
 import React from 'react';
 import {Jumbotron, Button, Grid, Row, Col} from 'react-bootstrap';
 import {ListGroup, ListGroupItem, PageHeader, Table, thead, td, tr, th, Label} from 'react-bootstrap';
-import Request from 'rest-request';
 require('./home.less');
 
 
@@ -10,9 +9,6 @@ module.exports = class Home extends React.Component {
 	constructor(props) {
 		super(props);
 
-		//this.url = 'http://app-o.se:5000';
-		this.url = 'http://localhost:3000';
-		this.api = new Request(this.url);
 		this.state = {stocks:[]};
 
 	};
@@ -27,15 +23,30 @@ module.exports = class Home extends React.Component {
 		var self = this;
 
 		console.log('Raderar aktie ' + id);
+		
+		
+	
+		var request = require("client-request");
 
-		self.api.put('delete').then(function(id) {
-			console.log(id);
-			self.setState({stocks:stocks});
-		})
-		.catch(function(error) {
-			console.log(error);
 
-		});
+		var options = {
+		  uri: "http://localhost:3000/stocks/" + id,
+		  method: "DELETE",
+		  timeout: 100,
+		  json: true,
+		   headers: {
+		    "content-type": "application/json"   // setting headers is up to *you* 
+		  }
+		};
+		
+		var req = request(options, function(err, response, body) {
+
+			if (!err) {
+				self.fetchStocks();
+			}
+ 		});
+
+
 	}
 
 
@@ -44,17 +55,31 @@ module.exports = class Home extends React.Component {
 
 		console.log('Hämtar aktiekurser...');
 
-		self.api.get('stocks').then(function(stocks) {
-			console.log(stocks);
-			self.setState({stocks:stocks});
-		})
-		.catch(function(error) {
-			console.log(error);
+		var request = require("client-request");
 
-		});
+
+		var options = {
+		  uri: "http://localhost:3000/stocks",
+		  method: "GET",
+		  json: true,
+		   headers: {
+		    "content-type": "application/json"   // setting headers is up to *you* 
+		  }
+		};
+		
+		var req = request(options, function(err, response, body) {
+
+			if (!err) {
+				self.setState({stocks:body});
+				
+			}
+			else
+			console.log(err);
+ 		});
 	}
 	
 	renderStocks() {
+		var self = this;
 		
 		var items = this.state.stocks.map(function(stock, index) {
 			return (
@@ -65,7 +90,7 @@ module.exports = class Home extends React.Component {
 				<td>{stock.senaste}</td>
 				<td>{stock.utfall}</td>
 				{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="success">Flyger</Label></center></td> : <td></td>}
-				<td><Button bsStyle="danger" bsSize="xsmall" onClick={this.deleteStock(stock.id).bind(this)}>Radera</Button></td>
+				<td><Button bsStyle="danger" bsSize="xsmall" onClick={self.deleteStock.bind(self, stock.id)}>Radera</Button></td>
 				</tr>
 			);
 		});

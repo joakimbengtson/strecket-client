@@ -74,7 +74,6 @@ module.exports = class Home extends React.Component {
 		};
 		
 		var req = request(options, function callback(err, response, body) {
-		  console.log(response.statusCode)
 		  if (body) {
 		    console.log(body)
 			window.history.back();		    
