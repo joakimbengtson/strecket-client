@@ -74,10 +74,12 @@ module.exports = class Home extends React.Component {
 		};
 		
 		var req = request(options, function callback(err, response, body) {
-		  if (body) {
-		    console.log(body)
+						
+			if (err) {
+				console.log(err);
+			}
+			
 			window.history.back();		    
-		  }
 		});
 
 /*

@@ -71,10 +71,9 @@ module.exports = class Home extends React.Component {
 
 			if (!err) {
 				self.setState({stocks:body});
-				
 			}
 			else
-			console.log(err);
+				console.log(err);
  		});
 	}
 	
@@ -90,13 +89,13 @@ module.exports = class Home extends React.Component {
 				<td>{stock.senaste}</td>
 				<td>{stock.utfall}</td>
 				{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="success">Flyger</Label></center></td> : <td></td>}
-				<td><Button bsStyle="danger" bsSize="xsmall" onClick={self.deleteStock.bind(self, stock.id)}>Radera</Button></td>
+				<td><center><Button bsStyle="danger" bsSize="xsmall" onClick={self.deleteStock.bind(self, stock.id)}>Radera</Button></center></td>
 				</tr>
 			);
 		});
 
 		if (items.length == 0) {
-				<td colSpan="7">{'Inga aktier'}</td>
+			var items = <tr><td colSpan="7"><center>{'Inga aktier'}</center></td></tr>
 		}
 
 		return(
