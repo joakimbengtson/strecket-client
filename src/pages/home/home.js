@@ -1,5 +1,5 @@
 import React from 'react';
-import {Jumbotron, Button, Grid, Row, Col} from 'react-bootstrap';
+import {Button, Grid, Row, Col, Glyphicon} from 'react-bootstrap';
 import {ListGroup, ListGroupItem, PageHeader, Table, thead, td, tr, th, Label} from 'react-bootstrap';
 require('./home.less');
 
@@ -9,7 +9,7 @@ module.exports = class Home extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {stocks:[]};
+		this.state = {stocks:[], error:''}; 
 
 	};
 
@@ -22,17 +22,16 @@ module.exports = class Home extends React.Component {
 	deleteStock(id) {
 		var self = this;
 
-		console.log('Raderar aktie ' + id);
-		
-		
+		console.log('Raderar aktie ' + id);		
 	
 		var request = require("client-request");
 
 
 		var options = {
-		  uri: "http://localhost:3000/stocks/" + id,
+		  //uri: "http://localhost:3000/stocks/" + id,
+		  uri: "http://app-o.se:3000/stocks/" + id,
 		  method: "DELETE",
-		  timeout: 100,
+		  timeout: 1000,
 		  json: true,
 		   headers: {
 		    "content-type": "application/json"   // setting headers is up to *you* 
@@ -44,6 +43,9 @@ module.exports = class Home extends React.Component {
 			if (!err) {
 				self.fetchStocks();
 			}
+			else
+				console.log(err);				
+			
  		});
 
 
@@ -59,7 +61,8 @@ module.exports = class Home extends React.Component {
 
 
 		var options = {
-		  uri: "http://localhost:3000/stocks",
+			//uri: "http://localhost:3000/stocks",
+		  uri: "http://app-o.se:3000/stocks",
 		  method: "GET",
 		  json: true,
 		   headers: {
@@ -72,10 +75,13 @@ module.exports = class Home extends React.Component {
 			if (!err) {
 				self.setState({stocks:body});
 			}
-			else
-				console.log(err);
+			else {
+				self.setState({error:err});				
+				console.log(err);				
+			}
  		});
 	}
+	
 	
 	renderStocks() {
 		var self = this;
@@ -83,19 +89,22 @@ module.exports = class Home extends React.Component {
 		var items = this.state.stocks.map(function(stock, index) {
 			return (
 				<tr key={index}>
-				<td>{stock.namn}</td>
+				<td>{stock.namn}</td> 
 				<td>{stock.ticker}</td>
 				<td>{stock.kurs}</td>
 				<td>{stock.senaste}</td>
 				<td>{stock.utfall}</td>
 				{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="success">Flyger</Label></center></td> : <td></td>}
-				<td><center><Button bsStyle="danger" bsSize="xsmall" onClick={self.deleteStock.bind(self, stock.id)}>Radera</Button></center></td>
+				<td><center><Button bsStyle="danger" bsSize="xsmall" onClick={self.deleteStock.bind(self, stock.id)}>Radera</Button></center></td> 
 				</tr>
 			);
 		});
 
 		if (items.length == 0) {
-			var items = <tr><td colSpan="7"><center>{'Inga aktier'}</center></td></tr>
+			if (this.state.error)
+				var items = <tr><td colSpan="7"><center>{'Kan inte nå servern: ' + self.state.error.message}</center></td></tr>			
+			else
+				var items = <tr><td colSpan="7"><center>{'Inga aktier'}</center></td></tr>
 		}
 
 		return(

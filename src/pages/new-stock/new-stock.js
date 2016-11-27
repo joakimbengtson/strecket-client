@@ -19,7 +19,8 @@ module.exports = class Home extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.url = 'http://localhost:3000';
+		this.url = 'http://app-o.se:3000';
+		//this.url = 'http://localhost:3000';
 		this.api = new Request(this.url);
 
 		this.state = {};
@@ -63,10 +64,11 @@ module.exports = class Home extends React.Component {
 		rec.antal = ReactDOM.findDOMNode(this.refs.stockcount).value;
 
 		var options = {
-		  uri: "http://localhost:3000/save",
+		  //uri: "http://localhost:3000/save",
+		  uri: "http://app-o.se:3000/save",
 		  method: "POST",
 		  body: rec,
-		  timeout: 100,
+		  timeout: 1000,
 		  json: true,
 		   headers: {
 		    "content-type": "application/json"   // setting headers is up to *you* 
