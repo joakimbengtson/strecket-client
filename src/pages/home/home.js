@@ -50,7 +50,7 @@ module.exports = class Home extends React.Component {
 
 
 	}
-
+	
 
 	fetchStocks() {
 		var self = this;
@@ -81,11 +81,8 @@ module.exports = class Home extends React.Component {
 			}
  		});
 	}
-	
-	
-	renderStocks() {
-		var self = this;
-		
+
+/*	
 		var items = this.state.stocks.map(function(stock, index) {
 			return (
 				<tr key={index}>
@@ -99,6 +96,32 @@ module.exports = class Home extends React.Component {
 				</tr>
 			);
 		});
+*/
+
+	
+	renderStocks() {
+		var self = this;
+
+		var items = this.state.stocks.map(function(stock, index) {
+			
+			if (stock.ticker == 'xxx') {
+				return (<tr key={index}><td colSpan="7"><center>{stock.namn}</center></td></tr>);
+			}
+			else {
+				return (
+					<tr key={index}>
+					<td>{stock.namn}</td>
+					<td>{stock.ticker}</td>
+					<td>{stock.kurs}</td>
+					<td>{stock.senaste}</td>
+					<td>{stock.utfall}</td>
+					{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="info">Flyger</Label></center></td> : <td></td>}
+					<td><center><Button bsSize="xsmall" bsStyle="link" onClick={self.deleteStock.bind(self, stock.id)}>Radera</Button></center></td>
+					</tr>
+				);				
+			}
+						
+		});
 
 		if (items.length == 0) {
 			if (this.state.error)
@@ -106,7 +129,7 @@ module.exports = class Home extends React.Component {
 			else
 				var items = <tr><td colSpan="7"><center>{'Inga aktier'}</center></td></tr>
 		}
-
+		
 		return(
 			<Table striped={true} bordered={true} condensed={true} responsive={true}>
 			
@@ -125,8 +148,8 @@ module.exports = class Home extends React.Component {
 		    <tbody>
 				{items}
 			</tbody>
-			
 			</Table>
+			
 		);
 		
 	}
