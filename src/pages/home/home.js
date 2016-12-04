@@ -82,22 +82,6 @@ module.exports = class Home extends React.Component {
  		});
 	}
 
-/*	
-		var items = this.state.stocks.map(function(stock, index) {
-			return (
-				<tr key={index}>
-				<td>{stock.namn}</td> 
-				<td>{stock.ticker}</td>
-				<td>{stock.kurs}</td>
-				<td>{stock.senaste}</td>
-				<td>{stock.utfall}</td>
-				{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="success">Flyger</Label></center></td> : <td></td>}
-				<td><center><Button bsStyle="danger" bsSize="xsmall" onClick={self.deleteStock.bind(self, stock.id)}>Radera</Button></center></td> 
-				</tr>
-			);
-		});
-*/
-
 	
 	renderStocks() {
 		var self = this;

@@ -8,6 +8,7 @@ require('./new-stock.less');
 
 const ReactDOM = require('react-dom');
 
+var _inputfield;
 
 function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
@@ -31,6 +32,7 @@ module.exports = class Home extends React.Component {
 	componentDidMount() {
 		// Sätt fokus på första fältet
 		ReactDOM.findDOMNode(this.refs.stockticker).focus(); 
+		_inputfield = ReactDOM.findDOMNode(this.refs.stockname);
 	}
 		
 	onSave() {
@@ -84,26 +86,45 @@ module.exports = class Home extends React.Component {
 			window.history.back();		    
 		});
 
-/*
-
-   var headers =  {
-    "content-type": "application/json"   // setting headers is up to *you* 
-  };
-			
-		
-		
-		this.api.post('save', blubba, headers).then(function(response) {
-			window.history.back();
-		})
-		
-*/
-
 	}
 	
 	onCancel() {
 		window.history.back();
 	}
 
+	handleKeyDown(target) {
+		// Tillåt inte ','
+		if (target.keyCode == 188)
+			target.preventDefault();	
+	}
+
+	handleKeyPress(target) {
+		// Kolla att tickern finns
+		if (target.key == 'Enter') {
+			var self = this;
+			
+			var request = require("client-request");
+	
+			var options = {
+			  uri: "http://app-o.se:3000/company/" + target.currentTarget.value,
+			  method: "GET",
+			  timeout: 1000,
+			  json: true,
+			   headers: {
+			    "content-type": "application/json"   // setting headers is up to *you* 
+			  }
+			};
+			
+			var req = request(options, function(err, response, body) {
+				if (!err) {
+					_inputfield.value = body;
+				}				
+	 		});
+	 		
+	 	}
+	}	
+	
+	
 	render() {
 
 		return (
@@ -122,7 +143,7 @@ module.exports = class Home extends React.Component {
 					        Ticker
 					      </Col>
 					      <Col sm={4}>
-					        <FormControl type="text" ref='stockticker' placeholder="Kortnamn för aktien" />
+					        <FormControl type="text" ref='stockticker' placeholder="Kortnamn för aktien" onKeyPress={this.handleKeyPress}/>
 					      </Col>
 					    </FormGroup>
 
@@ -140,7 +161,7 @@ module.exports = class Home extends React.Component {
 					        Kurs
 					      </Col>
 					      <Col sm={2}>
-					        <FormControl type="text" ref='stockprice' placeholder="Köpt till kursen?" />
+					        <FormControl type="text" ref='stockprice' placeholder="Köpt till kursen?" onKeyDown={this.handleKeyDown}/>
 					      </Col>
 					    </FormGroup>
 
