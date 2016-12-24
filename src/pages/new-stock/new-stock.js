@@ -57,6 +57,19 @@ module.exports = class Home extends React.Component {
 			ReactDOM.findDOMNode(this.refs.stockprice).focus(); 
 			return;			
 		}
+
+		if (ReactDOM.findDOMNode(this.refs.stockstoploss).value.length > 0) {
+			// Om egen stop loss angiven, måste vara numerisk och mellan 1-20%
+			if (!isNumeric(ReactDOM.findDOMNode(this.refs.stockstoploss).value)) {
+				ReactDOM.findDOMNode(this.refs.stockstoploss).focus(); 
+				return;				
+			}
+			if (ReactDOM.findDOMNode(this.refs.stockstoploss).value < 1 || ReactDOM.findDOMNode(this.refs.stockstoploss).value > 20) {
+				ReactDOM.findDOMNode(this.refs.stockstoploss).focus(); 
+				return;				
+			}
+		}
+
 		
 		var request = require("client-request");
 
@@ -64,13 +77,14 @@ module.exports = class Home extends React.Component {
 		rec.namn = ReactDOM.findDOMNode(this.refs.stockname).value;
 		rec.kurs = ReactDOM.findDOMNode(this.refs.stockprice).value;
 		rec.antal = ReactDOM.findDOMNode(this.refs.stockcount).value;
+		rec.stoploss = ReactDOM.findDOMNode(this.refs.stockstoploss).value/100;
 
 		var options = {
 		  //uri: "http://localhost:3000/save",
 		  uri: "http://app-o.se:3000/save",
 		  method: "POST",
 		  body: rec,
-		  timeout: 1000,
+		  timeout: 3000,
 		  json: true,
 		   headers: {
 		    "content-type": "application/json"   // setting headers is up to *you* 
@@ -117,7 +131,7 @@ module.exports = class Home extends React.Component {
 			
 			var req = request(options, function(err, response, body) {
 				if (!err) {
-					_inputfield.value = body;
+					_inputfield.value = body; // Sätt aktienamnet automatiskt
 				}				
 	 		});
 	 		
@@ -173,6 +187,16 @@ module.exports = class Home extends React.Component {
 					        <FormControl type="text" ref='stockcount' placeholder="Antal aktier" />
 					      </Col>
 					    </FormGroup>
+
+					    <FormGroup controlId="stock_stoploss">
+					      <Col componentClass={ControlLabel} sm={2}>
+					        Släpande stop loss
+					      </Col>
+					      <Col sm={2}>
+					        <FormControl type="text" ref='stockstoploss' placeholder="Släpande stop loss i %" />
+					      </Col>
+					    </FormGroup>
+
 
 						<FormGroup>
 					    <Col sm={10} smOffset={1}>

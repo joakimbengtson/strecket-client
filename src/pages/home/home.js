@@ -1,11 +1,11 @@
 import React from 'react';
 import {Button, Grid, Row, Col, Glyphicon} from 'react-bootstrap';
-import {ListGroup, ListGroupItem, PageHeader, Table, thead, td, tr, th, Label} from 'react-bootstrap';
+import {ListGroup, ListGroupItem, PageHeader, Table, thead, td, tr, th, Label, OverlayTrigger, Popover} from 'react-bootstrap';
 require('./home.less');
 
 
 module.exports = class Home extends React.Component {
-
+	
 	constructor(props) {
 		super(props);
 
@@ -31,7 +31,7 @@ module.exports = class Home extends React.Component {
 		  //uri: "http://localhost:3000/stocks/" + id,
 		  uri: "http://app-o.se:3000/stocks/" + id,
 		  method: "DELETE",
-		  timeout: 1000,
+		  timeout: 3000,
 		  json: true,
 		   headers: {
 		    "content-type": "application/json"   // setting headers is up to *you* 
@@ -80,27 +80,73 @@ module.exports = class Home extends React.Component {
 				console.log(err);				
 			}
  		});
-	}
-
+	};
 	
+	
+	getColor(percentage) {
+		const green5 = {backgroundColor: '#00610e'};
+		const green4 = {backgroundColor: '#3d860b'};
+		const green3 = {backgroundColor: '#34a203'};
+		const green2 = {backgroundColor: '#6ec007'};
+		const green1 = {backgroundColor: '#c1d11f'};
+		const red1 = {backgroundColor: '#ffb5b5'};
+		const red2 = {backgroundColor: '#ff9393'};
+		const red3 = {backgroundColor: '#ff6a6a'};
+		const red4 = {backgroundColor: '#ff3e3e'};
+		const red5 = {backgroundColor: '#ff2d2d'};	
+		
+		var p = parseFloat(percentage);
+
+		if (p > 20)
+			return green5;
+			
+		if (p > 15)
+			return green4;
+				
+		if (p > 10)
+			return green3;
+				
+		if (p > 5)
+			return green2;
+				
+		if (p > 0)
+			return green1;
+
+		if (p > -5)
+			return red1;
+			
+		if (p > -10)
+			return red2;
+			
+		if (p > -15)
+			return red3;
+			
+		if (p > -20)
+			return red4;			
+		else
+			return red5;										
+
+	};
+//					<td>{parseFloat(stock.senaste).toFixed(2) + " (" + parseFloat(stock.kurs).toFixed(2) + ")"}</td>		
 	renderStocks() {
 		var self = this;
-
+		
 		var items = this.state.stocks.map(function(stock, index) {
 			
 			if (stock.ticker == 'xxx') {
-				return (<tr key={index}><td colSpan="7"><center>{stock.namn}</center></td></tr>);
+				return (<tr key={index}><td colSpan="8"><center>{stock.namn}</center></td></tr>);
 			}
 			else {
 				return (
 					<tr key={index}>
-					<td>{stock.namn}</td>
-					<td>{stock.ticker}</td>
-					<td>{stock.kurs}</td>
-					<td>{stock.senaste}</td>
-					<td>{stock.utfall}</td>
+					<OverlayTrigger trigger="click" placement="top" overlay={<Popover id="popover-positioned-top" title="Företag">{stock.namn}</Popover>}><td>{stock.ticker}</td></OverlayTrigger>
+					<td>{parseFloat(stock.senaste).toFixed(2)}<span style={{color:'#b2b2b2'}}> ({parseFloat(stock.kurs).toFixed(2)})</span></td>
+					<td><span>{stock.utfall}</span></td>
+					<td style={{color:'#b2b2b2'}}>{parseFloat((1-(stock.kurs/stock.maxkurs))*100).toFixed(2)}</td>					
+					<td style={self.getColor(parseFloat((1-(stock.sma50/stock.senaste))*100).toFixed(2))}>{}</td>					
+					<td style={self.getColor(parseFloat((1-(stock.sma200/stock.senaste))*100).toFixed(2))}>{}</td>					
 					{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="info">Flyger</Label></center></td> : <td></td>}
-					<td><center><Button bsSize="xsmall" bsStyle="link" onClick={self.deleteStock.bind(self, stock.id)}>Radera</Button></center></td>
+					<td><center><Button bsSize="xsmall" bsStyle="link" onClick={self.deleteStock.bind(self, stock.id)}>Sälj</Button></center></td>
 					</tr>
 				);				
 			}
@@ -109,21 +155,22 @@ module.exports = class Home extends React.Component {
 
 		if (items.length == 0) {
 			if (this.state.error)
-				var items = <tr><td colSpan="7"><center>{'Kan inte nå servern: ' + self.state.error.message}</center></td></tr>			
+				var items = <tr><td colSpan="8"><center>{'Kan inte nå servern: ' + self.state.error.message}</center></td></tr>			
 			else
-				var items = <tr><td colSpan="7"><center>{'Inga aktier'}</center></td></tr>
+				var items = <tr><td colSpan="8"><center>{'Inga aktier'}</center></td></tr>
 		}
-		
+				
 		return(
 			<Table striped={true} bordered={true} condensed={true} responsive={true}>
 			
 		    <thead>
 		      <tr>
-		        <th>Namn</th>
 		        <th>Ticker</th>
-		        <th>Köpkurs</th>
-		        <th>Senaste</th>
+		        <th>Kurs</th>
 		        <th>%</th>
+		        <th>%max</th>
+		        <th>ma50 </th>		        
+		        <th>ma200</th>
 		        <th></th>
 		        <th></th>		        
 		      </tr>
