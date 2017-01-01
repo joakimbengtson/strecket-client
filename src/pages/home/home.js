@@ -13,7 +13,6 @@ module.exports = class Home extends React.Component {
 
 	};
 
-	// Virtuell function som anropas då sidan visas
 	componentDidMount() {
 		this.fetchStocks();
 	}
@@ -127,7 +126,7 @@ module.exports = class Home extends React.Component {
 			return red5;										
 
 	};
-//					<td>{parseFloat(stock.senaste).toFixed(2) + " (" + parseFloat(stock.kurs).toFixed(2) + ")"}</td>		
+
 	renderStocks() {
 		var self = this;
 		
@@ -141,8 +140,8 @@ module.exports = class Home extends React.Component {
 					<tr key={index}>
 					<OverlayTrigger trigger="click" placement="top" overlay={<Popover id="popover-positioned-top" title="Företag">{stock.namn}</Popover>}><td>{stock.ticker}</td></OverlayTrigger>
 					<td>{parseFloat(stock.senaste).toFixed(2)}<span style={{color:'#b2b2b2'}}> ({parseFloat(stock.kurs).toFixed(2)})</span></td>
-					<td><span>{stock.utfall}</span></td>
-					<td style={{color:'#b2b2b2'}}>{parseFloat((1-(stock.kurs/stock.maxkurs))*100).toFixed(2)}</td>					
+					<td style={{textAlign:'right'}}>{stock.utfall}</td>
+					<td style={{color:'#b2b2b2',textAlign:'right'}}>{parseFloat((1-(stock.kurs/stock.maxkurs))*100).toFixed(2)}</td>					
 					<td style={self.getColor(parseFloat((1-(stock.sma50/stock.senaste))*100).toFixed(2))}>{}</td>					
 					<td style={self.getColor(parseFloat((1-(stock.sma200/stock.senaste))*100).toFixed(2))}>{}</td>					
 					{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="info">Flyger</Label></center></td> : <td></td>}
@@ -167,8 +166,8 @@ module.exports = class Home extends React.Component {
 		      <tr>
 		        <th>Ticker</th>
 		        <th>Kurs</th>
-		        <th>%</th>
-		        <th>%max</th>
+		        <th style={{textAlign:'right'}}>%</th>
+		        <th style={{textAlign:'right'}}>%max</th>
 		        <th>ma50 </th>		        
 		        <th>ma200</th>
 		        <th></th>

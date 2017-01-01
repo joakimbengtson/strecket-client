@@ -1,7 +1,7 @@
 import React from 'react';
 import {Jumbotron, Button, Grid, Row, Col, ButtonToolbar} from 'react-bootstrap';
 import {ListGroup, ListGroupItem, PageHeader} from 'react-bootstrap';
-import {Form, FormGroup, FormControl, ControlLabel} from 'react-bootstrap';
+import {Form, FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
 import Request from 'rest-request';
 
 require('./new-stock.less');
@@ -9,6 +9,8 @@ require('./new-stock.less');
 const ReactDOM = require('react-dom');
 
 var _inputfield;
+var _stoploss;
+var _stoplosshelper;
 
 function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
@@ -23,8 +25,10 @@ module.exports = class Home extends React.Component {
 		this.url = 'http://app-o.se:3000';
 		//this.url = 'http://localhost:3000';
 		this.api = new Request(this.url);
+		
+		this.handleKeyPress = this.handleKeyPress.bind(this);
 
-		this.state = {};
+		this.state = {helptext:'?'};
 		
 	};
 	
@@ -33,6 +37,8 @@ module.exports = class Home extends React.Component {
 		// Sätt fokus på första fältet
 		ReactDOM.findDOMNode(this.refs.stockticker).focus(); 
 		_inputfield = ReactDOM.findDOMNode(this.refs.stockname);
+		_stoploss = ReactDOM.findDOMNode(this.refs.stockstoploss);
+		_stoplosshelper = ReactDOM.findDOMNode(this.refs.stoplosshelper);		
 	}
 		
 	onSave() {
@@ -111,16 +117,17 @@ module.exports = class Home extends React.Component {
 		if (target.keyCode == 188)
 			target.preventDefault();	
 	}
-
+	
 	handleKeyPress(target) {
 		// Kolla att tickern finns
 		if (target.key == 'Enter') {
 			var self = this;
 			
 			var request = require("client-request");
+			var ticker = target.currentTarget.value;
 	
 			var options = {
-			  uri: "http://app-o.se:3000/company/" + target.currentTarget.value,
+			  uri: "http://app-o.se:3000/company/" + ticker,
 			  method: "GET",
 			  timeout: 1000,
 			  json: true,
@@ -130,17 +137,40 @@ module.exports = class Home extends React.Component {
 			};
 			
 			var req = request(options, function(err, response, body) {
-				if (!err) {
+				if (!err) {					
 					_inputfield.value = body; // Sätt aktienamnet automatiskt
+
+					options = {
+					  uri: "http://app-o.se:3000/atr/" + ticker,
+					  method: "GET",
+					  timeout: 1000,
+					  json: true,
+					   headers: {
+					    "content-type": "application/json"   // setting headers is up to *you* 
+					  }
+					};
+					
+					var req = request(options, function(err, response, body) {
+						if (!err) {
+							var helpStr;
+							
+							_stoploss.value = body;
+							if (body > 0)
+								helpStr = "(2 ATR = " + (2*body).toFixed(2) + "%)  (2.5 ATR = " + (2.5*body).toFixed(2) + "%)  (3 ATR = " + (3*body).toFixed(2) + "%)";
+							else
+								helpStr = "???";
+							self.setState({helptext: helpStr});				
+						}				
+			 		});
+
 				}				
 	 		});
 	 		
 	 	}
 	}	
 	
-	
 	render() {
-
+		console.log("render");
 		return (
 			<div id="new_stock">
 					
@@ -187,7 +217,7 @@ module.exports = class Home extends React.Component {
 					        <FormControl type="text" ref='stockcount' placeholder="Antal aktier" />
 					      </Col>
 					    </FormGroup>
-
+					    
 					    <FormGroup controlId="stock_stoploss">
 					      <Col componentClass={ControlLabel} sm={2}>
 					        Släpande stop loss
@@ -195,6 +225,9 @@ module.exports = class Home extends React.Component {
 					      <Col sm={2}>
 					        <FormControl type="text" ref='stockstoploss' placeholder="Släpande stop loss i %" />
 					      </Col>
+					      <HelpBlock ref='stoplosshelper'>
+					        {this.state.helptext}
+					      </HelpBlock >      
 					    </FormGroup>
 
 
