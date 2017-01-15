@@ -132,23 +132,18 @@ module.exports = class Home extends React.Component {
 		
 		var items = this.state.stocks.map(function(stock, index) {
 			
-			if (stock.ticker == 'xxx') {
-				return (<tr key={index}><td colSpan="8"><center>{stock.namn}</center></td></tr>);
-			}
-			else {
-				return (
-					<tr key={index}>
-					<OverlayTrigger trigger="click" placement="top" overlay={<Popover id="popover-positioned-top" title="Företag">{stock.namn}</Popover>}><td>{stock.ticker}</td></OverlayTrigger>
-					<td>{parseFloat(stock.senaste).toFixed(2)}<span style={{color:'#b2b2b2'}}> ({parseFloat(stock.kurs).toFixed(2)})</span></td>
-					<td style={{textAlign:'right'}}>{stock.utfall}</td>
-					<td style={{color:'#b2b2b2',textAlign:'right'}}>{parseFloat((1-(stock.kurs/stock.maxkurs))*100).toFixed(2)}</td>					
-					<td style={self.getColor(parseFloat((1-(stock.sma50/stock.senaste))*100).toFixed(2))}>{}</td>					
-					<td style={self.getColor(parseFloat((1-(stock.sma200/stock.senaste))*100).toFixed(2))}>{}</td>					
-					{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="info">Flyger</Label></center></td> : <td></td>}
-					<td><center><Button bsSize="xsmall" bsStyle="link" onClick={self.deleteStock.bind(self, stock.id)}>Sälj</Button></center></td>
-					</tr>
-				);				
-			}
+			return (
+				<tr key={index}>
+				<OverlayTrigger trigger="click" placement="top" overlay={<Popover id="popover-positioned-top" title="Företag">{stock.namn}, {stock.stoploss*100}%</Popover>}><td>{stock.ticker}</td></OverlayTrigger>
+				<td>{parseFloat(stock.senaste).toFixed(2)}<span style={{color:'#b2b2b2'}}> ({parseFloat(stock.kurs).toFixed(2)})</span></td>
+				<td style={{textAlign:'right'}}>{stock.utfall}</td>
+				<td style={{color:'#b2b2b2',textAlign:'right'}}>{parseFloat((1-(stock.kurs/stock.maxkurs))*100).toFixed(2)}</td>					
+				<td style={self.getColor(parseFloat((1-(stock.sma50/stock.senaste))*100).toFixed(2))}>{}</td>					
+				<td style={self.getColor(parseFloat((1-(stock.sma200/stock.senaste))*100).toFixed(2))}>{}</td>					
+				{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="info">Flyger</Label></center></td> : <td></td>}
+				<td><center><Button bsSize="xsmall" bsStyle="link" onClick={self.deleteStock.bind(self, stock.id)}>Sälj</Button></center></td>
+				</tr>
+			);				
 						
 		});
 
