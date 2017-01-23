@@ -9,7 +9,7 @@ module.exports = class Home extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {stocks:[], error:''}; 
+		this.state = {stocks:[], watches:[], error:''}; 
 
 	};
 
@@ -49,8 +49,7 @@ module.exports = class Home extends React.Component {
 
 
 	}
-	
-
+/*	
 	fetchStocks() {
 		var self = this;
 
@@ -60,12 +59,11 @@ module.exports = class Home extends React.Component {
 
 
 		var options = {
-			//uri: "http://localhost:3000/stocks",
 		  uri: "http://app-o.se:3000/stocks",
 		  method: "GET",
 		  json: true,
 		   headers: {
-		    "content-type": "application/json"   // setting headers is up to *you* 
+		    "content-type": "application/json"
 		  }
 		};
 		
@@ -73,6 +71,56 @@ module.exports = class Home extends React.Component {
 
 			if (!err) {
 				self.setState({stocks:body});
+			}
+			else {
+				self.setState({error:err});				
+				console.log(err);				
+			}
+ 		});
+	};
+*/
+	fetchStocks() {
+		var self = this;
+
+		console.log('Hämtar aktiekurser...');
+
+		var request = require("client-request");
+
+
+		var options = {
+		  uri: "http://app-o.se:3000/stocks",
+		  method: "GET",
+		  json: true,
+		   headers: {
+		    "content-type": "application/json"
+		  }
+		};
+		
+		var req = request(options, function(err, response, body) {
+
+			if (!err) {
+
+				var options = {
+				  uri: "http://app-o.se:3000/watches",
+				  method: "GET",
+				  json: true,
+				   headers: {
+				    "content-type": "application/json"
+				  }
+				};
+
+				var req = request(options, function(err, response, body2) {
+
+					if (!err) {
+						self.setState({stocks:body, watches:body2});
+					}
+					else {
+						self.setState({error:err});				
+						console.log(err);				
+					}
+
+				});
+
 			}
 			else {
 				self.setState({error:err});				
@@ -153,8 +201,22 @@ module.exports = class Home extends React.Component {
 			else
 				var items = <tr><td colSpan="8"><center>{'Inga aktier'}</center></td></tr>
 		}
+
+		var watchItems = this.state.watches.map(function(watch, index) {
+			
+			return (
+				<tr key={index}>
+				<td style={self.getColor(parseFloat((1-(watch.values[0]/watch.quote))*100).toFixed(2))}>{}</td>					
+				<td style={self.getColor(parseFloat((1-(watch.values[1]/watch.quote))*100).toFixed(2))}><center>{watch.name}</center></td>					
+				<td style={self.getColor(parseFloat((1-(watch.values[2]/watch.quote))*100).toFixed(2))}>{}</td>					
+				</tr>
+			);
+						
+		});
+
 				
 		return(
+			<div>
 			<Table striped={true} bordered={true} condensed={true} responsive={true}>
 			
 		    <thead>
@@ -174,6 +236,23 @@ module.exports = class Home extends React.Component {
 				{items}
 			</tbody>
 			</Table>
+
+
+			<Table condensed={true} responsive={true}>
+			
+		    <thead>
+		      <tr>
+		        <th style={{width:'33%'}}></th>		        
+		        <th style={{width:'33%'}}></th>		        
+		        <th style={{width:'33%'}}></th>
+		      </tr>
+		    </thead>
+		    
+		    <tbody>
+				{watchItems}
+			</tbody>
+			</Table>
+			</div>
 			
 		);
 		

@@ -156,9 +156,9 @@ module.exports = class Home extends React.Component {
 							
 							_stoploss.value = body;
 							if (body > 0)
-								helpStr = "(2 ATR = " + (2*body).toFixed(2) + "%)  (2.5 ATR = " + (2.5*body).toFixed(2) + "%)  (3 ATR = " + (3*body).toFixed(2) + "%)";
+								helpStr = "% (2 ATR = " + (2*body).toFixed(2) + "%)  (2.5 ATR = " + (2.5*body).toFixed(2) + "%)  (3 ATR = " + (3*body).toFixed(2) + "%)";
 							else
-								helpStr = "???";
+								helpStr = "% ???";
 							self.setState({helptext: helpStr});				
 						}				
 			 		});
