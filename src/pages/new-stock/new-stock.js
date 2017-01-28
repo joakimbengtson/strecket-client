@@ -1,7 +1,7 @@
 import React from 'react';
 import {Jumbotron, Button, Grid, Row, Col, ButtonToolbar} from 'react-bootstrap';
 import {ListGroup, ListGroupItem, PageHeader} from 'react-bootstrap';
-import {Form, FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
+import {Form, FormGroup, FormControl, ControlLabel, HelpBlock, Panel, Radio, Checkbox} from 'react-bootstrap';
 import Request from 'rest-request';
 
 require('./new-stock.less');
@@ -9,8 +9,14 @@ require('./new-stock.less');
 const ReactDOM = require('react-dom');
 
 var _inputfield;
-var _stoploss;
-var _stoplosshelper;
+
+var _stoplossType = {
+    StoplossTypeATR : 1,
+    StoplossTypeQuote : 2,
+    StoplossTypePercent : 3
+}
+
+var _percentile10 = false;
 
 function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
@@ -23,26 +29,41 @@ module.exports = class Home extends React.Component {
 		super(props);
 
 		this.url = 'http://app-o.se:3000';
-		//this.url = 'http://localhost:3000';
 		this.api = new Request(this.url);
 		
 		this.handleKeyPress = this.handleKeyPress.bind(this);
+		this.handleOptionChange = this.handleOptionChange.bind(this);
 
-		this.state = {helptext:'?'};
+		this.state = {helptext:'', selectedOption: 'option1'};
 		
 	};
+
+	handleCheckChange(changeEvent) {
+		_percentile10 = !_percentile10;
+	}
+	
+	handleOptionChange(changeEvent) {
+		this.setState({selectedOption: changeEvent.target.value});
+		
+		if (changeEvent.target.value == 'option1')
+			ReactDOM.findDOMNode(this.refs.ATRMultiple).focus();
+		else if (changeEvent.target.value == 'option2')
+			ReactDOM.findDOMNode(this.refs.stoplossQuote).focus();
+		else
+			ReactDOM.findDOMNode(this.refs.stoplossPercentage).focus();		
+	}
 	
 	// Virtuell function som anropas då sidan visas
 	componentDidMount() {
 		// Sätt fokus på första fältet
 		ReactDOM.findDOMNode(this.refs.stockticker).focus(); 
 		_inputfield = ReactDOM.findDOMNode(this.refs.stockname);
-		_stoploss = ReactDOM.findDOMNode(this.refs.stockstoploss);
-		_stoplosshelper = ReactDOM.findDOMNode(this.refs.stoplosshelper);		
 	}
 		
 	onSave() {
 		var rec = {};		
+		
+		// ---- VALIDATE
 		
 		if (ReactDOM.findDOMNode(this.refs.stockticker).value.length == 0) {
 			ReactDOM.findDOMNode(this.refs.stockticker).focus(); 
@@ -60,22 +81,43 @@ module.exports = class Home extends React.Component {
 		}
 
 		if (!(ReactDOM.findDOMNode(this.refs.stockcount).value.length > 0 && isNumeric(ReactDOM.findDOMNode(this.refs.stockcount).value))) {
-			ReactDOM.findDOMNode(this.refs.stockprice).focus(); 
+			ReactDOM.findDOMNode(this.refs.stockcount).focus(); 
 			return;			
 		}
-
-		if (ReactDOM.findDOMNode(this.refs.stockstoploss).value.length > 0) {
-			// Om egen stop loss angiven, måste vara numerisk och mellan 1-20%
-			if (!isNumeric(ReactDOM.findDOMNode(this.refs.stockstoploss).value)) {
-				ReactDOM.findDOMNode(this.refs.stockstoploss).focus(); 
-				return;				
-			}
-			if (ReactDOM.findDOMNode(this.refs.stockstoploss).value < 1 || ReactDOM.findDOMNode(this.refs.stockstoploss).value > 20) {
-				ReactDOM.findDOMNode(this.refs.stockstoploss).focus(); 
-				return;				
+		
+		if (this.state.selectedOption == 'option1') {
+			if (!(ReactDOM.findDOMNode(this.refs.ATRMultiple).value.length > 0 && isNumeric(ReactDOM.findDOMNode(this.refs.ATRMultiple).value))) {
+				ReactDOM.findDOMNode(this.refs.ATRMultiple).focus(); 
+				return;			
 			}
 		}
+		else if (this.state.selectedOption == 'option2') {
+			if (!(ReactDOM.findDOMNode(this.refs.stoplossQuote).value.length > 0 && isNumeric(ReactDOM.findDOMNode(this.refs.stoplossQuote).value))) {
+				ReactDOM.findDOMNode(this.refs.stoplossQuote).focus(); 
+				return;			
+			}
+		}
+		else {
+			if (!ReactDOM.findDOMNode(this.refs.stoplossPercentage).value.length > 0) {
+				ReactDOM.findDOMNode(this.refs.stoplossPercentage).focus(); 
+				return;			
+			}
+			else if (isNumeric(ReactDOM.findDOMNode(this.refs.stoplossPercentage).value)) {
+				var val = ReactDOM.findDOMNode(this.refs.stoplossPercentage).value;
+				
+				if (val > 25) {
+					ReactDOM.findDOMNode(this.refs.stoplossPercentage).focus();  
+					return;												
+				}
+			}
+			else {
+				ReactDOM.findDOMNode(this.refs.stoplossPercentage).focus(); 
+				return;							
+			}
+		}
+				
 
+		// ---- SAVE
 		
 		var request = require("client-request");
 
@@ -83,17 +125,31 @@ module.exports = class Home extends React.Component {
 		rec.namn = ReactDOM.findDOMNode(this.refs.stockname).value;
 		rec.kurs = ReactDOM.findDOMNode(this.refs.stockprice).value;
 		rec.antal = ReactDOM.findDOMNode(this.refs.stockcount).value;
-		rec.stoploss = ReactDOM.findDOMNode(this.refs.stockstoploss).value/100;
+		
+		if (this.state.selectedOption == 'option1') {
+			rec.stoplossTyp = _stoplossType.StoplossTypeATR;
+			rec.ATRMultipel = ReactDOM.findDOMNode(this.refs.ATRMultiple).value;		
+		}
+		else if (this.state.selectedOption == 'option2') {
+			rec.stoplossTyp = _stoplossType.StoplossTypeQuote;
+			rec.stoplossKurs = ReactDOM.findDOMNode(this.refs.stoplossQuote).value;		
+			
+		}
+		else {
+			rec.stoplossTyp = _stoplossType.StoplossTypePercent;
+			rec.stoplossProcent = ReactDOM.findDOMNode(this.refs.stoplossPercentage).value;			
+		}
+		
+		rec.percentil10 = _percentile10;
 
 		var options = {
-		  //uri: "http://localhost:3000/save",
 		  uri: "http://app-o.se:3000/save",
 		  method: "POST",
 		  body: rec,
 		  timeout: 3000,
 		  json: true,
 		   headers: {
-		    "content-type": "application/json"   // setting headers is up to *you* 
+		    "content-type": "application/json" 
 		  }
 		};
 		
@@ -154,11 +210,10 @@ module.exports = class Home extends React.Component {
 						if (!err) {
 							var helpStr;
 							
-							_stoploss.value = body;
 							if (body > 0)
-								helpStr = "% (2 ATR = " + (2*body).toFixed(2) + "%)  (2.5 ATR = " + (2.5*body).toFixed(2) + "%)  (3 ATR = " + (3*body).toFixed(2) + "%)";
+								helpStr = "(ATR = " + body + "%)";
 							else
-								helpStr = "% ???";
+								helpStr = "(ATR kan inte beräknas)";
 							self.setState({helptext: helpStr});				
 						}				
 			 		});
@@ -169,8 +224,21 @@ module.exports = class Home extends React.Component {
 	 	}
 	}	
 	
+	/*
+							    <FormGroup controlId="stock_stoploss">
+					      <Col componentClass={ControlLabel} sm={2}>
+					        Släpande stop loss
+					      </Col>
+					      <Col sm={2}>
+					        <FormControl type="text" ref='stockstoploss' placeholder="Släpande stop loss i %" />
+					      </Col>
+					      <HelpBlock ref='stoplosshelper'>
+					        {this.state.helptext}
+					      </HelpBlock >      
+					    </FormGroup>
+*/
+	
 	render() {
-		console.log("render");
 		return (
 			<div id="new_stock">
 					
@@ -218,22 +286,56 @@ module.exports = class Home extends React.Component {
 					      </Col>
 					    </FormGroup>
 					    
-					    <FormGroup controlId="stock_stoploss">
-					      <Col componentClass={ControlLabel} sm={2}>
-					        Släpande stop loss
-					      </Col>
-					      <Col sm={2}>
-					        <FormControl type="text" ref='stockstoploss' placeholder="Släpande stop loss i %" />
-					      </Col>
-					      <HelpBlock ref='stoplosshelper'>
-					        {this.state.helptext}
-					      </HelpBlock >      
-					    </FormGroup>
+					    
+					    <Col sm={7} smOffset={2}>
+					    <ControlLabel>Stop loss</ControlLabel>
+					    <Row>
+					    <Col sm={2}>
+						<Radio   value="option1" checked={this.state.selectedOption === 'option1'} onChange={this.handleOptionChange}>
+						&nbsp;&nbsp;släpande 
+						</Radio>
+						</Col>
+					    <Col sm={2}>						
+						<FormControl type="text" ref='ATRMultiple' placeholder="x ATR?" />
+						</Col>
+					    <Col sm={4}>						
+						<ControlLabel ref='stoplosshelper'><span style={{color:'#b2b2b2'}}>{this.state.helptext}</span></ControlLabel>
+						</Col>
+						</Row>
 
+					    <Row>
+					    <Col sm={2}>						
+						<Radio   value="option2" checked={this.state.selectedOption === 'option2'} onChange={this.handleOptionChange}>
+						&nbsp;&nbsp;under kurs 
+						</Radio>
+						</Col>
+					    <Col sm={2}>												
+						<FormControl type="text" ref='stoplossQuote' placeholder="Kurs?" />
+						</Col>
+						</Row>
+						
+						<Row>
+					    <Col sm={3}>						
+						<Radio   value="option3" checked={this.state.selectedOption === 'option3'} onChange={this.handleOptionChange}>
+						&nbsp;&nbsp;släpande under procent 
+						</Radio>
+						</Col>
+					    <Col sm={2}>						
+						<FormControl type="text" ref='stoplossPercentage' placeholder="%" />
+						</Col>
+						</Row>
+						
+						<br/>
+						
+						<Checkbox ref='percentile10' onChange={this.handleCheckChange}>
+						&nbsp;&nbsp;öka stop loss med 1% för varje 10%-ökning av kursen
+						</Checkbox>
+						
+					    </Col>
 
 						<FormGroup>
 					    <Col sm={10} smOffset={1}>
-
+						<br/>
 						<ButtonToolbar>
 
 							<Button onClick={this.onCancel.bind(this)}>

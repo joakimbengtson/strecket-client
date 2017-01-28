@@ -182,7 +182,7 @@ module.exports = class Home extends React.Component {
 			
 			return (
 				<tr key={index}>
-				<OverlayTrigger trigger="click" placement="top" overlay={<Popover id="popover-positioned-top" title="Företag">{stock.namn}, {stock.stoploss*100}%</Popover>}><td>{stock.ticker}</td></OverlayTrigger>
+				<OverlayTrigger trigger="click" placement="top" overlay={<Popover id="popover-positioned-top" title="Företag">{stock.namn}, {stock.stoplossProcent*100}%</Popover>}><td>{stock.ticker}</td></OverlayTrigger>
 				<td>{parseFloat(stock.senaste).toFixed(2)}<span style={{color:'#b2b2b2'}}> ({parseFloat(stock.kurs).toFixed(2)})</span></td>
 				<td style={{textAlign:'right'}}>{stock.utfall}</td>
 				<td style={{color:'#b2b2b2',textAlign:'right'}}>{parseFloat((1-(stock.kurs/stock.maxkurs))*100).toFixed(2)}</td>					
