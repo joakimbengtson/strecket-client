@@ -10,6 +10,9 @@ const ReactDOM = require('react-dom');
 
 var _inputfield;
 
+var _ATR;
+var _ATRDate;
+
 var _stoplossType = {
     StoplossTypeATR : 1,
     StoplossTypeQuote : 2,
@@ -61,7 +64,8 @@ module.exports = class Home extends React.Component {
 	}
 		
 	onSave() {
-		var rec = {};		
+		var rec = {};	
+		var today = new Date();	
 		
 		// ---- VALIDATE
 		
@@ -137,10 +141,13 @@ module.exports = class Home extends React.Component {
 		}
 		else {
 			rec.stoplossTyp = _stoplossType.StoplossTypePercent;
-			rec.stoplossProcent = ReactDOM.findDOMNode(this.refs.stoplossPercentage).value;			
+			rec.stoplossProcent = ReactDOM.findDOMNode(this.refs.stoplossPercentage).value/100;			
 		}
 		
 		rec.percentil10 = _percentile10;
+		
+		rec.ATR = _ATR;		
+		rec.ATRDatum = _ATRDate;
 
 		var options = {
 		  uri: "http://app-o.se:3000/save",
@@ -210,11 +217,12 @@ module.exports = class Home extends React.Component {
 						if (!err) {
 							var helpStr;
 							
-							if (body > 0)
-								helpStr = "(ATR = " + body + "%)";
-							else
-								helpStr = "(ATR kan inte beräknas)";
-							self.setState({helptext: helpStr});				
+							helpStr = "(ATR = " + body.atr.toFixed(2) + " ATR % = " + body.atrPercent + "%)";
+							_ATR = body.atr;
+							_ATRDate = body.atrDate;
+
+							self.setState({helptext: helpStr});		
+							ReactDOM.findDOMNode(self.refs.stockprice).focus();
 						}				
 			 		});
 
@@ -223,21 +231,7 @@ module.exports = class Home extends React.Component {
 	 		
 	 	}
 	}	
-	
-	/*
-							    <FormGroup controlId="stock_stoploss">
-					      <Col componentClass={ControlLabel} sm={2}>
-					        Släpande stop loss
-					      </Col>
-					      <Col sm={2}>
-					        <FormControl type="text" ref='stockstoploss' placeholder="Släpande stop loss i %" />
-					      </Col>
-					      <HelpBlock ref='stoplosshelper'>
-					        {this.state.helptext}
-					      </HelpBlock >      
-					    </FormGroup>
-*/
-	
+		
 	render() {
 		return (
 			<div id="new_stock">

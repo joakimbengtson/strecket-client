@@ -49,36 +49,8 @@ module.exports = class Home extends React.Component {
 
 
 	}
-/*	
-	fetchStocks() {
-		var self = this;
-
-		console.log('Hämtar aktiekurser...');
-
-		var request = require("client-request");
 
 
-		var options = {
-		  uri: "http://app-o.se:3000/stocks",
-		  method: "GET",
-		  json: true,
-		   headers: {
-		    "content-type": "application/json"
-		  }
-		};
-		
-		var req = request(options, function(err, response, body) {
-
-			if (!err) {
-				self.setState({stocks:body});
-			}
-			else {
-				self.setState({error:err});				
-				console.log(err);				
-			}
- 		});
-	};
-*/
 	fetchStocks() {
 		var self = this;
 
@@ -182,12 +154,13 @@ module.exports = class Home extends React.Component {
 			
 			return (
 				<tr key={index}>
-				<OverlayTrigger trigger="click" placement="top" overlay={<Popover id="popover-positioned-top" title="Företag">{stock.namn}, {stock.stoplossProcent*100}%</Popover>}><td>{stock.ticker}</td></OverlayTrigger>
+				<OverlayTrigger trigger="click" placement="top" overlay={<Popover id="popover-positioned-top" title="Företag">{stock.namn}</Popover>}><td>{stock.ticker}</td></OverlayTrigger>
 				<td>{parseFloat(stock.senaste).toFixed(2)}<span style={{color:'#b2b2b2'}}> ({parseFloat(stock.kurs).toFixed(2)})</span></td>
 				<td style={{textAlign:'right'}}>{stock.utfall}</td>
 				<td style={{color:'#b2b2b2',textAlign:'right'}}>{parseFloat((1-(stock.kurs/stock.maxkurs))*100).toFixed(2)}</td>					
 				<td style={self.getColor(parseFloat((1-(stock.sma50/stock.senaste))*100).toFixed(2))}>{}</td>					
-				<td style={self.getColor(parseFloat((1-(stock.sma200/stock.senaste))*100).toFixed(2))}>{}</td>					
+				<td style={self.getColor(parseFloat((1-(stock.sma200/stock.senaste))*100).toFixed(2))}>{}</td>
+				{stock.stoplossTyp == 3 ? <td style={{textAlign:'right'}}>{(stock.stoplossProcent*100).toFixed(2)}%</td> : stock.stoplossTyp == 2 ? <td style={{textAlign:'right'}}>&gt; {stock.stoplossKurs}</td> : <td style={{textAlign:'right'}}>{(stock.atrStoploss*100).toFixed(2)}%<sup>*</sup></td>}
 				{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="info">Flyger</Label></center></td> : <td></td>}
 				<td><center><Button bsSize="xsmall" bsStyle="link" onClick={self.deleteStock.bind(self, stock.id)}>Sälj</Button></center></td>
 				</tr>
@@ -197,9 +170,9 @@ module.exports = class Home extends React.Component {
 
 		if (items.length == 0) {
 			if (this.state.error)
-				var items = <tr><td colSpan="8"><center>{'Kan inte nå servern: ' + self.state.error.message}</center></td></tr>			
+				var items = <tr><td colSpan="9"><center>{'Kan inte nå servern: ' + self.state.error.message}</center></td></tr>			
 			else
-				var items = <tr><td colSpan="8"><center>{'Inga aktier'}</center></td></tr>
+				var items = <tr><td colSpan="9"><center>{'Inga aktier'}</center></td></tr>
 		}
 
 		var watchItems = this.state.watches.map(function(watch, index) {
@@ -207,7 +180,7 @@ module.exports = class Home extends React.Component {
 			return (
 				<tr key={index}>
 				<td style={self.getColor(parseFloat((1-(watch.values[0]/watch.quote))*100).toFixed(2))}>{}</td>					
-				<td style={self.getColor(parseFloat((1-(watch.values[1]/watch.quote))*100).toFixed(2))}><center>{watch.name}</center></td>					
+				<td style={self.getColor(parseFloat((1-(watch.values[1]/watch.quote))*100).toFixed(2))}><center><small>{watch.name} ({watch.ticker})</small></center></td>					
 				<td style={self.getColor(parseFloat((1-(watch.values[2]/watch.quote))*100).toFixed(2))}>{}</td>					
 				</tr>
 			);
@@ -227,6 +200,7 @@ module.exports = class Home extends React.Component {
 		        <th style={{textAlign:'right'}}>%max</th>
 		        <th>ma50 </th>		        
 		        <th>ma200</th>
+		        <th style={{textAlign:'right'}}>S/L</th>		        
 		        <th></th>
 		        <th></th>		        
 		      </tr>
