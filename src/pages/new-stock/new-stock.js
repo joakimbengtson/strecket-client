@@ -11,7 +11,6 @@ const ReactDOM = require('react-dom');
 var _inputfield;
 
 var _ATR;
-var _ATRDate;
 
 var _stoplossType = {
     StoplossTypeATR : 1,
@@ -147,7 +146,6 @@ module.exports = class Home extends React.Component {
 		rec.percentil10 = _percentile10;
 		
 		rec.ATR = _ATR;		
-		rec.ATRDatum = _ATRDate;
 
 		var options = {
 		  uri: "http://app-o.se:3000/save",
@@ -219,7 +217,6 @@ module.exports = class Home extends React.Component {
 							
 							helpStr = "(ATR = " + body.atr.toFixed(2) + " ATR % = " + body.atrPercent + "%)";
 							_ATR = body.atr;
-							_ATRDate = body.atrDate;
 
 							self.setState({helptext: helpStr});		
 							ReactDOM.findDOMNode(self.refs.stockprice).focus();
