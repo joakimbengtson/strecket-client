@@ -35,7 +35,6 @@ module.exports = class Home extends React.Component {
 
 
 		var options = {
-		  //uri: "http://localhost:3000/stocks/" + id,
 		  uri: "http://app-o.se:3000/stocks/" + id,
 		  method: "DELETE",
 		  timeout: 3000,
@@ -56,8 +55,8 @@ module.exports = class Home extends React.Component {
  		});
 
 
-	}
-	
+	}	
+
 
 	fetchStocks() {
 		var self = this;
@@ -136,7 +135,7 @@ module.exports = class Home extends React.Component {
 
 	renderStocks() {
 		var self = this;
-		
+		 
 		var items = this.state.stocks.map(function(stock, index) {
 					
 			return (
@@ -148,8 +147,9 @@ module.exports = class Home extends React.Component {
 				<td style={self.getColor(parseFloat((1-(stock.sma200/stock.senaste))*100).toFixed(2))}>{}</td>
 				{stock.stoplossTyp == 3 ? <td style={{textAlign:'right'}}>{(stock.stoplossProcent*100).toFixed(2)}%</td> : stock.stoplossTyp == 2 ? <td style={{textAlign:'right'}}>&gt; {stock.stoplossKurs}</td> : <td style={{textAlign:'right'}}>{(stock.atrStoploss*100).toFixed(2)}%<sup>*</sup></td>}
 				{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="info">Flyger</Label></center></td> : <td></td>}
-				<td><center><Button bsSize="xsmall" bsStyle="link" onClick={self.deleteStock.bind(self, stock.id)}>Sälj</Button></center></td>
-				{stock.utfall > 0 ? <td style={{textAlign:'right'}}>{((stock.utfall/dayDiff(stock.köpt_datum))*365).toFixed(2)}%</td> : <td style={{textAlign:'right'}}>-</td>}
+				<td><center><Button bsSize="xsmall" bsStyle="link" onClick={self.deleteStock.bind(self, stock.id)}><Glyphicon glyph="trash" /></Button></center></td>
+				<td><center><Button bsSize="xsmall" bsStyle="link" href={'#new-stock/?id=' + stock.id + "&senaste=" + stock.senaste}><Glyphicon glyph="edit" /></Button></center></td>
+				{stock.utfall > 0 && dayDiff(stock.köpt_datum) > 0 ? <td style={{textAlign:'right'}}><span style={{color:'#b2b2b2'}}><small>{((stock.utfall/dayDiff(stock.köpt_datum))*365).toFixed(0)}%, {dayDiff(stock.köpt_datum)}d</small></span></td> : <td style={{textAlign:'right'}}><span style={{color:'#b2b2b2'}}><small>-, {dayDiff(stock.köpt_datum)}d</small></span></td>}
 				</tr>
 			);				
 						
@@ -175,6 +175,7 @@ module.exports = class Home extends React.Component {
 		        <th style={{textAlign:'center'}}>ma200</th>
 		        <th style={{textAlign:'right'}}>S/L</th>		        
 		        <th></th>
+		        <th></th>		        
 		        <th></th>		        
 		        <th style={{textAlign:'right'}}>yY</th>		        
 		      </tr>

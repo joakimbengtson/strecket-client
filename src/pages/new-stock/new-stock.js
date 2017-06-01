@@ -9,16 +9,16 @@ require('./new-stock.less');
 const ReactDOM = require('react-dom');
 
 var _inputfield;
-
 var _ATR;
-
+var _stockID;
+var _stockQuote;
 var _stoplossType = {
     StoplossTypeATR : 1,
     StoplossTypeQuote : 2,
     StoplossTypePercent : 3
 }
+var _percentile10;
 
-var _percentile10 = false;
 
 function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
@@ -29,19 +29,23 @@ module.exports = class Home extends React.Component {
 
 	constructor(props) {
 		super(props);
+				
+		_stockID = props.location.query.id;
+		_stockQuote = props.location.query.senaste;
+		_percentile10 = false;
 
-		this.url = 'http://app-o.se:3000';
+		this.url = 'http://app-o.se:3000'; 
 		this.api = new Request(this.url);
 		
 		this.handleKeyPress = this.handleKeyPress.bind(this);
 		this.handleOptionChange = this.handleOptionChange.bind(this);
-
-		this.state = {helptext:'', selectedOption: 'option1'};
-		
+		this.state = {helptext:'', selectedOption: 'option1', selectedCheck: false};
 	};
 
 	handleCheckChange(changeEvent) {
 		_percentile10 = !_percentile10;
+		this.setState({selectedCheck: _percentile10});
+		
 	}
 	
 	handleOptionChange(changeEvent) {
@@ -57,8 +61,68 @@ module.exports = class Home extends React.Component {
 	
 	// Virtuell function som anropas då sidan visas
 	componentDidMount() {
-		// Sätt fokus på första fältet
-		ReactDOM.findDOMNode(this.refs.stockticker).focus(); 
+		var self = this;
+		var stoplossOption = "option1"; 
+		var helpStr = "";
+
+		// Om vi har ett ID, hämta aktien
+		if (_stockID != undefined) {
+			var request = require("client-request");
+		
+			var options = {
+			  uri: "http://app-o.se:3000/stock/" + _stockID,
+			  method: "GET",
+			  json: true,
+			   headers: {
+			    "content-type": "application/json"
+			  }
+			};
+
+			var req = request(options, function(err, response, body) {
+	
+				if (!err) {
+					
+					ReactDOM.findDOMNode(self.refs.stockticker).value = body[0].ticker;
+					ReactDOM.findDOMNode(self.refs.stockticker).disabled = true;
+					
+					ReactDOM.findDOMNode(self.refs.stockname).value = body[0].namn;
+					ReactDOM.findDOMNode(self.refs.stockname).focus();
+					
+					ReactDOM.findDOMNode(self.refs.stockprice).value = body[0].kurs;
+					ReactDOM.findDOMNode(self.refs.stockcount).value = body[0].antal;
+					
+					if (body[0].stoplossTyp == 1) {
+						ReactDOM.findDOMNode(self.refs.ATRMultiple).value = body[0].ATRMultipel;
+						stoplossOption = "option1";
+					}
+					else if (body[0].stoplossTyp == 2) {
+						ReactDOM.findDOMNode(self.refs.stoplossQuote).value = body[0].stoplossKurs;
+						stoplossOption = "option2";
+					}
+					else {
+						ReactDOM.findDOMNode(self.refs.stoplossPercentage).value = body[0].stoplossProcent * 100;
+						stoplossOption = "option3";
+					}
+					
+					_percentile10 = body[0].percentil10;
+										
+					helpStr = "(ATR = " + body[0].ATR.toFixed(2) + " ATR % = " + ((body[0].ATR/_stockQuote)*100).toFixed(2) + "%)";
+					
+					self.setState({helptext: helpStr, selectedOption: stoplossOption, selectedCheck: _percentile10});
+						 
+				}
+				else
+					console.log(err);				
+				
+	 		});			
+						
+		}
+		else {
+			// Sätt fokus på ticker
+			ReactDOM.findDOMNode(this.refs.stockticker).focus(); 		
+			self.setState({helptext: helpStr, selectedOption: stoplossOption, selectedCheck: false});
+		}
+		
 		_inputfield = ReactDOM.findDOMNode(this.refs.stockname);
 	}
 		
@@ -124,7 +188,7 @@ module.exports = class Home extends React.Component {
 		
 		var request = require("client-request");
 
-		rec.ticker = ReactDOM.findDOMNode(this.refs.stockticker).value;
+		rec.ticker = (ReactDOM.findDOMNode(this.refs.stockticker).value).toUpperCase();
 		rec.namn = ReactDOM.findDOMNode(this.refs.stockname).value;
 		rec.kurs = ReactDOM.findDOMNode(this.refs.stockprice).value;
 		rec.antal = ReactDOM.findDOMNode(this.refs.stockcount).value;
@@ -198,30 +262,33 @@ module.exports = class Home extends React.Component {
 			};
 			
 			var req = request(options, function(err, response, body) {
-				if (!err) {					
-					_inputfield.value = body; // Sätt aktienamnet automatiskt
-
-					options = {
-					  uri: "http://app-o.se:3000/atr/" + ticker,
-					  method: "GET",
-					  timeout: 1000,
-					  json: true,
-					   headers: {
-					    "content-type": "application/json"   // setting headers is up to *you* 
-					  }
-					};
+				if (!err) {
 					
-					var req = request(options, function(err, response, body) {
-						if (!err) {
-							var helpStr;
-							
-							helpStr = "(ATR = " + body.atr.toFixed(2) + " ATR % = " + body.atrPercent + "%)";
-							_ATR = body.atr;
-
-							self.setState({helptext: helpStr});		
-							ReactDOM.findDOMNode(self.refs.stockprice).focus();
-						}				
-			 		});
+					if (body != null) {
+						_inputfield.value = body; // Sätt aktienamnet automatiskt
+	
+						options = {
+						  uri: "http://app-o.se:3000/atr/" + ticker,
+						  method: "GET",
+						  timeout: 1000,
+						  json: true,
+						   headers: {
+						    "content-type": "application/json"   // setting headers is up to *you* 
+						  }
+						};
+						
+						var req = request(options, function(err, response, body) {
+							if (!err) {
+								var helpStr;
+								
+								helpStr = "(ATR = " + body.atr.toFixed(2) + " ATR % = " + body.atrPercent + "%)";
+								_ATR = body.atr;
+	
+								self.setState({helptext: helpStr});		
+								ReactDOM.findDOMNode(self.refs.stockprice).focus();
+							}				
+				 		});						
+					}
 
 				}				
 	 		});
@@ -318,7 +385,7 @@ module.exports = class Home extends React.Component {
 						
 						<br/>
 						
-						<Checkbox ref='percentile10' onChange={this.handleCheckChange}>
+						<Checkbox ref='percentile10' checked={this.state.selectedCheck} onChange={this.handleCheckChange.bind(this)}>
 						&nbsp;&nbsp;öka stop loss med 1% för varje 10%-ökning av kursen
 						</Checkbox>
 						
