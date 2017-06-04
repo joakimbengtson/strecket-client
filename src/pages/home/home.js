@@ -192,8 +192,7 @@ module.exports = class Home extends React.Component {
 		);
 		
 	}
-
-
+/* Old render
 	render() {
 
 		return (
@@ -204,7 +203,7 @@ module.exports = class Home extends React.Component {
 						<br/>
 					</Row>
 					<Row>
-						<Col sm={10} smOffset={1} md={8} mdOffset={2}>
+						//<Col sm={10} smOffset={1} md={8} mdOffset={2}>
 						
 							<Row>
 								<Col sm={10} smOffset={1} md={10} mdOffset={2}>
@@ -220,7 +219,40 @@ module.exports = class Home extends React.Component {
 							  </Button>
 							</p>
 							  
-						</Col>
+						//</Col>
+					</Row>
+				</Grid>
+			</div>
+
+		);
+	};
+*/
+
+	render() {
+
+		return (
+			
+			<div id="home">
+				<Grid>
+					<Row>
+						<br/>
+					</Row>
+					<Row>
+						
+						<Row>
+							<Col sm={10} smOffset={1} md={10} mdOffset={2}>
+								{this.renderStocks()}
+							</Col>
+						</Row>						
+						  
+						<br/>
+						  
+						<p>
+						  <Button bsStyle='success' bsSize='large' href='#new-stock'>
+							  Nytt köp
+						  </Button>
+						</p>
+							  
 					</Row>
 				</Grid>
 			</div>
