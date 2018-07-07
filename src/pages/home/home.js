@@ -140,11 +140,11 @@ module.exports = class Home extends React.Component {
 					
 			return (
 				<tr key={index}>
-				<OverlayTrigger trigger="click" placement="top" overlay={<Popover id="popover-positioned-top" title="Företag">{stock.namn}</Popover>}><td>{stock.ticker}</td></OverlayTrigger>
+				<OverlayTrigger trigger="click" placement="top" overlay={<Popover id="popover-positioned-top" title="Företag">{<span>{stock.namn}<p><small>{stock.sector}</small></p></span>}</Popover>}><td>{stock.ticker}</td></OverlayTrigger>
 				<td>{parseFloat(stock.senaste).toFixed(2)}<span style={{color:'#b2b2b2'}}> ({parseFloat(stock.kurs).toFixed(2)})</span></td>
 				<td style={{textAlign:'right'}}>{parseFloat(stock.utfall).toFixed(2)}<span style={{color:'#b2b2b2'}}> ({parseFloat((1-(stock.kurs/stock.maxkurs))*100).toFixed(2)})</span></td>				
-				<td style={self.getColor(parseFloat((1-(stock.sma50/stock.senaste))*100).toFixed(2))}>{}</td>					
-				<td style={self.getColor(parseFloat((1-(stock.sma200/stock.senaste))*100).toFixed(2))}>{}</td>
+				{stock.sma50 != -1 ?  <td style={self.getColor(parseFloat((1-(stock.sma50/stock.senaste))*100).toFixed(2))}>{}</td> : <td style={{backgroundColor: '#f2f2a4'}}>{}</td>}					
+				{stock.sma200 != -1 ? <td style={self.getColor(parseFloat((1-(stock.sma200/stock.senaste))*100).toFixed(2))}>{}</td> : <td style={{backgroundColor: '#f2f2a4'}}>{}</td>}					
 				{stock.stoplossTyp == 3 ? <td style={{textAlign:'right'}}>{(stock.stoplossProcent*100).toFixed(2)}%</td> : stock.stoplossTyp == 2 ? <td style={{textAlign:'right'}}>&gt; {stock.stoplossKurs}</td> : <td style={{textAlign:'right'}}>{(stock.atrStoploss*100).toFixed(2)}%<sup>*</sup></td>}
 				{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="info">Flyger</Label></center></td> : <td></td>}
 				<td><center><Button bsSize="xsmall" bsStyle="link" onClick={self.deleteStock.bind(self, stock.id)}><Glyphicon glyph="trash" /></Button></center></td>
@@ -157,9 +157,9 @@ module.exports = class Home extends React.Component {
 
 		if (items.length == 0) {
 			if (this.state.error)
-				var items = <tr><td colSpan="8"><center>{'Kan inte nå servern: ' + self.state.error.message}</center></td></tr>			
+				var items = <tr><td colSpan="10"><center>{'Kan inte nå servern: ' + self.state.error.message}</center></td></tr>			
 			else
-				var items = <tr><td colSpan="8"><center>{'Inga aktier'}</center></td></tr>
+				var items = <tr><td colSpan="10"><center>{'Inga aktier'}</center></td></tr>
 		}
 				
 		return(
@@ -251,7 +251,7 @@ module.exports = class Home extends React.Component {
 						  <Button bsStyle='success' bsSize='large' href='#new-stock'>
 							  Nytt köp
 						  </Button>
-						</p>
+						</p> 
 							  
 					</Row>
 				</Grid>
