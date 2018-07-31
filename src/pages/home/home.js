@@ -140,7 +140,7 @@ module.exports = class Home extends React.Component {
 					
 			return (
 				<tr key={index}>
-				<OverlayTrigger trigger="click" placement="top" overlay={<Popover id="popover-positioned-top" title="Företag">{<span>{stock.namn}<p><small>{stock.sector}</small></p></span>}</Popover>}><td>{stock.ticker}</td></OverlayTrigger>
+				<OverlayTrigger trigger="click" placement="bottom" overlay={<Popover id="popover-positioned-bottom" title="Företag">{<span>{stock.namn}<p><small>{stock.sector}</small></p></span>}</Popover>}><td>{stock.ticker}</td></OverlayTrigger>
 				<td>{parseFloat(stock.senaste).toFixed(2)}<span style={{color:'#b2b2b2'}}> ({parseFloat(stock.kurs).toFixed(2)})</span></td>
 				<td style={{textAlign:'right'}}>{parseFloat(stock.utfall).toFixed(2)}<span style={{color:'#b2b2b2'}}> ({parseFloat((1-(stock.kurs/stock.maxkurs))*100).toFixed(2)})</span></td>				
 				{stock.sma50 != -1 ?  <td style={self.getColor(parseFloat((1-(stock.sma50/stock.senaste))*100).toFixed(2))}>{}</td> : <td style={{backgroundColor: '#f2f2a4'}}>{}</td>}					

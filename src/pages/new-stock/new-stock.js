@@ -281,9 +281,9 @@ module.exports = class Home extends React.Component {
 							if (!err) {
 								var helpStr;
 								
-								helpStr = "(ATR = " + body.atr.toFixed(2) + " ATR % = " + body.atrPercent + "%)";
-								_ATR = body.atr;
-	
+								helpStr = "(ATR = " + body.ATR + " ATR % = " + body.atrPercent + "%)";
+								_ATR = body.ATR;  
+	 
 								self.setState({helptext: helpStr});		
 								ReactDOM.findDOMNode(self.refs.stockprice).focus();
 							}				
