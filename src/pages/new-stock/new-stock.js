@@ -281,7 +281,7 @@ module.exports = class Home extends React.Component {
 							if (!err) {
 								var helpStr;
 								
-								helpStr = "(ATR = " + body.ATR + " ATR % = " + body.atrPercent + "%)";
+								helpStr = "(ATR = " + body.ATR + " ATR % = " + body.atrPercentage + "%)";
 								_ATR = body.ATR;  
 	 
 								self.setState({helptext: helpStr});		
