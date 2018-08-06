@@ -356,7 +356,7 @@ module.exports = class Home extends React.Component {
 					    <Col sm={2}>						
 						<FormControl type="text" ref='ATRMultiple' placeholder="x ATR?" />
 						</Col>
-					    <Col sm={4}>						
+					    <Col sm={6}>						
 						<ControlLabel ref='stoplosshelper'><span style={{color:'#b2b2b2'}}>{this.state.helptext}</span></ControlLabel>
 						</Col>
 						</Row>
