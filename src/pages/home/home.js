@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Grid, Row, Col, Glyphicon} from 'react-bootstrap';
+import {Button, ButtonToolbar, Grid, Row, Col, Glyphicon} from 'react-bootstrap';
 import {ListGroup, ListGroupItem, PageHeader, Table, thead, td, tr, th, Label, OverlayTrigger, Popover} from 'react-bootstrap';
 require('./home.less');
 
@@ -168,7 +168,7 @@ module.exports = class Home extends React.Component {
 				{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="info">Flyger</Label></center></td> : <td></td>}
 				<td><center><Button bsSize="xsmall" bsStyle="link" onClick={self.deleteStock.bind(self, stock.id)}><Glyphicon glyph="trash" /></Button></center></td>
 				<td><center><Button bsSize="xsmall" bsStyle="link" href={'#new-stock/?id=' + stock.id + "&senaste=" + stock.senaste}><Glyphicon glyph="edit" /></Button></center></td>
-				{stock.utfall > 0 && dayDiff(stock.köpt_datum) > 0 ? <td style={{textAlign:'right'}}><span style={{color:'#b2b2b2'}}><small>{((stock.utfall/dayDiff(stock.köpt_datum))*365).toFixed(0)}%, {dayDiff(stock.köpt_datum)}d, ({stock.utdelning != null ? stock.utdelning : 'n/a'})</small></span></td> : <td style={{textAlign:'right'}}><span style={{color:'#b2b2b2'}}><small>-, {dayDiff(stock.köpt_datum)}d</small></span></td>}
+				{stock.utfall > 0 && dayDiff(stock.köpt_datum) > 0 ? <td style={{textAlign:'right'}}><span style={{color:'#b2b2b2'}}><small>{((stock.utfall/dayDiff(stock.köpt_datum))*365).toFixed(0)}%, {dayDiff(stock.köpt_datum)}d, ({stock.utdelning != null ? Number(stock.utdelning).toFixed(2) : 'n/a'})</small></span></td> : <td style={{textAlign:'right'}}><span style={{color:'#b2b2b2'}}><small>-, {dayDiff(stock.köpt_datum)}d</small></span></td>}
 				<td>{getSweDate(stock.earningsDate[0])}</td>
 				</tr>
 			);				
@@ -269,9 +269,14 @@ module.exports = class Home extends React.Component {
 						<br/>
 						  
 						<p>
+						<ButtonToolbar>
 						  <Button bsStyle='success' bsSize='large' href='#new-stock'>
 							  Nytt köp
 						  </Button>
+						  <Button bsStyle='info' bsSize='large' href='#candidates'>
+							  Kandidater
+						  </Button>
+						</ButtonToolbar>						  
 						</p> 
 							  
 					</Row>

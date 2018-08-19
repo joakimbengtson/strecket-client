@@ -26,6 +26,8 @@ ReactDOM.render((
 			<IndexRoute component={require('./pages/home/home.js')} />
 			<Route path="home"          component={require('./pages/home/home.js')} />
 			<Route path="new-stock"         component={require('./pages/new-stock/new-stock.js')} />
+			<Route path="candidates"         component={require('./pages/candidates/candidates.js')} />
+
 		</Route>
 	</Router>
 ), document.getElementById('app'))
