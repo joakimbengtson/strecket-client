@@ -11,6 +11,25 @@ function dayDiff(d) {
 	return Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate()) ) /(1000 * 60 * 60 * 24));
 }	
 
+function pad(n) {
+    return (n < 10) ? ("0" + n) : n;
+}
+
+
+function getSweDate(UNIX_timestamp){
+  var a = new Date(UNIX_timestamp * 1000);
+  var year = a.getFullYear();
+  var month = a.getMonth()+1;
+  var date = a.getDate();
+  
+  if (UNIX_timestamp == null)
+  	return "n/a";
+  
+  var time = year.toString().substr(-2) + pad(month) + pad(date);
+  
+  return time;
+}
+
 
 module.exports = class Home extends React.Component {
 	
@@ -149,7 +168,8 @@ module.exports = class Home extends React.Component {
 				{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="info">Flyger</Label></center></td> : <td></td>}
 				<td><center><Button bsSize="xsmall" bsStyle="link" onClick={self.deleteStock.bind(self, stock.id)}><Glyphicon glyph="trash" /></Button></center></td>
 				<td><center><Button bsSize="xsmall" bsStyle="link" href={'#new-stock/?id=' + stock.id + "&senaste=" + stock.senaste}><Glyphicon glyph="edit" /></Button></center></td>
-				{stock.utfall > 0 && dayDiff(stock.köpt_datum) > 0 ? <td style={{textAlign:'right'}}><span style={{color:'#b2b2b2'}}><small>{((stock.utfall/dayDiff(stock.köpt_datum))*365).toFixed(0)}%, {dayDiff(stock.köpt_datum)}d</small></span></td> : <td style={{textAlign:'right'}}><span style={{color:'#b2b2b2'}}><small>-, {dayDiff(stock.köpt_datum)}d</small></span></td>}
+				{stock.utfall > 0 && dayDiff(stock.köpt_datum) > 0 ? <td style={{textAlign:'right'}}><span style={{color:'#b2b2b2'}}><small>{((stock.utfall/dayDiff(stock.köpt_datum))*365).toFixed(0)}%, {dayDiff(stock.köpt_datum)}d, ({stock.utdelning != null ? stock.utdelning : 'n/a'})</small></span></td> : <td style={{textAlign:'right'}}><span style={{color:'#b2b2b2'}}><small>-, {dayDiff(stock.köpt_datum)}d</small></span></td>}
+				<td>{getSweDate(stock.earningsDate[0])}</td>
 				</tr>
 			);				
 						
@@ -177,7 +197,8 @@ module.exports = class Home extends React.Component {
 		        <th></th>
 		        <th></th>		        
 		        <th></th>		        
-		        <th style={{textAlign:'right'}}>yY</th>		        
+		        <th style={{textAlign:'right'}}>yY</th>
+		        <th>Rapport</th>		        	        
 		      </tr>
 		    </thead>
 		    
