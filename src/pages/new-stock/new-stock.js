@@ -4,6 +4,7 @@ import {ListGroup, ListGroupItem, PageHeader} from 'react-bootstrap';
 import {Form, FormGroup, FormControl, ControlLabel, HelpBlock, Panel, Radio, Checkbox} from 'react-bootstrap';
 import Request from 'rest-request';
 
+
 require('./new-stock.less');
 
 const ReactDOM = require('react-dom');

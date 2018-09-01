@@ -166,7 +166,7 @@ module.exports = class Home extends React.Component {
 				{stock.sma200 != -1 ? <td style={self.getColor(parseFloat((1-(stock.sma200/stock.senaste))*100).toFixed(2))}>{}</td> : <td style={{backgroundColor: '#f2f2a4'}}>{}</td>}					
 				{stock.stoplossTyp == 3 ? <td style={{textAlign:'right'}}>{(stock.stoplossProcent*100).toFixed(2)}%</td> : stock.stoplossTyp == 2 ? <td style={{textAlign:'right'}}>&gt; {stock.stoplossKurs}</td> : <td style={{textAlign:'right'}}>{(stock.atrStoploss*100).toFixed(2)}%<sup>*</sup></td>}
 				{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="info">Flyger</Label></center></td> : <td></td>}
-				<td><center><Button bsSize="xsmall" bsStyle="link" onClick={self.deleteStock.bind(self, stock.id)}><Glyphicon glyph="trash" /></Button></center></td>
+				<td><center><Button bsSize="xsmall" bsStyle="link" onClick={self.deleteStock.bind(self, stock.id)}><Glyphicon glyph="log-out" /></Button></center></td>
 				<td><center><Button bsSize="xsmall" bsStyle="link" href={'#new-stock/?id=' + stock.id + "&senaste=" + stock.senaste}><Glyphicon glyph="edit" /></Button></center></td>
 				{stock.utfall > 0 && dayDiff(stock.köpt_datum) > 0 ? <td style={{textAlign:'right'}}><span style={{color:'#b2b2b2'}}><small>{((stock.utfall/dayDiff(stock.köpt_datum))*365).toFixed(0)}%, {dayDiff(stock.köpt_datum)}d, ({stock.utdelning != null ? Number(stock.utdelning).toFixed(2) : 'n/a'})</small></span></td> : <td style={{textAlign:'right'}}><span style={{color:'#b2b2b2'}}><small>-, {dayDiff(stock.köpt_datum)}d</small></span></td>}
 				<td>{getSweDate(stock.earningsDate[0])}</td>
@@ -179,7 +179,7 @@ module.exports = class Home extends React.Component {
 			if (this.state.error)
 				var items = <tr><td colSpan="10"><center>{'Kan inte nå servern: ' + self.state.error.message}</center></td></tr>			
 			else
-				var items = <tr><td colSpan="10"><center>{'Inga aktier'}</center></td></tr>
+				var items = <tr><td colSpan="10"><center>{'Inga aktier'}</center></td></tr> 
 		}
 				
 		return(
@@ -213,41 +213,7 @@ module.exports = class Home extends React.Component {
 		);
 		
 	}
-/* Old render
-	render() {
 
-		return (
-			
-			<div id="home">
-				<Grid>
-					<Row>
-						<br/>
-					</Row>
-					<Row>
-						//<Col sm={10} smOffset={1} md={8} mdOffset={2}>
-						
-							<Row>
-								<Col sm={10} smOffset={1} md={10} mdOffset={2}>
-									{this.renderStocks()}
-								</Col>
-							</Row>						
-							  
-							<br/>
-							  
-							<p>
-							  <Button bsStyle='success' bsSize='large' href='#new-stock'>
-								  Nytt köp
-							  </Button>
-							</p>
-							  
-						//</Col>
-					</Row>
-				</Grid>
-			</div>
-
-		);
-	};
-*/
 
 	render() {
 
@@ -268,7 +234,6 @@ module.exports = class Home extends React.Component {
 						  
 						<br/>
 						  
-						<p>
 						<ButtonToolbar>
 						  <Button bsStyle='success' bsSize='large' href='#new-stock'>
 							  Nytt köp
@@ -277,7 +242,6 @@ module.exports = class Home extends React.Component {
 							  Kandidater
 						  </Button>
 						</ButtonToolbar>						  
-						</p> 
 							  
 					</Row>
 				</Grid>
