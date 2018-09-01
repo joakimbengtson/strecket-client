@@ -14,7 +14,7 @@ const ReactDOM = require('react-dom');
 var options = {
 	
   title: {
-    text: 'Ticker'
+    text: 'MEG'
   },
   
   chart: {
