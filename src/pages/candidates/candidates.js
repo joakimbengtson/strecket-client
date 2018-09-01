@@ -83,7 +83,7 @@ const App = () => <div>
 
 					/*
 				<div>
-				  <HighchartsReact
+				  <HighchartsReact 
 				    highcharts={Highcharts}
 				    constructorType={'stockChart'}
 				    options={options}
