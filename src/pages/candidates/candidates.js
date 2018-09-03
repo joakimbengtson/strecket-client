@@ -129,7 +129,6 @@ module.exports = class Home extends React.Component {
 				  <HighchartsReact
 				    highcharts={Highcharts}
 				    constructorType={'stockChart'}
-				    {options.title.text = stock}
 				    options={options}
 				  />
 				</div>
