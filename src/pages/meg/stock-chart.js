@@ -48,7 +48,7 @@ module.exports = class StockChart extends React.Component {
 
         var data = [];
 
-        // Hämta data frpn Munch via ett '/query' anrop...
+        // Hämta data från Munch via ett '/query' anrop...
         request.get('/query', {query:query}).then(response => {
             var stocks = response.body;
 
