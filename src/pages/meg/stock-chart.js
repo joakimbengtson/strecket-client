@@ -11,6 +11,7 @@ module.exports = class StockChart extends React.Component {
         super(args);
 
         this.state = {};
+        
         // ready = false, dvs vi har inte läst in data än...
         this.state.ready = false;
 
