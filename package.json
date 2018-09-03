@@ -33,12 +33,13 @@
     "react": "^15.3.1",
     "react-bootstrap": "^0.30.3",
     "react-dom": "^15.3.1",
+    "react-highcharts": "^16.0.2",
     "react-router": "^2.7.0",
     "react-spinkit": "^1.1.10",
     "rest-request": "^1.0.10",
     "uglify-js": "^2.7.3",
     "urify": "^2.0.2",
     "yahoo-finance": "^0.2.14",
-    "yow": "^1.0.26"
+    "yow": "^1.0.89"
   }
 }
