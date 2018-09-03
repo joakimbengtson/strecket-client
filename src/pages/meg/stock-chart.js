@@ -30,8 +30,11 @@ module.exports = class StockChart extends React.Component {
 
         then.setFullYear(now.getFullYear() - 1);
 
+        var nowYMD = sprintf('%04d-%02d-%02d', now.getFullYear(), now.getMonth() + 1, now.getDate());
+        var thenYMD = sprintf('%04d-%02d-%02d', then.getFullYear(), then.getMonth() + 1, then.getDate());
+
         query.sql        = 'select date, close from quotes where symbol = ? and date >= ?';
-        query.values     = [this.state.symbol, sprintf('%04d-%02d-%02d', then.getFullYear(), then.getMonth() + 1, then.getDate())];
+        query.values     = [this.state.symbol, thenYMD];
 
         var data = [];
 
@@ -51,7 +54,7 @@ module.exports = class StockChart extends React.Component {
                 text: this.state.symbol
               },
               subtitle: {
-                  text: 'Ett år tillbaka'
+                  text: sprintf('%s - %s', thenYMD, nowYMD)
               },
 
               yAxis: {
