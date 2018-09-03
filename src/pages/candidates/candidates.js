@@ -8,9 +8,7 @@ import HighchartsReact from 'highcharts-react-official';
 
 require('./candidates.less');
 
-/*
-MEG was here
-*/
+-
 
 const ReactDOM = require('react-dom');
 
