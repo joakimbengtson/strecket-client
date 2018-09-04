@@ -11,12 +11,12 @@ require('./candidates.less');
 
 
 const ReactDOM = require('react-dom');
-
+ 
 
 var options = {
 
   title: {
-    text: 'OLLE'
+    text: 'NISSE ' 
   },
 
   chart: {
