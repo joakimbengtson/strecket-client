@@ -39,15 +39,16 @@ module.exports = class StockChart extends React.Component {
         then.setFullYear(now.getFullYear() - 1);
 
         // Skapa läsbara texter från nu och då
-        var nowYMD = sprintf('%04d-%02d-%02d', now.getFullYear(), now.getMonth() + 1, now.getDate());
+        var nowYMD  = sprintf('%04d-%02d-%02d', now.getFullYear(), now.getMonth() + 1, now.getDate());
         var thenYMD = sprintf('%04d-%02d-%02d', then.getFullYear(), then.getMonth() + 1, then.getDate());
 
         // Skapa frågan
         var query = {};
-        query.sql        = 'select date, close from quotes where symbol = ? and date >= ?';
+        query.sql        = 'select date, open, high, low, close, volume from quotes where symbol = ? and date >= ?';
         query.values     = [this.state.symbol, thenYMD];
 
         var data = [];
+        var volume = [];
 
         // Hämta data från Munch via ett '/query' anrop...
         request.get('/query', {query:query}).then(response => {
@@ -56,43 +57,74 @@ module.exports = class StockChart extends React.Component {
             // Lägg till i vektorn 'data' på det format som Highcharts vill ha det
             stocks.forEach(stock => {
                 var date = new Date(stock.date);
-                data.push([Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()), stock.close]);
+                data.push([Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()), stock.open, stock.high, stock.low, stock.close, stock.volume]);
+                volume.push([Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()), stock.volume]);
             });
 
             // Skapa en Highcharts 'config'...
             var config = {
-              rangeSelector: {
-                selected: 1
-              },
               title: {
                 text: this.state.symbol
               },
+              
               subtitle: {
                   text: sprintf('%s - %s', thenYMD, nowYMD)
               },
 
-              yAxis: {
-                  title: {
-                      text: 'Värde'
-                  }
+			  chart: {
+			    height: (9 / 16 * 100) + '%',
+			    panning: false
+			  },
+			
+			  rangeSelector: {
+			    enabled: false
+			  },
+			
+			  navigator: {
+			    enabled: false
+			  },
+			
+			  tooltip: {
+			    enabled: false
+			  },
+			  
+		      scrollbar: {
+		      	enabled: false
+		      },
+
+              xAxis: { 
+			      type: 'datetime',
+			
+				  dateTimeLabelFormats: {
+			            second: '%Y-%m-%d<br/>%H:%M:%S',
+			            minute: '%Y-%m-%d<br/>%H:%M',
+			            hour: '%Y-%m-%d<br/>%H:%M',
+			            day: '%Y<br/>%m-%d',
+			            week: '%Y<br/>%m-%d',
+			            month: '%Y-%m',
+			            year: '%Y'
+			      }
               },
-              xAxis: {
-                  type: 'datetime',
-                  dateTimeLabelFormats: {
-                      month: '%b',
-                      year: '%b'
-                  },
-                  title: {
-                      text: 'Datum'
-                  }
-              },
+              
+			  plotOptions: {
+			    ohlc: {
+			        color: 'red',
+			        upColor: 'green',
+			        lineWidth: 2
+			     }
+			  },              
+              
               series: [{
                 name: this.state.symbol,
+                type: 'ohlc',
                 data: data,
-                tooltip: {
-                  valueDecimals: 2
-                }
-              }]
+              },
+              {
+	            type: 'column',
+	            name: 'Volym',
+	            data: volume,
+	            yAxis: 1,
+	          }]
             };
 
             // Sätt denna komponents 'tillstånd' till klar och datan finns under 'config'...

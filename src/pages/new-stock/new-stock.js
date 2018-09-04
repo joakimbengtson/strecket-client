@@ -301,13 +301,8 @@ module.exports = class Home extends React.Component {
 							if (!err) {
 								var helpStr;
 								
-<<<<<<< HEAD
-								helpStr = "(ATR = " + body.ATR + " ATR % = " + body.atrPercentage + "%)";
-								_ATR = body.ATR;  
-=======
 								helpStr = "(ATR = " + body.ATR + " ATR % = " + Math.round(body.atrPercentage*100*100)/100 + "%) " + getSweDate(body.earningsDate[0]);
 								_ATR = body.ATR;
->>>>>>> 5583af93c617376003c5e5470298d8afdc0ecd72
 	 
 								self.setState({helptext: helpStr});		
 								ReactDOM.findDOMNode(self.refs.stockprice).focus();

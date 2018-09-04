@@ -238,11 +238,8 @@ module.exports = class Home extends React.Component {
 						  <Button bsStyle='success' bsSize='large' href='#new-stock'>
 							  Nytt köp
 						  </Button>
-						  <Button bsStyle='info' bsSize='large' href='#candidates'>
-							  Kandidater
-						  </Button>
 						  <Button bsStyle='info' bsSize='large' href='#meg'>
-							  MEG
+							  Kandidater
 						  </Button>
 						</ButtonToolbar>
 
