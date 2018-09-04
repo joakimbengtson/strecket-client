@@ -4,6 +4,7 @@ import {ListGroup, ListGroupItem, PageHeader} from 'react-bootstrap';
 import {Form, FormGroup, FormControl, ControlLabel, HelpBlock, Panel, Radio, Checkbox} from 'react-bootstrap';
 import Request from 'rest-request';
 
+
 require('./new-stock.less');
 
 const ReactDOM = require('react-dom');
@@ -22,6 +23,25 @@ var _percentile10;
 
 function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function pad(n) {
+    return (n < 10) ? ("0" + n) : n;
+}
+
+
+function getSweDate(UNIX_timestamp){
+  var a = new Date(UNIX_timestamp * 1000);
+  var year = a.getFullYear();
+  var month = a.getMonth()+1;
+  var date = a.getDate();
+  
+  if (UNIX_timestamp == null)
+  	return "n/a";
+  
+  var time = year.toString().substr(-2) + pad(month) + pad(date);
+  
+  return time;
 }
 
 
@@ -281,8 +301,13 @@ module.exports = class Home extends React.Component {
 							if (!err) {
 								var helpStr;
 								
+<<<<<<< HEAD
 								helpStr = "(ATR = " + body.ATR + " ATR % = " + body.atrPercentage + "%)";
 								_ATR = body.ATR;  
+=======
+								helpStr = "(ATR = " + body.ATR + " ATR % = " + Math.round(body.atrPercentage*100*100)/100 + "%) " + getSweDate(body.earningsDate[0]);
+								_ATR = body.ATR;
+>>>>>>> 5583af93c617376003c5e5470298d8afdc0ecd72
 	 
 								self.setState({helptext: helpStr});		
 								ReactDOM.findDOMNode(self.refs.stockprice).focus();
@@ -349,7 +374,7 @@ module.exports = class Home extends React.Component {
 					    <ControlLabel>Stop loss</ControlLabel>
 					    <Row>
 					    <Col sm={2}>
-						<Radio   value="option1" checked={this.state.selectedOption === 'option1'} onChange={this.handleOptionChange}>
+						<Radio   value="option1" checked={this.state.selectedOption === 'option1'} onChange={this.handleOptionChange}> 
 						&nbsp;&nbsp;släpande 
 						</Radio>
 						</Col>
