@@ -85,7 +85,7 @@ module.exports = class StockChart extends React.Component {
 			  },
 			
 			  tooltip: {
-			    enabled: false
+			    enabled: true
 			  },
 			  
 		      scrollbar: {
@@ -106,6 +106,27 @@ module.exports = class StockChart extends React.Component {
 			      }
               },
               
+	        yAxis: [{
+	            labels: {
+	                align: 'right',
+	                x: -3
+	            },
+	            height: '60%',
+	            lineWidth: 2,
+	            resize: {
+	                enabled: true
+	            }
+	        }, {
+	            labels: {
+	                align: 'right',
+	                x: -3
+	            },
+	            top: '65%',
+	            height: '35%',
+	            offset: 0,
+	            lineWidth: 2
+	        }],              
+              
 			  plotOptions: {
 			    ohlc: {
 			        color: 'red',
@@ -120,8 +141,8 @@ module.exports = class StockChart extends React.Component {
                 data: data,
               },
               {
-	            type: 'column',
 	            name: 'Volym',
+	            type: 'column',
 	            data: volume,
 	            yAxis: 1,
 	          }]
