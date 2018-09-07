@@ -111,7 +111,7 @@ module.exports = class StockChart extends React.Component {
 	                align: 'right',
 	                x: -3
 	            },
-	            height: '60%',
+	            height: '70%',
 	            lineWidth: 2,
 	            resize: {
 	                enabled: true
@@ -122,7 +122,7 @@ module.exports = class StockChart extends React.Component {
 	                x: -3
 	            },
 	            top: '65%',
-	            height: '35%',
+	            height: '25%',
 	            offset: 0,
 	            lineWidth: 2
 	        }],              
