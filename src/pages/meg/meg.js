@@ -11,7 +11,7 @@ class NagotSomFunkar extends React.Component {
 
 		this.state = {spikes:[], spikesFetched: false};
 	};
-
+	
 	getSpikes() {
         // Gjorde om getSpikes() till en Promise istället.
         return new Promise((resolve, reject) => {
@@ -73,6 +73,23 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 
 		this.state = {spikes:null, error: null};
 	};
+	
+	getDates() {
+        return new Promise((resolve, reject) => {
+	        var request = new Request('http://app-o.se:3012');
+	        var query = {};
+
+	        query.sql    = 'select distinct date from quotes order by date desc limit 2';
+
+	        request.get('/query', {query:query}).then(response => {
+		        console.log(response.body);
+                resolve(response.body);
+	        })
+	        .catch(error => {
+                reject(error);
+	        })
+        });	
+	}	
 
 	getSpikes() {
         return new Promise((resolve, reject) => {
@@ -100,6 +117,9 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	}
 
 	componentDidMount() {
+		
+		this.getDates();
+		
         this.getSpikes().then(spikes => {
             this.setState({spikes:spikes});
         })
