@@ -16,7 +16,7 @@ function pad(n) {
 }
 
 
-function getSweDate(UNIX_timestamp){
+function getSweDate(UNIX_timestamp) {
   var a = new Date(UNIX_timestamp * 1000);
   var year = a.getFullYear();
   var month = a.getMonth()+1;
@@ -83,7 +83,6 @@ module.exports = class Home extends React.Component {
 		console.log('Hämtar aktiekurser...');
 
 		var request = require("client-request");
-
 
 		var options = {
 		  uri: "http://app-o.se:3000/stocks",
@@ -162,7 +161,7 @@ module.exports = class Home extends React.Component {
 			return (
 				<tr key={index}>
 				<OverlayTrigger trigger="click" placement="bottom" overlay={<Popover id="popover-positioned-bottom" title="Företag">{<span>{stock.namn}<p><small>{stock.sector}</small></p></span>}</Popover>}><td>{stock.ticker}</td></OverlayTrigger>
-				<td>{parseFloat(stock.senaste).toFixed(2)}<span style={{color:'#b2b2b2'}}> ({parseFloat(stock.kurs).toFixed(2)})</span></td>
+				<td  style={{textAlign:'right'}}>{parseFloat(stock.senaste).toFixed(2)}<span style={{color:'#b2b2b2'}}> ({parseFloat(stock.kurs).toFixed(2)})</span></td>
 				<td style={{textAlign:'right'}}>{parseFloat(stock.utfall).toFixed(2)}<span style={{color:'#b2b2b2'}}> ({parseFloat((1-(stock.kurs/stock.maxkurs))*100).toFixed(2)})</span></td>
 				{stock.sma50 != -1 ?  <td style={self.getColor(parseFloat((1-(stock.sma50/stock.senaste))*100).toFixed(2))}>{}</td> : <td style={{backgroundColor: '#f2f2a4'}}>{}</td>}
 				{stock.sma200 != -1 ? <td style={self.getColor(parseFloat((1-(stock.sma200/stock.senaste))*100).toFixed(2))}>{}</td> : <td style={{backgroundColor: '#f2f2a4'}}>{}</td>}
@@ -183,8 +182,8 @@ module.exports = class Home extends React.Component {
 			
 			if (stock.antal == -1) {
 
-				return (<tr><td>{stock.namn}</td><td>{stock.kurs}</td><td style={self.getColor(15)}>{}</td><td style={self.getColor(parseFloat((1-(stock.sma50/stock.senaste))*100).toFixed(2))}>{}</td><td style={self.getColor(parseFloat((1-(stock.sma200/stock.senaste))*100).toFixed(2))}>{}</td></tr>);
-
+				return (<tr key={index}><td>{stock.namn}</td><td style={{textAlign:'right'}}>{parseFloat(stock.senaste).toFixed(2)}</td><td style={self.getColor(15)}>{}</td><td style={self.getColor(parseFloat((1-(stock.sma50/stock.senaste))*100).toFixed(2))}>{}</td><td style={self.getColor(parseFloat((1-(stock.sma200/stock.senaste))*100).toFixed(2))}>{}</td></tr>);
+				
 			}
 
 		});
@@ -203,7 +202,7 @@ module.exports = class Home extends React.Component {
 		    <thead>
 		      <tr>
 		        <th>Ticker</th>
-		        <th>Kurs</th>
+		        <th style={{textAlign:'right'}}>Kurs</th>
 		        <th style={{textAlign:'center'}}>%</th>
 		        <th style={{textAlign:'center'}}>ma50 </th>
 		        <th style={{textAlign:'center'}}>ma200</th>
@@ -229,7 +228,7 @@ module.exports = class Home extends React.Component {
 		    <thead>
 		      <tr>
 		        <th>Valuta</th>
-		        <th>Kurs</th>
+		        <th style={{textAlign:'right'}}>Kurs</th>
 		        <th style={{textAlign:'center'}}>ema8</th>
 		        <th style={{textAlign:'center'}}>ma50 </th>
 		        <th style={{textAlign:'center'}}>ma200</th>
@@ -249,71 +248,6 @@ module.exports = class Home extends React.Component {
 
 	}
 	
-/*	
-
-	renderStocks() {
-		var self = this;
-
-		var items = this.state.stocks.map(function(stock, index) {
-			
-			return (
-				<tr key={index}>
-				<OverlayTrigger trigger="click" placement="bottom" overlay={<Popover id="popover-positioned-bottom" title="Företag">{<span>{stock.namn}<p><small>{stock.sector}</small></p></span>}</Popover>}><td>{stock.ticker}</td></OverlayTrigger>
-				<td>{parseFloat(stock.senaste).toFixed(2)}<span style={{color:'#b2b2b2'}}> ({parseFloat(stock.kurs).toFixed(2)})</span></td>
-				<td style={{textAlign:'right'}}>{parseFloat(stock.utfall).toFixed(2)}<span style={{color:'#b2b2b2'}}> ({parseFloat((1-(stock.kurs/stock.maxkurs))*100).toFixed(2)})</span></td>
-				{stock.sma50 != -1 ?  <td style={self.getColor(parseFloat((1-(stock.sma50/stock.senaste))*100).toFixed(2))}>{}</td> : <td style={{backgroundColor: '#f2f2a4'}}>{}</td>}
-				{stock.sma200 != -1 ? <td style={self.getColor(parseFloat((1-(stock.sma200/stock.senaste))*100).toFixed(2))}>{}</td> : <td style={{backgroundColor: '#f2f2a4'}}>{}</td>}
-				{stock.stoplossTyp == 3 ? <td style={{textAlign:'right'}}>{(stock.stoplossProcent*100).toFixed(2)}%</td> : stock.stoplossTyp == 2 ? <td style={{textAlign:'right'}}>&gt; {stock.stoplossKurs}</td> : <td style={{textAlign:'right'}}>{(stock.atrStoploss*100).toFixed(2)}%<sup>*</sup></td>}
-				{stock.larm == 1 ? <td><center><Label bsStyle="danger">Larm</Label></center></td> : stock.flyger == 1 ? <td><center><Label bsStyle="info">Flyger</Label></center></td> : <td></td>}
-				<td><center><Button bsSize="xsmall" bsStyle="link" onClick={self.deleteStock.bind(self, stock.id)}><Glyphicon glyph="log-out" /></Button></center></td>
-				<td><center><Button bsSize="xsmall" bsStyle="link" href={'#new-stock/?id=' + stock.id + "&senaste=" + stock.senaste}><Glyphicon glyph="edit" /></Button></center></td>
-				{stock.utfall > 0 && dayDiff(stock.köpt_datum) > 0 ? <td style={{textAlign:'right'}}><span style={{color:'#b2b2b2'}}><small>{((stock.utfall/dayDiff(stock.köpt_datum))*365).toFixed(0)}%, {dayDiff(stock.köpt_datum)}d, ({stock.utdelning != null ? Number(stock.utdelning).toFixed(2) : 'n/a'})</small></span></td> : <td style={{textAlign:'right'}}><span style={{color:'#b2b2b2'}}><small>-, {dayDiff(stock.köpt_datum)}d</small></span></td>}
-				<td>{getSweDate(stock.earningsDate[0])}</td>
-				</tr>
-			);
-			
-		});
-		
-		if (items.length == 0) {
-			if (this.state.error)
-				var items = <tr><td colSpan="10"><center>{'Kan inte nå servern: ' + self.state.error.message}</center></td></tr>
-			else
-				var items = <tr><td colSpan="10"><center>{'Inga aktier'}</center></td></tr>
-		}
-
-		return(
-			<div>
-			<Table striped={true} bordered={true} condensed={true} responsive={true}>
-
-		    <thead>
-		      <tr>
-		        <th>Ticker</th>
-		        <th>Kurs</th>
-		        <th style={{textAlign:'center'}}>%</th>
-		        <th style={{textAlign:'center'}}>ma50 </th>
-		        <th style={{textAlign:'center'}}>ma200</th>
-		        <th style={{textAlign:'right'}}>S/L</th>
-		        <th></th>
-		        <th></th>
-		        <th></th>
-		        <th style={{textAlign:'right'}}>yY</th>
-		        <th>Rapport</th>
-		      </tr>
-		    </thead>
-
-		    <tbody>
-				{items}
-			</tbody>
-
-			</Table>
-
-			</div>
-
-		);
-
-	}
-
-*/
 
 	render() {
 

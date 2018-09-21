@@ -92,26 +92,28 @@ module.exports = class StockChart extends React.Component {
 		      	enabled: false
 		      },
 
-              xAxis: { 
-			      type: 'datetime',
+			xAxis: { 
+			  type: 'datetime',
 			
-				  dateTimeLabelFormats: {
-			            second: '%Y-%m-%d<br/>%H:%M:%S',
-			            minute: '%Y-%m-%d<br/>%H:%M',
-			            hour: '%Y-%m-%d<br/>%H:%M',
-			            day: '%Y<br/>%m-%d',
-			            week: '%Y<br/>%m-%d',
-			            month: '%Y-%m',
-			            year: '%Y'
-			      }
-              },
+			  dateTimeLabelFormats: {
+			        second: '%Y-%m-%d<br/>%H:%M:%S',
+			        minute: '%Y-%m-%d<br/>%H:%M',
+			        hour: '%Y-%m-%d<br/>%H:%M',
+			        day: '%Y<br/>%m-%d',
+			        week: '%Y<br/>%m-%d',
+			        month: '%Y-%m',
+			        year: '%Y'
+			  }
+			},
               
 	        yAxis: [{
+		        
 	            labels: {
 	                align: 'right',
 	                x: -3
 	            },
-	            height: '70%',
+	            //height: '70%',
+	            height: (9 / 16 * 100) + '%',
 	            lineWidth: 2,
 	            resize: {
 	                enabled: true
@@ -127,25 +129,45 @@ module.exports = class StockChart extends React.Component {
 	            lineWidth: 2
 	        }],              
               
-			  plotOptions: {
-			    ohlc: {
-			        color: 'red',
-			        upColor: 'green',
-			        lineWidth: 2
-			     }
-			  },              
+			plotOptions: {
+				ohlc: {
+				    color: 'red',
+				    upColor: 'green',
+				    lineWidth: 2
+				 }
+			},
+			  
+	        indicators: [
+	        	{
+		            id: 'STOCK',
+		            type: 'sma',
+		            params: {
+		            	period: 50,
+						//index: 0
+		            },
+		            styles: {
+		                strokeWidth: 2,
+		                stroke: 'green',
+		                dashstyle: 'solid'
+		            }
+		        }
+	        ],			                
               
-              series: [{
-                name: this.state.symbol,
-                type: 'ohlc',
-                data: data,
-              },
-              {
-	            name: 'Volym',
-	            type: 'column',
-	            data: volume,
-	            yAxis: 1,
-	          }]
+            series: [
+              	{
+	                name: this.state.symbol,
+	                id: 'STOCK',
+	                type: 'ohlc',
+	                data: data,
+            	},
+				{
+		            name: 'Volym',
+		            type: 'column',
+		            data: volume,
+		            yAxis: 1,
+	        	}
+	        ]
+            
             };
 
             // Sätt denna komponents 'tillstånd' till klar och datan finns under 'config'...
