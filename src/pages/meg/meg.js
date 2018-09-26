@@ -2,6 +2,8 @@ import React from 'react';
 import StockChartList from './stock-chart-list.js';
 import Request from 'yow/request';
 
+require('./meg.css');
+
 
 function pad(n) {
     return (n < 10) ? ("0" + n) : n;
@@ -19,7 +21,7 @@ function sweDate(theDate) {
 }
 
 
-class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
+class NagotSomFunkarBattreOmNagotBlirFel extends React.Component { 
 	
 	constructor(props) {
 		super(props);
@@ -58,9 +60,7 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 
 	        query.sql    = 'SELECT a.symbol, a.volume, b.volume, a.close as lastClose, b.close as previousClose FROM stockquotes a INNER JOIN stockquotes b ON a.symbol = b.symbol WHERE a.date = ? AND b.date = ? AND a.volume > b.AV14*2 AND a.close > b.close AND a.close > a.SMA200 AND a.close*a.AV14 > 5000000';
 	        query.values = [this.state.dates[0], this.state.dates[1]];
-	        
-			//console.log("sweDate", sweDate(new Date(dates[0].date)), sweDate(new Date(dates[1].date)));
- 
+	         
 	        request.get('/query', {query:query}).then(response => {
 	            var tickers = response.body;
 	            tickers.forEach(ticker => {
@@ -99,7 +99,7 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
         if (this.state.spikes) {
 	        return (
 		        <div> 
-		        <h1 className="text-center">{this.state.dates[1] + " - " + this.state.dates[0]}</h1>
+		        <h1 className="text-center">{this.state.dates[1] + " - " + this.state.dates[0] + " (" + this.state.spikes.length + " st)"}</h1>
                 <StockChartList symbols={this.state.spikes}/>
                 </div>
 	        );
@@ -110,7 +110,7 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
         }
 
         else {
-            return <div>Vänta, snart klar. Eller varför inte visa en spinner?!</div>
+            return <div id="over" style="position:absolute; width:100%; height:100%"><img src="../images/spinner.gif"></img></div>
         }
     }
 }

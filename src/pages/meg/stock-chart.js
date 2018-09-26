@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactHighcharts from 'react-highcharts';
 import ReactHighstock from 'react-highcharts/ReactHighstock';
+
+
 import Request from 'yow/request';
 import sprintf from 'yow/sprintf';
 
@@ -136,23 +138,7 @@ module.exports = class StockChart extends React.Component {
 				    lineWidth: 2
 				 }
 			},
-			  
-	        indicators: [
-	        	{
-		            id: 'STOCK',
-		            type: 'sma',
-		            params: {
-		            	period: 50,
-						//index: 0
-		            },
-		            styles: {
-		                strokeWidth: 2,
-		                stroke: 'green',
-		                dashstyle: 'solid'
-		            }
-		        }
-	        ],			                
-              
+			                
             series: [
               	{
 	                name: this.state.symbol,
@@ -165,7 +151,20 @@ module.exports = class StockChart extends React.Component {
 		            type: 'column',
 		            data: volume,
 		            yAxis: 1,
-	        	}
+	        	}, 
+				{
+		            type: 'sma',
+		            linkedTo: 'STOCK',
+		            params: {
+		            	period: 50
+		            },
+		            styles: {
+		                strokeWidth: 2,
+		                stroke: 'green',
+		                dashstyle: 'solid'
+		            }
+	        	}, 
+	        	
 	        ]
             
             };
@@ -190,12 +189,12 @@ module.exports = class StockChart extends React.Component {
             style.marginRight = '10em';
             style.marginTop = '5em';
             style.marginBottom = '5em';
-
+            
             // Returnera grafen med angiven stil och genererad data...
             return (
                 <div style = {style}>
                     <ReactHighstock config={this.state.config} ref="chart"></ReactHighstock>
-                </div>
+                </div>                
             );
 
         }
