@@ -33,8 +33,9 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	        var query = {};
 	        var dates = [];
 
-			// Räkna ut de två senaste datumen som har kurser
-	        query.sql    = 'select distinct date from stockquotes order by date desc limit 2';
+			// Räkna ut de två senaste datumen som har kurser och troligen inte är helg (dvs mer än 200 rader)
+	        //query.sql    = 'select distinct date from stockquotes order by date desc limit 2';
+	        query.sql = 'select distinct date from (SELECT COUNT(date) as c, date FROM stockquotes GROUP BY date HAVING c > 200) tradeDays order by date desc limit 2';
 
 	        request.get('/query', {query:query}).then(response => {
 
