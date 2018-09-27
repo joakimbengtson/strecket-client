@@ -21,14 +21,14 @@ function sweDate(theDate) {
 }
 
 
-class NagotSomFunkarBattreOmNagotBlirFel extends React.Component { 
-	
+class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
+
 	constructor(props) {
 		super(props);
 
 		this.state = {spikes:null, dates:null, error: null};
 	};
-	
+
 	getDates() {
         return new Promise((resolve, reject) => {
 	        var request = new Request('http://app-o.se:3012');
@@ -42,25 +42,25 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	        request.get('/query', {query:query}).then(response => {
 
 		        dates[0] = sweDate(new Date(response.body[0].date));
-		        dates[1] = sweDate(new Date(response.body[1].date));	
-		        	        
+		        dates[1] = sweDate(new Date(response.body[1].date));
+
                 resolve(dates);
 	        })
 	        .catch(error => {
                 reject(error);
 	        })
-        });	
-	}	
+        });
+	}
 
 	getSpikes() {
         return new Promise((resolve, reject) => {
-	        var request = new Request('http://app-o.se:3012'); 
+	        var request = new Request('http://app-o.se:3012');
 	        var query = {};
 	        var spikes = [];
 
 	        query.sql    = 'SELECT a.symbol, a.volume, b.volume, a.close as lastClose, b.close as previousClose FROM stockquotes a INNER JOIN stockquotes b ON a.symbol = b.symbol WHERE a.date = ? AND b.date = ? AND a.volume > b.AV14*2 AND a.close > b.close AND a.close > a.SMA200 AND a.close*a.AV14 > 5000000';
 	        query.values = [this.state.dates[0], this.state.dates[1]];
-	         
+
 	        request.get('/query', {query:query}).then(response => {
 	            var tickers = response.body;
 	            tickers.forEach(ticker => {
@@ -75,10 +75,10 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
         });
 
 	}
- 
+
 	componentDidMount() {
-		
-		this.getDates().then(dates => {		
+
+		this.getDates().then(dates => {
 	        this.setState({dates:dates});
 	        this.getSpikes().then(spikes => {
 	            this.setState({spikes:spikes});
@@ -92,13 +92,13 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
             console.log(error);
             this.setState({error:error});
         });
-				
+
     }
 
     render() {
         if (this.state.spikes) {
 	        return (
-		        <div> 
+		        <div>
 		        <h1 className="text-center">{this.state.dates[1] + " - " + this.state.dates[0] + " (" + this.state.spikes.length + " st)"}</h1>
                 <StockChartList symbols={this.state.spikes}/>
                 </div>
@@ -110,7 +110,12 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
         }
 
         else {
-            return <div id="over" style="position:absolute; width:100%; height:100%"><img src="../images/spinner.gif"></img></div>
+            var image = require('../candidates/images/spinner.gif')
+            var imgStyle = {};
+            imgStyle.marginLeft = 'auto';
+            imgStyle.marginRight = 'auto';
+            imgStyle.display = 'block';
+            return <div style={{position:'absolute', width:'100%',  height:'100%'}}><img style={imgStyle} src={image}></img></div>
         }
     }
 }
