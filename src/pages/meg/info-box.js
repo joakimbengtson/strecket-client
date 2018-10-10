@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactHighcharts from 'react-highcharts';
 import ReactHighstock from 'react-highcharts/ReactHighstock';
+import {Table, thead, td, tr, th} from 'react-bootstrap';
 
 
 import Request from 'yow/request';
@@ -16,7 +17,7 @@ module.exports = class InfoBox extends React.Component {
 
         // ready = false, dvs vi har inte läst in data än...
         this.state.ready = false;
-        this.state.companyName = null;
+        this.state.rawDump = null;
 
         // Hämta parametrar från anropet <StockChart symbol='X'/>
         this.state.symbol = this.props.symbol;
@@ -24,12 +25,10 @@ module.exports = class InfoBox extends React.Component {
 
     fetch() {
         return new Promise((resolve, reject) => {
-            // Deklarera en request som går direkt till Munch (slipper då MySQL-anrop)
             var request = new Request('http://app-o.se:3000');
 
 
-            // Hämta data från Munch via ett '/query' anrop...
-            request.get('/company/' + this.state.symbol).then(response => {
+            request.get('/rawdump/' + this.state.symbol).then(response => {
                 resolve(response.body);
             })
             .catch ((error) => {
@@ -42,8 +41,8 @@ module.exports = class InfoBox extends React.Component {
     componentDidMount() {
         this.setState({ready:false});
 
-        this.fetch().then((companyName) => {
-            this.setState({companyName:companyName, ready:true});
+        this.fetch().then((rawDump) => {
+            this.setState({rawDump:rawDump, ready:true});
 
         })
         .catch((error) => {
@@ -54,10 +53,8 @@ module.exports = class InfoBox extends React.Component {
 
 
     render() {
-        // Om allt är klart så...
         if (this.state.ready) {
 
-            // Lite styling kring grafen
             var style = {};
             style.border = '1px solid rgba(0, 0, 0, 0.1)';
             style.marginLeft = '10em';
@@ -66,20 +63,26 @@ module.exports = class InfoBox extends React.Component {
             style.marginBottom = '5em';
             style.backgroundColor = 'snow';
 
-            // Returnera grafen med angiven stil och genererad data...
             return (
                 <div style = {style}>
-                    {this.state.companyName}
+					<Table striped={true} bordered={true} condensed={true} responsive={true}>
+				
+				    <tbody>
+						<tr>												
+							{(this.state.rawDump.defaultKeyStatistics.pegRatio >= 0 && this.state.rawDump.defaultKeyStatistics.pegRatio <= 1)? <td style={{backgroundColor: 'green'}}>{'PEG:' + this.state.rawDump.defaultKeyStatistics.pegRatio}</td> : <td style={{backgroundColor: 'red'}}>{'PEG:' + this.state.rawDump.defaultKeyStatistics.pegRatio}</td>}						
+						
+						</tr>
+					</tbody>
+		
+					</Table>
+                                    
                 </div>
             );
 
         }
-        // Annars visa en tom graf...
         else {
             return (<div>-</div>);
         }
     }
-
-
 
 }

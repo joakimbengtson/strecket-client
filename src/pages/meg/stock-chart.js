@@ -42,7 +42,7 @@ module.exports = class StockChart extends React.Component {
         var then = new Date();
 
         // Då är ett år tillbaka i tiden
-        then.setFullYear(now.getFullYear() - 1);
+        then.setFullYear(now.getFullYear() - 2);
 
         // Skapa läsbara texter från nu och då
         var nowYMD  = sprintf('%04d-%02d-%02d', now.getFullYear(), now.getMonth() + 1, now.getDate());
@@ -57,8 +57,8 @@ module.exports = class StockChart extends React.Component {
         var volume = [];
 
 
-        // Hämta data från Munch via ett '/query' anrop...
-        request.get('/query', {query:query}).then(response => {
+        // Hämta data från Munch via ett '/mysql' anrop...
+        request.get('/mysql', {query:query}).then(response => {
             var stocks = response.body;
 
 
@@ -102,7 +102,7 @@ module.exports = class StockChart extends React.Component {
 
 			xAxis: {
 			  type: 'datetime',
-
+			  			  
 			  dateTimeLabelFormats: {
 			        second: '%Y-%m-%d<br/>%H:%M:%S',
 			        minute: '%Y-%m-%d<br/>%H:%M',
@@ -120,8 +120,7 @@ module.exports = class StockChart extends React.Component {
 	                align: 'right',
 	                x: -3
 	            },
-	            //height: '70%',
-	            height: (9 / 16 * 100) + '%',
+	            height: '75%',
 	            lineWidth: 2,
 	            resize: {
 	                enabled: true
@@ -138,16 +137,36 @@ module.exports = class StockChart extends React.Component {
 	        }],
 
 			plotOptions: {
+
+		        series: {
+					allowPointSelect: false,
+		            dashStyle: 'solid',
+					enableMouseTracking: false,
+		            marker: {
+		                enabled: false,
+			            states: {
+			                select: {
+			                    enabled: false
+			                },
+			                hover: {
+			                    enabled: false,
+			                    halo: {
+									size: 0
+								}
+			                },
+			                normal: {
+			                    animation: false
+			                }
+			                
+			            }
+		            }
+		            
+		        },
+
 				ohlc: {
 				    color: 'red',
 				    upColor: 'green',
 				    lineWidth: 2
-                },
-                sma: {
-                    strokeWidth: 2,
-                    stroke: 'green',
-                    dashstyle: 'solid'
-                    
                 }
 			},
 
@@ -164,18 +183,35 @@ module.exports = class StockChart extends React.Component {
 		            data: volume,
 		            yAxis: 1,
 	        	},
-
-				{
+				{ 
+					name: 'sma50',
 		            type: 'sma',
+		            color: 'green',	
+		            lineWidth: 2,
 		            linkedTo: 'STOCK',
 		            params: {
 		            	period: 50
 		            }
+	        	},
+				{ 
+					name: 'sma14',
+		            type: 'sma',
+		            color: 'red',	
+		            lineWidth: 4,
+		            linkedTo: 'STOCK',
+		            params: {
+		            	period: 200
+		            }
+		            
 	        	}
+
 
 	        ]
 
             };
+            
+            //config.xAxis.min = then.toISOString();
+            //config.xAxis.max = now.toISOString();           
 
             // Sätt denna komponents 'tillstånd' till klar och datan finns under 'config'...
             this.setState({ready:true, config:config});
