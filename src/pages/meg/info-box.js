@@ -71,7 +71,7 @@ module.exports = class InfoBox extends React.Component {
 						<tr>												
 							{(this.state.rawDump.defaultKeyStatistics.pegRatio >= 0 && this.state.rawDump.defaultKeyStatistics.pegRatio <= 1)? <td><Alert bsStyle="success">{'PEG: ' + this.state.rawDump.defaultKeyStatistics.pegRatio}</Alert></td> : <td><Alert bsStyle="danger">{'PEG:' + this.state.rawDump.defaultKeyStatistics.pegRatio}</Alert></td>}
 							{(this.state.rawDump.summaryDetail.dividendYield !== undefined)? <td><Alert bsStyle="success">{'Utdelning: ' + (this.state.rawDump.summaryDetail.dividendYield*100).toFixed(2)}%</Alert></td> : <td><Alert bsStyle="danger">{'Utdelning: 0'}</Alert></td>}
-							{(this.state.rawDump.defaultKeyStatistics.currentRatio >= 0 && this.state.rawDump.defaultKeyStatistics.currentRatio <= 1)? <td><Alert bsStyle="success">{'Current ratio: ' + this.state.rawDump.defaultKeyStatistics.currentRatio}</Alert></td> : <td><Alert bsStyle="danger">{'PEG:' + this.state.rawDump.defaultKeyStatistics.currentRatio}</Alert></td>}							
+							{(this.state.rawDump.defaultKeyStatistics.currentRatio >= 0 && this.state.rawDump.defaultKeyStatistics.currentRatio <= 1)? <td><Alert bsStyle="success">{'Current ratio: ' + this.state.rawDump.defaultKeyStatistics.currentRatio}</Alert></td> : <td><Alert bsStyle="danger">{'Current ratio:' + this.state.rawDump.defaultKeyStatistics.currentRatio}</Alert></td>}							
 						</tr>
 						<tr>
 							<td><Alert bsStyle="info">{this.state.rawDump.price.longName}</Alert></td><td>{this.state.rawDump.summaryProfile.sector}</td><td>{this.state.rawDump.summaryProfile.industry}</td>
