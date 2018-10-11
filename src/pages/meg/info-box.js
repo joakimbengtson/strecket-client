@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactHighcharts from 'react-highcharts';
 import ReactHighstock from 'react-highcharts/ReactHighstock';
-import {Table, thead, td, tr, th} from 'react-bootstrap';
+import {Table, thead, td, tr, th, Alert} from 'react-bootstrap';
 
 
 import Request from 'yow/request';
@@ -65,13 +65,19 @@ module.exports = class InfoBox extends React.Component {
 
             return (
                 <div style = {style}>
-					<Table striped={true} bordered={true} condensed={true} responsive={true}>
+					<Table bordered={true} condensed={true} responsive={true}>
 				
 				    <tbody>
 						<tr>												
-							{(this.state.rawDump.defaultKeyStatistics.pegRatio >= 0 && this.state.rawDump.defaultKeyStatistics.pegRatio <= 1)? <td style={{backgroundColor: 'green'}}>{'PEG:' + this.state.rawDump.defaultKeyStatistics.pegRatio}</td> : <td style={{backgroundColor: 'red'}}>{'PEG:' + this.state.rawDump.defaultKeyStatistics.pegRatio}</td>}						
-						
+							{(this.state.rawDump.defaultKeyStatistics.pegRatio >= 0 && this.state.rawDump.defaultKeyStatistics.pegRatio <= 1)? <td><Alert bsStyle="success">{'PEG: ' + this.state.rawDump.defaultKeyStatistics.pegRatio}</Alert></td> : <td><Alert bsStyle="danger">{'PEG:' + this.state.rawDump.defaultKeyStatistics.pegRatio}</Alert></td>}
+							{(this.state.rawDump.summaryDetail.dividendYield !== undefined)? <td><Alert bsStyle="success">{'Utdelning: ' + (this.state.rawDump.summaryDetail.dividendYield*100).toFixed(2)}%</Alert></td> : <td><Alert bsStyle="danger">{'Utdelning: 0'}</Alert></td>}
 						</tr>
+						<tr>
+							<td><Alert bsStyle="info">{this.state.rawDump.price.longName}</Alert></td><td>{this.state.rawDump.summaryProfile.sector}</td><td>{this.state.rawDump.summaryProfile.industry}</td>
+						</tr>
+						<tr>						
+							<td colSpan="3"><Alert bsStyle="info"><small>{this.state.rawDump.summaryProfile.longBusinessSummary}</small></Alert></td>
+						</tr>						
 					</tbody>
 		
 					</Table>

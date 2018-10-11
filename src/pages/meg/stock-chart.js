@@ -40,13 +40,18 @@ module.exports = class StockChart extends React.Component {
         // Nu och då
         var now = new Date();
         var then = new Date();
+		var oneYearAgo = new Date();
 
-        // Då är ett år tillbaka i tiden
+        // Då är två år tillbaka i tiden
         then.setFullYear(now.getFullYear() - 2);
+        
+        // Håll koll på ett år tillbaks, vi visar bara ett år i grafen
+        oneYearAgo.setFullYear(now.getFullYear() - 1);
 
         // Skapa läsbara texter från nu och då
         var nowYMD  = sprintf('%04d-%02d-%02d', now.getFullYear(), now.getMonth() + 1, now.getDate());
         var thenYMD = sprintf('%04d-%02d-%02d', then.getFullYear(), then.getMonth() + 1, then.getDate());
+        var yearAgoYMD = sprintf('%04d-%02d-%02d', oneYearAgo.getFullYear(), oneYearAgo.getMonth() + 1, oneYearAgo.getDate());
 
         // Skapa frågan
         var query = {};
@@ -76,7 +81,7 @@ module.exports = class StockChart extends React.Component {
               },
 
               subtitle: {
-                  text: sprintf('%s - %s', thenYMD, nowYMD)
+                  text: sprintf('%s - %s', yearAgoYMD, nowYMD)
               },
 
 			  chart: {
@@ -210,9 +215,8 @@ module.exports = class StockChart extends React.Component {
 
             };
             
-            //config.xAxis.min = then.toISOString();
-            //config.xAxis.max = now.toISOString();           
-
+            config.xAxis.min = Date.UTC(oneYearAgo.getFullYear(), oneYearAgo.getMonth(), oneYearAgo.getDate());
+            
             // Sätt denna komponents 'tillstånd' till klar och datan finns under 'config'...
             this.setState({ready:true, config:config});
         })
