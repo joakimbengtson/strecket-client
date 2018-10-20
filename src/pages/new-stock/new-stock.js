@@ -286,91 +286,128 @@ module.exports = class Home extends React.Component {
             <div id="new_stock">
                 <Container>
                     <Form >
-                        <Form.Group>
-                            <Form.Label tag='h2'>
-                                Ny aktie
-                            </Form.Label>
+                        <Form.Group row>
+                            <Form.Col sm={{offset:1}}>
+                                <Form.Label tag='h2'>
+                                    Ny aktie
+                                </Form.Label>
+                            </Form.Col>
                         </Form.Group>
 
-                        <Form.Group >
-                            <Form.Label>
-                                Ticker
-                            </Form.Label>
-                             <Form.Input type="text" ref="stockticker" placeholder="Kortnamn för aktien" onKeyPress={this.handleKeyPress} />
-                        </Form.Group> 
-                         
-                         
-
-                        <Form.Group >
-                            <Form.Label>
-                                Namn
-                            </Form.Label>
-                            <Form.Input type="text" ref="stockname" placeholder="Namnet på aktien" />
+                        <Form.Group row>
+                            <Form.Col sm={1} textAlign='right' >
+                                <Form.Label inline for='name' textColor='muted'>
+                                    <small>Ticker</small>
+                                </Form.Label>
+                            </Form.Col>
+                            <Form.Col sm={11}>
+                                <Form.Input type="text" ref="stockticker" placeholder="Kortnamn för aktien" onKeyPress={this.handleKeyPress}/>
+                            </Form.Col>
+                        </Form.Group>
+                        
+                        <Form.Group row>
+                            <Form.Col sm={1} textAlign='right' >
+                                <Form.Label inline for='name' textColor='muted'>
+                                    <small>Namn</small>
+                                </Form.Label>
+                            </Form.Col>
+                            <Form.Col sm={11}>
+                                <Form.Input type="text" ref="stockname" placeholder="Namnet på aktien" />
+                            </Form.Col>
                         </Form.Group>
 
-                        <Form.Group>
-                            <Form.Label>
-                                Kurs
-                            </Form.Label>
-                            <Form.Input type="text" ref="stockprice" placeholder="Köpt till kursen?" onKeyDown={this.handleKeyDown} />
+                        <Form.Group row>
+                            <Form.Col sm={1} textAlign='right' >
+                                <Form.Label inline for='price' textColor='muted'>
+                                    <small>Kurs</small>
+                                </Form.Label>
+                            </Form.Col>
+                            <Form.Col sm={11}>
+                                <Form.Input id='price' type="text" ref="stockprice" placeholder="Köpt till kursen?" onKeyDown={this.handleKeyDown} />
+                            </Form.Col>
                         </Form.Group>
 
-                        <Form.Group>
-                            <Form.Label>
-                                Antal
-                            </Form.Label>
-                            <Form.Input type="text" ref="stockcount" placeholder="Antal aktier" />
+                        <Form.Group row>
+                            <Form.Col sm={1} textAlign='right' >
+                                <Form.Label inline for='name' textColor='muted'>
+                                    <small>Antal</small>
+                                </Form.Label>
+                            </Form.Col>
+                            <Form.Col sm={11}>
+                                <Form.Input type="text" ref="stockcount" placeholder="Antal aktier" />
+                            </Form.Col>
                         </Form.Group>
 
-                        <Form.Group>
-                            <Form.Label>Stop loss</Form.Label>
-
-                            <Form.Group>
-                                <Form.Radio value="option1" checked={this.state.selectedOption === "option1"} onChange={this.handleOptionChange}>
-                                    &nbsp;&nbsp;släpande
-                                </Form.Radio>
-
-                                <Form.Input type="text" ref="ATRMultiple" placeholder="x ATR?" />
-                                <span ref="stoplosshelper">
-                                    <span style={{color: "#b2b2b2"}}>{this.state.helptext}</span>
-                                </span>
-
-                            </Form.Group>
-
-                            <Form.Group>
-                                <Form.Radio value="option2" checked={this.state.selectedOption === "option2"} onChange={this.handleOptionChange}>
-                                    &nbsp;&nbsp;under kurs
-                                </Form.Radio>
-
-                                <Form.Input type="text" ref="stoplossQuote" placeholder="Kurs?" />
-
-                            </Form.Group>
 
 
+                        <Form.Group row>
+                            <Form.Col sm={1} textAlign='right' >
+                                <Form.Label  for='name' inline textColor='muted'>
+                                    <small>Stop loss</small>
+                                </Form.Label>
+                            </Form.Col>
 
-                            <Form.Group>
-                                <Form.Radio value="option3" checked={this.state.selectedOption === "option3"} onChange={this.handleOptionChange}>
-                                    &nbsp;&nbsp;släpande under procent
-                                </Form.Radio>
-                                <Form.Input  type="text" ref="stoplossPercentage" placeholder="%" />
-                            </Form.Group>
+                            <Form.Col sm={11}>
+                                <Form inline  padding={{bottom:1, top:1}}>
+                                    <Form.Radio value="option1" checked={this.state.selectedOption === "option1"} onChange={this.handleOptionChange}>
+                                        Släpande
+                                    </Form.Radio>
 
-                            <Form.Group>
-                                <Form.Checkbox ref="percentile10" checked={this.state.selectedCheck} onChange={this.handleCheckChange.bind(this)}>
-                                    &nbsp;&nbsp;öka stop loss med 1% för varje 10%-ökning av kursen
+                                    <Form.Input margin={{left:2, right:2}} type="text" ref="ATRMultiple" placeholder="x ATR?" />
+
+                                    <span ref="stoplosshelper">
+                                        <span style={{color: "#b2b2b2"}}>{this.state.helptext}</span>
+                                    </span>
+
+                                </Form>
+
+                                <Form inline  padding={{bottom:1, top:1}}>
+                                    <Form.Radio value="option2" checked={this.state.selectedOption === "option2"} onChange={this.handleOptionChange}>
+                                        Under kurs
+                                    </Form.Radio>
+
+                                    <Form.Input margin={{left:2, right:2}} type="text" ref="stoplossQuote" placeholder="Kurs?" />
+                                </Form>
+                                
+                                <Form inline padding={{bottom:1, top:1}}>
+                                    <Form.Radio value="option3" checked={this.state.selectedOption === "option3"} onChange={this.handleOptionChange}>
+                                        Släpande under procent
+                                    </Form.Radio>
+                                    <Form.Input  margin={{left:2, right:2}} type="text" ref="stoplossPercentage" placeholder="%" />
+                                </Form>
+                            </Form.Col>
+                        </Form.Group>
+
+
+
+                        <Form.Group row>
+                            <Form.Col sm={1}>
+                                
+                            </Form.Col>
+                            <Form.Col sm={11}>
+                                <Form.Checkbox checked={this.state.selectedCheck} onChange={this.handleCheckChange.bind(this)}>
+                                    Öka stop loss med 1% för varje 10%-ökning av kursen
                                 </Form.Checkbox>
-
-                            </Form.Group>
+                            
+                            </Form.Col>
+    
                         </Form.Group>
 
-                        <Form.Group>   
-                            <Button color='info'  onClick={this.onCancel.bind(this)}>
-                                Avbryt
-                            </Button>
-                            <span>{' '}</span>
-                            <Button color="success" onClick={this.onSave.bind(this)}>
-                                Spara
-                            </Button>
+                        <Form.Group row>
+                            <Form.Col sm={1}>
+                                
+                            </Form.Col>
+                            <Form.Col sm={11}>
+                                <Button color='success' outline onClick={this.onCancel.bind(this)}>
+                                    Avbryt
+                                </Button>
+                                <span>{' '}</span>
+                                <Button color="success" onClick={this.onSave.bind(this)}>
+                                    Spara
+                                </Button>
+                            
+                            </Form.Col>
+    
                         </Form.Group>
                     </Form>
                 </Container>

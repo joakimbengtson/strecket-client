@@ -5,7 +5,7 @@ import {IndexRoute, hashHistory, Router, Route} from 'react-router';
 
 
 //import css from '../bootswatch/materia/bootstrap.min.css';
-import css from '../bootstrap/bootstrap.min.css';
+//import css from '../bootstrap/bootstrap.min.css';
 //require('./less/styles.less');
 
 
