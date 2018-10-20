@@ -85,7 +85,7 @@ module.exports = class Home extends React.Component {
                 if (isArray(body) && body.length == 0) {
                     var stock = {};
                     stock.namn = 'Genererats när inga aktier fanns';
-                    stock.ticker = 'AAPL';
+                    stock.ticker = 'MEG';
                     stock.senaste = 3.4;
                     stock.kurs = 100;
                     stock.sector = 'Olle';
