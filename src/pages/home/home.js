@@ -195,14 +195,14 @@ module.exports = class Home extends React.Component {
                         )}
                         <td>
                             <center>
-                                <Button size="xs" onClick={self.deleteStock.bind(self, stock.id)}>
+                                <Button size="sm" onClick={self.deleteStock.bind(self, stock.id)}>
                                     Logout
                                 </Button>
                             </center>
                         </td>
                         <td>
                             <center>
-                                <Button size="xs" href={"#new-stock/?id=" + stock.id + "&senaste=" + stock.senaste}>
+                                <Button size="sm" href={"#new-stock/?id=" + stock.id + "&senaste=" + stock.senaste}>
                                     Edit
                                 </Button>
                             </center>
@@ -318,11 +318,11 @@ module.exports = class Home extends React.Component {
                     </Container.Row>
 
                     <Container.Row>
-                        <Button color="success" size="lg" href="#new-stock">
+                        <Button margin={{left:1, right:1}} color="success" size="lg" href="#new-stock">
                             Nytt köp
                         </Button>
                         <span>{' '}</span>
-                        <Button color="info" size="lg" href="#meg">
+                        <Button margin={{left:1, right:1}} color="info" size="lg" href="#meg">
                             Kandidater
                         </Button>
                     </Container.Row>

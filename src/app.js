@@ -3,7 +3,10 @@ import ReactDOM from 'react-dom';
 import {IndexRoute, hashHistory, Router, Route} from 'react-router';
 
 
-require('./less/styles.less');
+
+//import css from '../bootswatch/materia/bootstrap.min.css';
+import css from '../bootstrap/bootstrap.min.css';
+//require('./less/styles.less');
 
 
 var App = React.createClass({
