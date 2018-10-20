@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactHighcharts from 'react-highcharts';
 import ReactHighstock from 'react-highcharts/ReactHighstock';
-import {Table, thead, td, tr, th, Alert} from 'react-bootstrap';
 
+import {Table, Alert} from 'react-bootify';
 
 import Request from 'yow/request';
 import sprintf from 'yow/sprintf';
@@ -68,19 +68,19 @@ var test;
 				
 				    <tbody>
 						<tr>												
-							{(this.state.rawDump.defaultKeyStatistics.pegRatio >= 0 && this.state.rawDump.defaultKeyStatistics.pegRatio <= 1)? <td><Alert bsStyle="success">{'PEG: ' + this.state.rawDump.defaultKeyStatistics.pegRatio}</Alert></td> : <td><Alert bsStyle="danger">{'PEG:' + this.state.rawDump.defaultKeyStatistics.pegRatio}</Alert></td>}
-							{(this.state.rawDump.summaryDetail.dividendYield !== undefined)? <td><Alert bsStyle="success">{'Utdelning: ' + (this.state.rawDump.summaryDetail.dividendYield*100).toFixed(2)}%</Alert></td> : <td><Alert bsStyle="danger">{'Utdelning: 0'}</Alert></td>}
-							{(this.state.rawDump.defaultKeyStatistics.currentRatio >= 0 && this.state.rawDump.defaultKeyStatistics.currentRatio <= 1)? <td><Alert bsStyle="success">{'Current ratio: ' + this.state.rawDump.defaultKeyStatistics.currentRatio}</Alert></td> : <td><Alert bsStyle="danger">{'Current ratio:' + this.state.rawDump.defaultKeyStatistics.currentRatio}</Alert></td>}							
+							{(this.state.rawDump.defaultKeyStatistics.pegRatio >= 0 && this.state.rawDump.defaultKeyStatistics.pegRatio <= 1)? <td><Alert color="success">{'PEG: ' + this.state.rawDump.defaultKeyStatistics.pegRatio}</Alert></td> : <td><Alert color="danger">{'PEG:' + this.state.rawDump.defaultKeyStatistics.pegRatio}</Alert></td>}
+							{(this.state.rawDump.summaryDetail.dividendYield !== undefined)? <td><Alert color="success">{'Utdelning: ' + (this.state.rawDump.summaryDetail.dividendYield*100).toFixed(2)}%</Alert></td> : <td><Alert color="danger">{'Utdelning: 0'}</Alert></td>}
+							{(this.state.rawDump.defaultKeyStatistics.currentRatio >= 0 && this.state.rawDump.defaultKeyStatistics.currentRatio <= 1)? <td><Alert color="success">{'Current ratio: ' + this.state.rawDump.defaultKeyStatistics.currentRatio}</Alert></td> : <td><Alert color="danger">{'Current ratio:' + this.state.rawDump.defaultKeyStatistics.currentRatio}</Alert></td>}							
 						</tr>
 						<tr>												
-							{(this.state.rawDump.financialData.quickRatio >= 1)? <td><Alert bsStyle="success">{'Quick Ratio: ' + this.state.rawDump.financialData.quickRatio}</Alert></td> : <td><Alert bsStyle="danger">{'Quick Ratio:' + this.state.rawDump.financialData.quickRatio}</Alert></td>}
-							{(this.state.rawDump.defaultKeyStatistics.sharesShort < this.state.rawDump.defaultKeyStatistics.sharesShortPriorMonth)? <td><Alert bsStyle="success">{'Blankare minskar' + this.state.rawDump.defaultKeyStatistics.sharesShortPriorMonth + '->' + this.state.rawDump.defaultKeyStatistics.sharesShort}</Alert></td> : <td><Alert bsStyle="danger">{'Blankare ökar' + this.state.rawDump.defaultKeyStatistics.sharesShortPriorMonth + '->' + this.state.rawDump.defaultKeyStatistics.sharesShort}</Alert></td>}							
+							{(this.state.rawDump.financialData.quickRatio >= 1)? <td><Alert color="success">{'Quick Ratio: ' + this.state.rawDump.financialData.quickRatio}</Alert></td> : <td><Alert color="danger">{'Quick Ratio:' + this.state.rawDump.financialData.quickRatio}</Alert></td>}
+							{(this.state.rawDump.defaultKeyStatistics.sharesShort < this.state.rawDump.defaultKeyStatistics.sharesShortPriorMonth)? <td><Alert color="success">{'Blankare minskar' + this.state.rawDump.defaultKeyStatistics.sharesShortPriorMonth + '->' + this.state.rawDump.defaultKeyStatistics.sharesShort}</Alert></td> : <td><Alert color="danger">{'Blankare ökar' + this.state.rawDump.defaultKeyStatistics.sharesShortPriorMonth + '->' + this.state.rawDump.defaultKeyStatistics.sharesShort}</Alert></td>}							
 						</tr>
 						<tr>
-							<td><Alert bsStyle="info">{this.state.rawDump.price.longName}</Alert></td><td>{this.state.rawDump.summaryProfile.sector}</td><td>{this.state.rawDump.summaryProfile.industry}</td>
+							<td><Alert color="info">{this.state.rawDump.price.longName}</Alert></td><td>{this.state.rawDump.summaryProfile.sector}</td><td>{this.state.rawDump.summaryProfile.industry}</td>
 						</tr>
 						<tr>						
-							<td colSpan="3"><Alert bsStyle="info"><small>{this.state.rawDump.summaryProfile.longBusinessSummary}</small></Alert></td>
+							<td colSpan="3"><Alert color="info"><small>{this.state.rawDump.summaryProfile.longBusinessSummary}</small></Alert></td>
 						</tr>						
 					</tbody>
 		
