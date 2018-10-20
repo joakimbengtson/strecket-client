@@ -1,3 +1,3 @@
 # strecket-client
 
-KALLE
+KALLEX
