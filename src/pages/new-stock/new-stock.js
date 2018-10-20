@@ -331,9 +331,9 @@ module.exports = class Home extends React.Component {
                                 </Form.Radio>
 
                                 <Form.Input type="text" ref="ATRMultiple" placeholder="x ATR?" />
-                                <Form.Label ref="stoplosshelper">
+                                <span ref="stoplosshelper">
                                     <span style={{color: "#b2b2b2"}}>{this.state.helptext}</span>
-                                </Form.Label>
+                                </span>
 
                             </Form.Group>
 
