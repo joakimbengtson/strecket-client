@@ -195,14 +195,14 @@ module.exports = class Home extends React.Component {
                         )}
                         <td>
                             <center>
-                                <Button size="xs" bsStyle="link" onClick={self.deleteStock.bind(self, stock.id)}>
+                                <Button size="xs" onClick={self.deleteStock.bind(self, stock.id)}>
                                     Logout
                                 </Button>
                             </center>
                         </td>
                         <td>
                             <center>
-                                <Button size="xs" bsStyle="link" href={"#new-stock/?id=" + stock.id + "&senaste=" + stock.senaste}>
+                                <Button size="xs" href={"#new-stock/?id=" + stock.id + "&senaste=" + stock.senaste}>
                                     Edit
                                 </Button>
                             </center>
@@ -265,7 +265,7 @@ module.exports = class Home extends React.Component {
 
         return (
             <div>
-                <Table striped={true} bordered={true} condensed={true} responsive={true}>
+                <Table striped={true} bordered={true} responsive={true}>
                     <thead>
                         <tr>
                             <th>Ticker</th>
