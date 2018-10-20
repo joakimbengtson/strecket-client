@@ -1,6 +1,7 @@
 import React from "react";
 require("./home.less");
 import {Button, Container, Table, Row, Col} from 'react-bootify';
+import {isArray} from 'yow/is';
 
 function dayDiff(d) {
     var dt1 = new Date(d);
@@ -80,26 +81,25 @@ module.exports = class Home extends React.Component {
         var req = request(options, function(err, response, body) {
             if (!err) {
 
-                // Listan var tom, så jag skapade en egen så jag kunde testa...
-                
-                /* 
-                var stock = {};
-                stock.namn = 'Apple';
-                stock.ticker = 'AAPL';
-                stock.senaste = 3.4;
-                stock.kurs = 100;
-                stock.sector = 'Olle';
-                stock.sma200 = 23;
-                stock.sma50 = 23;
-                stock.utfall = 4;
-                stock.stoplossProcent = 4;
-                stock.stoplossKurs = 4;
-                stock.antal = 10;
-                stock.earningsDate = [1, 2, 3];
-
-
-                body = [stock];
-                */
+                // MEG:s påhitt. Om inget finns i listan, lägg till en påhittad.
+                if (isArray(body) && body.length == 0) {
+                    var stock = {};
+                    stock.namn = 'Genererats när inga aktier fanns';
+                    stock.ticker = 'AAPL';
+                    stock.senaste = 3.4;
+                    stock.kurs = 100;
+                    stock.sector = 'Olle';
+                    stock.sma200 = 23;
+                    stock.sma50 = 23;
+                    stock.utfall = 4;
+                    stock.stoplossProcent = 4;
+                    stock.stoplossKurs = 4;
+                    stock.antal = 10;
+                    stock.earningsDate = [1, 2, 3];
+    
+    
+                    body.push(stock);
+                }  
 
                 self.setState({stocks: body});
             } else {
