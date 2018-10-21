@@ -301,7 +301,7 @@ module.exports = class Home extends React.Component {
                                 </Form.Label>
                             </Form.Col>
                             <Form.Col sm={11}>
-                                <Form.Input type="text" ref="stockticker" placeholder="Kortnamn för aktien" onKeyPress={this.handleKeyPress}/>
+                                <Form.Input padding={{bottom:1}} type="text" ref="stockticker" placeholder="Kortnamn för aktien" onKeyPress={this.handleKeyPress}/>
                             </Form.Col>
                         </Form.Group>
                         
@@ -312,7 +312,7 @@ module.exports = class Home extends React.Component {
                                 </Form.Label>
                             </Form.Col>
                             <Form.Col sm={11}>
-                                <Form.Input type="text" ref="stockname" placeholder="Namnet på aktien" />
+                                <Form.Input padding={{bottom:1}} type="text" ref="stockname" placeholder="Namnet på aktien" />
                             </Form.Col>
                         </Form.Group>
 
@@ -323,7 +323,7 @@ module.exports = class Home extends React.Component {
                                 </Form.Label>
                             </Form.Col>
                             <Form.Col sm={11}>
-                                <Form.Input id='price' type="text" ref="stockprice" placeholder="Köpt till kursen?" onKeyDown={this.handleKeyDown} />
+                                <Form.Input padding={{bottom:1}} id='price' type="text" ref="stockprice" placeholder="Köpt till kursen?" onKeyDown={this.handleKeyDown} />
                             </Form.Col>
                         </Form.Group>
 
@@ -334,7 +334,7 @@ module.exports = class Home extends React.Component {
                                 </Form.Label>
                             </Form.Col>
                             <Form.Col sm={11}>
-                                <Form.Input type="text" ref="stockcount" placeholder="Antal aktier" />
+                                <Form.Input padding={{bottom:1}} type="text" ref="stockcount" placeholder="Antal aktier" />
                             </Form.Col>
                         </Form.Group>
 
