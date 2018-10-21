@@ -1,6 +1,6 @@
 import React from "react";
 require("./home.less");
-import {Button, Container, Table, Row, Col} from 'react-bootify';
+import {Popover, Button, Container, Table, Row, Col} from 'react-bootify';
 import {isArray} from 'yow/is';
 
 function dayDiff(d) {
@@ -150,7 +150,19 @@ module.exports = class Home extends React.Component {
             if (stock.antal > 0) {
                 return (
                     <tr key={index}>
-                        <td>{stock.ticker}</td>
+                        <td>
+                            <Popover placement='bottom-start' >
+                                <Popover.Target>
+                                    <span >{stock.ticker}</span>
+                                </Popover.Target>
+                                <Popover.Header>
+                                    Eos modo
+                                </Popover.Header>
+                                <Popover.Body>
+                                    Te alii dicam fabulas mei. Quo graeco iuvaret scaevola no.
+                                </Popover.Body>
+                            </Popover>                            
+                        </td>
                         <td style={{textAlign: "right"}}>
                             {parseFloat(stock.senaste).toFixed(2)}
                             <span style={{color: "#b2b2b2"}}> ({parseFloat(stock.kurs).toFixed(2)})</span>
