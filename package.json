@@ -12,6 +12,7 @@
     "install-react-bootify": "npm install --save react-bootify",
     "reinstall-react-bootify": "npm run uninstall-react-bootify && npm run install-react-bootify",
     "goto-github": "open https://github.com/joakimbengtson/strecket-client",
+    "publish-to-meg-strecket": "npm run build && scp index.html index.js favicon.ico admin@nestor:www/meg/strecket",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -156,10 +156,10 @@ module.exports = class Home extends React.Component {
                                     <span >{stock.ticker}</span>
                                 </Popover.Target>
                                 <Popover.Header>
-                                    Eos modo
+                                    {stock.namn}
                                 </Popover.Header>
                                 <Popover.Body>
-                                    Te alii dicam fabulas mei. Quo graeco iuvaret scaevola no.
+                                    {stock.sector}
                                 </Popover.Body>
                             </Popover>                            
                         </td>
