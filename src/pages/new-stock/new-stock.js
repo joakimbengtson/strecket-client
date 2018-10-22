@@ -366,7 +366,7 @@ module.exports = class Home extends React.Component {
                                         Under kurs
                                     </Form.Radio>
 
-                                    <Form.Input margin={{left:2, right:2}} type="text" ref="stoplossQuote" placeholder="Kurs?" />
+                                    <Form.Input margin={{bottom:0, left:2, right:2}} type="text" ref="stoplossQuote" placeholder="Kurs?" />
                                 </Form>
                                 
                                 <Form inline padding={{bottom:1, top:1}}>
