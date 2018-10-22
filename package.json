@@ -6,7 +6,13 @@
   "scripts": {
     "watch": "watchify ./src/app.js -v -d -t [babelify --presets [ es2015 react stage-2] ] -t node-lessify -t imgurify -o index.js",
     "build": "browserify ./src/app.js -v -d  -t  -t [babelify --presets [ es2015 react stage-2] ] -t node-lessify -t imgurify | uglifyjs -c > index.js",
+    "commit": "git add -A && git commit -m '-' && git push",
     "upload": "scp index.html index.js admin@nestor:www/jbn/strecket",
+    "uninstall-react-bootify": "npm uninstall --save react-bootify",
+    "install-react-bootify": "npm install --save react-bootify",
+    "reinstall-react-bootify": "npm run uninstall-react-bootify && npm run install-react-bootify",
+    "goto-github": "open https://github.com/joakimbengtson/strecket-client",
+    "publish-to-meg-strecket": "npm run build && scp index.html index.js favicon.ico admin@nestor:www/meg/strecket",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -32,7 +38,7 @@
     "moment": "^2.14.1",
     "node-lessify": "^0.1.4",
     "react": "^15.6.2",
-    "react-bootstrap": "^0.30.3",
+    "react-bootify": "0.0.111",
     "react-dom": "^15.3.1",
     "react-highcharts": "^16.0.2",
     "react-router": "^2.7.0",
