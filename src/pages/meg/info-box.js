@@ -57,82 +57,85 @@ module.exports = class InfoBox extends React.Component {
             style.marginRight = "10em";
             style.marginTop = "5em";
             style.marginBottom = "5em";
-            var test;
+
             return (
                 <div style={style}>
-                    <Table bordered={true} condensed={true} responsive={true}>
+                    <Table bordered={true} responsive={true} size={'sm'}>
                         <tbody>
                             <tr>
                                 {this.state.rawDump.defaultKeyStatistics.pegRatio >= 0 && this.state.rawDump.defaultKeyStatistics.pegRatio <= 1 ? (
-                                    <td>
-                                        <Alert color="success">{"PEG: " + this.state.rawDump.defaultKeyStatistics.pegRatio}</Alert>
+                                    <td className="table-success">
+                                        <h3 className="text-white text-center">{"PEG: " + this.state.rawDump.defaultKeyStatistics.pegRatio}</h3>
                                     </td>
                                 ) : (
-                                    <td>
-                                        <Alert color="danger">{"PEG:" + this.state.rawDump.defaultKeyStatistics.pegRatio}</Alert>
+                                    <td className="table-danger">
+                                        <h3 className="text-white text-center">{"PEG:" + this.state.rawDump.defaultKeyStatistics.pegRatio}</h3>
                                     </td>
                                 )}
                                 {this.state.rawDump.summaryDetail.dividendYield !== undefined ? (
-                                    <td>
-                                        <Alert color="success">{"Utdelning: " + (this.state.rawDump.summaryDetail.dividendYield * 100).toFixed(2)}%</Alert>
+                                    <td className="table-success">
+                                        <h3 className="text-white text-center">{"Utdelning: " + (this.state.rawDump.summaryDetail.dividendYield * 100).toFixed(2)}%</h3>
                                     </td>
                                 ) : (
-                                    <td>
-                                        <Alert color="danger">{"Utdelning: 0"}</Alert>
+                                    <td className="table-danger">
+                                        <h3 className="text-white text-center">{"Utdelning: 0"}</h3>
                                     </td>
                                 )}
                                 {this.state.rawDump.defaultKeyStatistics.currentRatio >= 0 && this.state.rawDump.defaultKeyStatistics.currentRatio <= 1 ? (
-                                    <td>
-                                        <Alert color="success">{"Current ratio: " + this.state.rawDump.defaultKeyStatistics.currentRatio}</Alert>
+                                    <td className="table-success">
+                                        <h3 className="text-white text-center">{"Current ratio: " + this.state.rawDump.defaultKeyStatistics.currentRatio}</h3>
                                     </td>
                                 ) : (
-                                    <td>
-                                        <Alert color="danger">{"Current ratio:" + this.state.rawDump.defaultKeyStatistics.currentRatio}</Alert>
+                                    <td className="table-danger">
+                                        <h3 className="text-white text-center">{"Current ratio:" + this.state.rawDump.defaultKeyStatistics.currentRatio}</h3>
                                     </td>
                                 )}
                             </tr>
                             <tr>
                                 {this.state.rawDump.financialData.quickRatio >= 1 ? (
-                                    <td>
-                                        <Alert color="success">{"Quick Ratio: " + this.state.rawDump.financialData.quickRatio}</Alert>
+                                    <td className="table-success">
+                                        <h3 className="text-white text-center">{"Quick Ratio: " + this.state.rawDump.financialData.quickRatio}</h3>
                                     </td>
                                 ) : (
-                                    <td>
-                                        <Alert color="danger">{"Quick Ratio:" + this.state.rawDump.financialData.quickRatio}</Alert>
+                                    <td className="table-danger">
+                                        <h3 className="text-white text-center">{"Quick Ratio:" + this.state.rawDump.financialData.quickRatio}</h3>
                                     </td>
                                 )}
                                 {this.state.rawDump.defaultKeyStatistics.sharesShort < this.state.rawDump.defaultKeyStatistics.sharesShortPriorMonth ? (
-                                    <td>
-                                        <Alert color="success">
-                                            {"Blankare minskar" +
-                                                this.state.rawDump.defaultKeyStatistics.sharesShortPriorMonth +
-                                                "->" +
-                                                this.state.rawDump.defaultKeyStatistics.sharesShort}
-                                        </Alert>
+                                    <td className="table-success">
+                                        <h3 className="text-white text-center">{"Blankare minskar: " +
+                                            parseFloat((1 - (this.state.rawDump.defaultKeyStatistics.sharesShortPriorMonth / this.state.rawDump.defaultKeyStatistics.sharesShort))*100).toFixed(2)}%
+                                        </h3>
                                     </td>
                                 ) : (
-                                    <td>
-                                        <Alert color="danger">
-                                            {"Blankare ökar" +
-                                                this.state.rawDump.defaultKeyStatistics.sharesShortPriorMonth +
-                                                "->" +
-                                                this.state.rawDump.defaultKeyStatistics.sharesShort}
-                                        </Alert>
+                                    <td className="table-danger">
+                                        <h3 className="text-white text-center">{"Blankare ökar: " +
+                                            parseFloat((1 - (this.state.rawDump.defaultKeyStatistics.sharesShortPriorMonth / this.state.rawDump.defaultKeyStatistics.sharesShort))*100).toFixed(2)}%
+                                        </h3>                                            
+                                    </td>
+                                )}
+                                {this.state.rawDump.summaryDetail.fiftyTwoWeekHigh < this.state.rawDump.price.regularMarketPrice ? (
+                                    <td className="table-success">
+                                        <h3 className="text-white text-center">{"> 52 veckor"}
+                                        </h3>
+                                    </td>
+                                ) : (
+                                    <td className="table-danger">
+                                        <h3 className="text-white text-center">{"< 52 veckor"}
+                                        </h3>                                            
                                     </td>
                                 )}
                             </tr>
                             <tr>
-                                <td>
-                                    <Alert color="info">{this.state.rawDump.price.longName}</Alert>
+                                <td className="table-primary">
+                                    {this.state.rawDump.price.longName}
                                 </td>
-                                <td>{this.state.rawDump.summaryProfile.sector}</td>
-                                <td>{this.state.rawDump.summaryProfile.industry}</td>
+                                <td className="table-primary">{this.state.rawDump.summaryProfile.sector}</td>
+                                <td className="table-primary">{this.state.rawDump.summaryProfile.industry}</td>
                             </tr>
                             <tr>
-                                <td colSpan="3">
-                                    <Alert color="info">
-                                        <small>{this.state.rawDump.summaryProfile.longBusinessSummary}</small>
-                                    </Alert>
+                                <td colSpan="3" className="table-primary">
+                                	<small>{this.state.rawDump.summaryProfile.longBusinessSummary}</small>
                                 </td>
                             </tr>
                         </tbody>

@@ -58,7 +58,7 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	        var query = {};
 	        var spikes = [];
 
-	        query.sql    = 'SELECT a.symbol, a.volume, b.volume, a.close as lastClose, b.close as previousClose FROM stockquotes a INNER JOIN stockquotes b ON a.symbol = b.symbol WHERE a.date = ? AND b.date = ? AND a.volume > b.AV14*2 AND a.close > b.close AND a.close > a.SMA200 AND a.close*a.AV14 > 5000000';
+	        query.sql    = 'SELECT a.symbol, a.volume, b.volume, a.close as lastClose, b.close as previousClose FROM stockquotes a INNER JOIN stockquotes b ON a.symbol = b.symbol WHERE a.date = ? AND b.date = ? AND a.volume > b.AV14*2 AND a.close > b.close AND a.close > a.SMA200 AND a.close*a.AV14 > 5000000 AND a.close > a.open';
 	        query.values = [this.state.dates[0], this.state.dates[1]];
 
 	        request.get('/mysql', {query:query}).then(response => {

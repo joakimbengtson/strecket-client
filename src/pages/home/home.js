@@ -1,7 +1,11 @@
 import React from "react";
-require("./home.less");
 import {Popover, Button, Container, Table, Row, Col} from 'react-bootify';
 import {isArray} from 'yow/is';
+import { confirmAlert } from 'react-confirm-alert';
+//import 'react-confirm-alert/src/react-confirm-alert.css';
+
+require("./home.less");
+
 
 function dayDiff(d) {
     var dt1 = new Date(d);
@@ -61,6 +65,23 @@ module.exports = class Home extends React.Component {
             } else console.log(err);
         });
     }
+    
+	submit = (id) => {
+	    confirmAlert({
+	      title: 'SÄLJ',
+	      message: 'Säker på att du vill sälja aktien?',
+	      buttons: [
+	        {
+	          label: 'JA',
+	          onClick: () => this.deleteStock(id)
+	        },
+	        {
+	          label: 'AVBRYT',
+	          onClick: () => {}
+	        }
+	      ]
+	    })
+	}
 
     fetchStocks() {
         var self = this;
@@ -80,27 +101,6 @@ module.exports = class Home extends React.Component {
 
         var req = request(options, function(err, response, body) {
             if (!err) {
-
-                // MEG:s påhitt. Om inget finns i listan, lägg till en påhittad.
-                if (isArray(body) && body.length == 0) {
-                    var stock = {};
-                    stock.namn = 'Genererats när inga aktier fanns';
-                    stock.ticker = 'MEG';
-                    stock.senaste = 3.4;
-                    stock.kurs = 100;
-                    stock.sector = 'Olle';
-                    stock.sma200 = 23;
-                    stock.sma50 = 23;
-                    stock.utfall = 4;
-                    stock.stoplossProcent = 4;
-                    stock.stoplossKurs = 4;
-                    stock.antal = 10;
-                    stock.earningsDate = [1, 2, 3];
-    
-    
-                    body.push(stock);
-                }  
-
                 self.setState({stocks: body});
             } else {
                 self.setState({error: err});
@@ -193,7 +193,7 @@ module.exports = class Home extends React.Component {
                         {stock.larm == 1 ? (
                             <td>
                                 <center>
-                                    <span className='label label-danger'>Larm</span>
+                                    <span className='badge badge-danger'>Larm</span>
                                 </center>
                             </td>
                         ) : stock.flyger == 1 ? (
@@ -207,14 +207,14 @@ module.exports = class Home extends React.Component {
                         )}
                         <td>
                             <center>
-                                <Button size="sm" onClick={self.deleteStock.bind(self, stock.id)}>
-                                    Logout
+                                <Button size="sm" className="btn btn-secondary" onClick={self.submit.bind(self, stock.id)}>
+                                    Sell
                                 </Button>
                             </center>
                         </td>
                         <td>
                             <center>
-                                <Button size="sm" href={"#new-stock/?id=" + stock.id + "&senaste=" + stock.senaste}>
+                                <Button size="sm" className="btn btn-secondary" href={"#new-stock/?id=" + stock.id + "&senaste=" + stock.senaste}>
                                     Edit
                                 </Button>
                             </center>
@@ -232,7 +232,7 @@ module.exports = class Home extends React.Component {
                         ) : (
                             <td style={{textAlign: "right"}}>
                                 <span style={{color: "#b2b2b2"}}>
-                                    <small>-, {dayDiff(stock.köpt_datum)}d</small>
+                                    <small>-, {dayDiff(stock.köpt_datum)}d, ({stock.utdelning != null ? Number(stock.utdelning).toFixed(2) : "n/a"})</small>
                                 </span>
                             </td>
                         )}
@@ -241,6 +241,8 @@ module.exports = class Home extends React.Component {
                 );
             }
         });
+        
+//                                 <Button size="sm" className="btn btn-secondary" onClick={self.deleteStock.bind(self, stock.id)}>
 
         var rates = this.state.stocks.map(function(stock, index) {
             if (stock.antal == -1) {
@@ -334,7 +336,7 @@ module.exports = class Home extends React.Component {
                             Nytt köp
                         </Button>
                         <span>{' '}</span>
-                        <Button margin={{left:1, right:1}} color="info" size="lg" href="#meg">
+                        <Button margin={{left:1, right:1}} className="btn-warning" size="lg" href="#meg">
                             Kandidater
                         </Button>
                     </Container.Row>
