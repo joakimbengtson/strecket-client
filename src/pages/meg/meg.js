@@ -2,12 +2,13 @@ import React from 'react';
 import StockChartList from './stock-chart-list.js';
 import Request from 'yow/request';
 
-require('./meg.css');
+require('./meg.css'); 
 
 
 function pad(n) {
-    return (n < 10) ? ("0" + n) : n;
+    return (n < 10) ? ("0" + n) : n; 
 }
+
 
 
 function sweDate(theDate) {
