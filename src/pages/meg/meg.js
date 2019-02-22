@@ -38,7 +38,7 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 
 			// Räkna ut de två senaste datumen som har kurser och troligen inte är helg (dvs mer än 200 rader)
 	        //query.sql    = 'select distinct date from stockquotes order by date desc limit 2';
-	        query.sql = 'select distinct date from (SELECT COUNT(date) as c, date FROM stockquotes GROUP BY date HAVING c > 200) tradeDays order by date desc limit 2';
+	        query.sql = 'select distinct date from (SELECT COUNT(date) as c, date FROM stockquotes GROUP BY date HAVING c > 1000) tradeDays order by date desc limit 2';
 
 	        request.get('/mysql', {query:query}).then(response => {
 
@@ -58,12 +58,14 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	        var request = new Request('http://app-o.se:3012');
 	        var query = {};
 	        var spikes = [];
-
-	        query.sql    = 'SELECT a.symbol, a.volume, b.volume, a.close as lastClose, b.close as previousClose FROM stockquotes a INNER JOIN stockquotes b ON a.symbol = b.symbol WHERE a.date = ? AND b.date = ? AND a.volume > b.AV14*2 AND a.close > b.close AND a.close > a.SMA200 AND a.close*a.AV14 > 5000000 AND a.close > a.open';
+	        
+			// a.date = latest date with quotes
+	        query.sql    = 'SELECT a.symbol, a.volume, b.volume, a.close as lastClose, b.close as previousClose FROM stockquotes a INNER JOIN stockquotes b ON a.symbol = b.symbol WHERE a.date = ? AND b.date = ? AND a.volume > b.AV14*1.3 AND a.close > b.close AND a.close > a.SMA200 AND a.close*a.AV14 > 5000000 AND a.close > a.open';
 	        query.values = [this.state.dates[0], this.state.dates[1]];
 
 	        request.get('/mysql', {query:query}).then(response => {
 	            var tickers = response.body;
+	            console.log(tickers);
 	            tickers.forEach(ticker => {
 	                spikes.push(ticker.symbol);
 	            });
