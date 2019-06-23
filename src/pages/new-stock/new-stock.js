@@ -312,7 +312,9 @@ module.exports = class Home extends React.Component {
     render() {
         return (
             <div id="new_stock">
+
                 <Container>
+
                     <Form >
                         <Form.Group row>
                             <Form.Col sm={{offset:1}}>
