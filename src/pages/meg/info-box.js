@@ -81,13 +81,13 @@ module.exports = class InfoBox extends React.Component {
                                         <h3 className="text-white text-center">{"Utdelning: 0"}</h3>
                                     </td>
                                 )}
-                                {this.state.rawDump.defaultKeyStatistics.currentRatio >= 0 && this.state.rawDump.defaultKeyStatistics.currentRatio <= 1 ? (
+                                {this.state.rawDump.financialData.currentRatio >= 0 && this.state.rawDump.financialData.currentRatio <= 1 ? (
                                     <td className="table-success">
-                                        <h3 className="text-white text-center">{"Current ratio: " + this.state.rawDump.defaultKeyStatistics.currentRatio}</h3>
+                                        <h3 className="text-white text-center">{"Current ratio: " + this.state.rawDump.financialData.currentRatio}</h3>
                                     </td>
                                 ) : (
                                     <td className="table-danger">
-                                        <h3 className="text-white text-center">{"Current ratio:" + this.state.rawDump.defaultKeyStatistics.currentRatio}</h3>
+                                        <h3 className="text-white text-center">{"Current ratio:" + this.state.rawDump.financialData.currentRatio}</h3>
                                     </td>
                                 )}
                             </tr>
@@ -114,7 +114,7 @@ module.exports = class InfoBox extends React.Component {
                                         </h3>                                            
                                     </td>
                                 )}
-                                {this.state.rawDump.summaryDetail.fiftyTwoWeekHigh < this.state.rawDump.price.regularMarketPrice ? (
+                                {this.state.rawDump.summaryDetail.fiftyTwoWeekHigh <= this.state.rawDump.price.regularMarketPrice ? (
                                     <td className="table-success">
                                         <h3 className="text-white text-center">{"> 52 veckor"}
                                         </h3>

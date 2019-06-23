@@ -36,7 +36,7 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	        var query = {};
 	        var dates = [];
 
-			// Räkna ut de två senaste datumen som har kurser och troligen inte är helg (dvs mer än 200 rader)
+			// Räkna ut de två senaste datumen som har kurser och troligen inte är helg (dvs mer än 1000 rader)
 	        //query.sql    = 'select distinct date from stockquotes order by date desc limit 2';
 	        query.sql = 'select distinct date from (SELECT COUNT(date) as c, date FROM stockquotes GROUP BY date HAVING c > 1000) tradeDays order by date desc limit 2';
 
@@ -59,8 +59,12 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	        var query = {};
 	        var spikes = [];
 	        
-			// a.date = latest date with quotes
-	        query.sql    = 'SELECT a.symbol, a.volume, b.volume, a.close as lastClose, b.close as previousClose FROM stockquotes a INNER JOIN stockquotes b ON a.symbol = b.symbol WHERE a.date = ? AND b.date = ? AND a.volume > b.AV14*1.3 AND a.close > b.close AND a.close > a.SMA200 AND a.close*a.AV14 > 5000000 AND a.close > a.open';
+			// 30% över normal volym
+			// stängt över gårdagen
+			// över 51 week high
+			// över sma200
+	        query.sql    = 'SELECT a.symbol, a.volume, b.volume, a.close as lastClose, b.close as previousClose FROM stockquotes a INNER JOIN stockquotes b ON a.symbol = b.symbol INNER JOIN stocks ON stocks.symbol = a.symbol WHERE a.date = ? AND b.date = ? AND a.volume > b.AV14*1.3 AND a.close > b.close AND a.close > a.SMA200 AND a.close*a.AV14 > 5000000 AND a.close > a.open AND a.close >= stocks.wh51';
+
 	        query.values = [this.state.dates[0], this.state.dates[1]];
 
 	        request.get('/mysql', {query:query}).then(response => {

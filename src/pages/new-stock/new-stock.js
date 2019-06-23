@@ -1,7 +1,7 @@
 import React from "react";
 import Request from "rest-request";
 
-import {Form, Button, Container, Row, Col} from 'react-bootify';
+import {Form, Button, Container, Row, Col, Dropdown} from 'react-bootify';
 
 require("./new-stock.less");
 
@@ -52,7 +52,7 @@ module.exports = class Home extends React.Component {
 
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleOptionChange = this.handleOptionChange.bind(this);
-        this.state = {helptext: "", selectedOption: "option1", selectedCheck: false};
+        this.state = {helptext: "", selectedOption: "option1", selectedCheck: false, sourceID: null, sources: [{name:"Twitter", id:1}, {name:"Min SQL", id:2}]};
     }
 
     handleCheckChange(changeEvent) {
@@ -280,6 +280,18 @@ module.exports = class Home extends React.Component {
             });
         }
     }
+    
+    renderSources() {
+		var self = this;
+
+		var items = this.state.sources.map(function(source) {
+			return (
+                <Dropdown.Item>
+                    {source.name}
+                </Dropdown.Item>
+            );
+        }); 
+    }
 
     render() {
         return (
@@ -338,7 +350,20 @@ module.exports = class Home extends React.Component {
                             </Form.Col>
                         </Form.Group>
 
-
+                        <Form.Group row>
+					        <Dropdown placement='bottom-start'>
+					            <Dropdown.Target>
+					                <Button outline color='primary'>
+					                    Källa
+					                </Button>
+					            </Dropdown.Target>
+					            
+					            <Dropdown.Menu>
+									{this.renderSources()}
+								</Dropdown.Menu>
+								
+							</Dropdown>
+                        </Form.Group>
 
                         <Form.Group row>
                             <Form.Col sm={1} textAlign='right' >

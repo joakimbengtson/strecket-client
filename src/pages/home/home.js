@@ -1,10 +1,26 @@
 import React from "react";
 import {Popover, Button, Container, Table, Row, Col} from 'react-bootify';
 import {isArray} from 'yow/is';
-import { confirmAlert } from 'react-confirm-alert';
-//import 'react-confirm-alert/src/react-confirm-alert.css';
+import {confirmAlert} from 'react-confirm-alert';
+import {Sparklines, SparklinesLine, SparklinesReferenceLine, SparklinesBars} from 'react-sparklines';
+import {BarChart, Bar, Tooltip} from 'recharts';
+import PropTypes from 'prop-types';
+
 
 require("./home.less");
+
+const RenderBar = (props) => {
+  const { fill, x, y, width, height } = props;
+  return <rect x={x} y={height>0?y:y+height} width={width} height={Math.abs(height)} stroke="none" fill={height>0?fill:"lightcoral"}/>;
+};
+
+RenderBar.propTypes = {
+  fill: PropTypes.string,
+  x: PropTypes.number, 
+  y: PropTypes.number,
+  width: PropTypes.number,
+  height: PropTypes.number,
+};
 
 
 function dayDiff(d) {
@@ -155,7 +171,7 @@ module.exports = class Home extends React.Component {
                                 <Popover.Target>
                                     <span >{stock.ticker}</span>
                                 </Popover.Target>
-                                <Popover.Header>
+                                <Popover.Header> 
                                     {stock.namn}
                                 </Popover.Header>
                                 <Popover.Body>
@@ -170,6 +186,11 @@ module.exports = class Home extends React.Component {
                         <td style={{textAlign: "right"}}>
                             {parseFloat(stock.utfall).toFixed(2)}
                             <span style={{color: "#b2b2b2"}}> ({parseFloat((1 - stock.kurs / stock.maxkurs) * 100).toFixed(2)})</span>
+                        </td>
+                        <td>
+							<BarChart width={130} height={30} margin={{top: 0, right: 0, left: 0, bottom: 0}} barGap={1} data={stock.spyProgress}>
+								<Bar dataKey="value" fill='mediumseagreen' shape={<RenderBar/>}/>
+							</BarChart>
                         </td>
                         {stock.sma50 != -1 ? (
                             <td style={self.getColor(parseFloat((1 - stock.sma50 / stock.senaste) * 100).toFixed(2))}>{}</td>
@@ -196,14 +217,9 @@ module.exports = class Home extends React.Component {
                                     <span className='badge badge-danger'>Larm</span>
                                 </center>
                             </td>
-                        ) : stock.flyger == 1 ? (
-                            <td>
-                                <center>
-                                    <span className='label label-info'>Larm</span>
-                                </center>
-                            </td>
                         ) : (
-                            <td />
+	                        <td>
+                            </td>
                         )}
                         <td>
                             <center>
@@ -236,11 +252,17 @@ module.exports = class Home extends React.Component {
                                 </span>
                             </td>
                         )}
-                        <td>{getSweDate(stock.earningsDate[0])}</td>
+
+                        {dayDiff(stock.earningsDate[0]) < 5 ? (
+							<td style={{backgroundColor: "red"}}>{getSweDate(stock.earningsDate[0])}</td>
+                        ) : (
+							<td>{getSweDate(stock.earningsDate[0])}</td>
+                        )}
+                        
                     </tr>
                 );
             }
-        });
+        }); 
         
 //                                 <Button size="sm" className="btn btn-secondary" onClick={self.deleteStock.bind(self, stock.id)}>
 
@@ -250,7 +272,7 @@ module.exports = class Home extends React.Component {
                     <tr key={index}>
                         <td>{stock.namn}</td>
                         <td style={{textAlign: "right"}}>{parseFloat(stock.senaste).toFixed(2)}</td>
-                        <td style={self.getColor(15)}>{}</td>
+				<td style={{textAlign: "center"}}><Sparklines data={stock.quotes} width={130} height={25} svgWidth={130} svgHeight={30} margin={0}><SparklinesLine color="LightSkyBlue" /></Sparklines></td>
                         <td style={self.getColor(parseFloat((1 - stock.sma50 / stock.senaste) * 100).toFixed(2))}>{}</td>
                         <td style={self.getColor(parseFloat((1 - stock.sma200 / stock.senaste) * 100).toFixed(2))}>{}</td>
                     </tr>
@@ -285,6 +307,7 @@ module.exports = class Home extends React.Component {
                             <th>Ticker</th>
                             <th style={{textAlign: "right"}}>Kurs</th>
                             <th style={{textAlign: "center"}}>%</th>
+                            <th style={{textAlign: "center"}}>vs SPY</th>
                             <th style={{textAlign: "center"}}>ma50 </th>
                             <th style={{textAlign: "center"}}>ma200</th>
                             <th style={{textAlign: "right"}}>S/L</th>
@@ -306,7 +329,7 @@ module.exports = class Home extends React.Component {
                         <tr>
                             <th>Valuta</th>
                             <th style={{textAlign: "right"}}>Kurs</th>
-                            <th style={{textAlign: "center"}}>ema8</th>
+                            <th style={{textAlign: "center"}}>Graf</th>
                             <th style={{textAlign: "center"}}>ma50 </th>
                             <th style={{textAlign: "center"}}>ma200</th>
                         </tr>
