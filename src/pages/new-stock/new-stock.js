@@ -280,7 +280,7 @@ module.exports = class Home extends React.Component {
             });
         }
     }
-    
+     
     renderSources() {
 		var self = this;
 
