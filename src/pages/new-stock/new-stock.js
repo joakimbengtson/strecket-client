@@ -53,7 +53,7 @@ module.exports = class Home extends React.Component {
 
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleOptionChange = this.handleOptionChange.bind(this);
-        this.state = {helptext: "", selectedOption: "option1", selectedCheck: false, sourceID: null, sources: [{name:"Twitter", id:1}, {name:"Min SQL", id:2}]};
+        this.state = {helptext: "", text: "Testing", selectedOption: "option1", selectedCheck: false, sourceID: null, sources: [{name:"Twitter", id:1}, {name:"Min SQL", id:2}]};
     }
 
     handleCheckChange(changeEvent) {
@@ -281,17 +281,24 @@ module.exports = class Home extends React.Component {
             });
         }
     }
-     
+    
+    setID(source) {
+	    this.setState({sourceID:source.id});
+	    this.setState({text:source.name});
+    }
+    
     renderSources() {
 		var self = this;
 
-		var items = this.state.sources.map(function(source) {
+		var items = this.state.sources.map(function(source) {			
 			return (
-                <Dropdown.Item>
+                <Dropdown.Item key={source.id} onClick={self.setID.bind(self, source)}>
                     {source.name}
                 </Dropdown.Item>
             );
         }); 
+        
+        return items;
     }
 
     render() {
@@ -362,6 +369,10 @@ module.exports = class Home extends React.Component {
 					            <Dropdown.Menu>
 									{this.renderSources()}
 								</Dropdown.Menu>
+								
+			                    <Form.Label inline>
+			                        {this.state.text}
+			                    </Form.Label>								
 								
 							</Dropdown>
                         </Form.Group>
