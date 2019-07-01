@@ -39,6 +39,33 @@ function getSweDate(UNIX_timestamp) {
     return time;
 }
 
+
+function SourceDrop(props) {
+	const sources = props.sources;
+
+	const listItems = sources.map((source) =>
+	    <Dropdown.Item key={source.id.toString()}>
+	      {source.name}
+	    </Dropdown.Item>
+	);
+
+	return (
+	    <Dropdown placement='bottom-start'>
+	        <Dropdown.Target>
+	            <Button outline color='primary'>
+	                Källa
+	            </Button>
+	        </Dropdown.Target>
+	        
+	        <Dropdown.Menu>
+				{listItems}
+			</Dropdown.Menu>
+			
+		</Dropdown>
+	)
+}
+ 
+
 module.exports = class Home extends React.Component {
     constructor(props) {
         super(props);
@@ -280,6 +307,7 @@ module.exports = class Home extends React.Component {
             });
         }
     }
+<<<<<<< HEAD
      
     renderSources() {
 		var self = this;
@@ -292,11 +320,16 @@ module.exports = class Home extends React.Component {
             );
         }); 
     }
+=======
+    
+>>>>>>> 69b6d308907fe8808062cb3d91ee627ba84d4d78
 
     render() {
         return (
             <div id="new_stock">
+
                 <Container>
+
                     <Form >
                         <Form.Group row>
                             <Form.Col sm={{offset:1}}>
@@ -329,7 +362,7 @@ module.exports = class Home extends React.Component {
                         </Form.Group>
 
                         <Form.Group row>
-                            <Form.Col sm={1} textAlign='right' >
+                            <Form.Col sm={1} textAlign='right' > 
                                 <Form.Label inline for='price' textColor='muted'>
                                     <small>Kurs</small>
                                 </Form.Label>
@@ -349,20 +382,11 @@ module.exports = class Home extends React.Component {
                                 <Form.Input padding={{bottom:1}} type="text" ref="stockcount" placeholder="Antal aktier" />
                             </Form.Col>
                         </Form.Group>
-
+                        
                         <Form.Group row>
-					        <Dropdown placement='bottom-start'>
-					            <Dropdown.Target>
-					                <Button outline color='primary'>
-					                    Källa
-					                </Button>
-					            </Dropdown.Target>
-					            
-					            <Dropdown.Menu>
-									{this.renderSources()}
-								</Dropdown.Menu>
-								
-							</Dropdown>
+                        	<Form.Col sm={12}> 
+	                        	<SourceDrop sources = {this.state.sources}/>
+	                        </Form.Col>
                         </Form.Group>
 
                         <Form.Group row>
