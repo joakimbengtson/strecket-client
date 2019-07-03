@@ -27,7 +27,7 @@ function pad(n) {
 }
 
 function getSweDate(UNIX_timestamp) {
-    var a = new Date(UNIX_timestamp * 1000);
+    var a = new Date(UNIX_timestamp * 1000); 
     var year = a.getFullYear();
     var month = a.getMonth() + 1;
     var date = a.getDate();
@@ -53,7 +53,7 @@ module.exports = class Home extends React.Component {
 
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleOptionChange = this.handleOptionChange.bind(this);
-        this.state = {helptext: "", text: "Testing", selectedOption: "option1", selectedCheck: false, sourceID: null, sources: [{name:"Twitter", id:1}, {name:"Min SQL", id:2}]};
+        this.state = {helptext: "", text: "", selectedOption: "option1", selectedCheck: false, sourceID: null, sources: [{name:"Twitter", id:1}, {name:"Min SQL", id:2}]};
     }
 
     handleCheckChange(changeEvent) {
@@ -283,8 +283,7 @@ module.exports = class Home extends React.Component {
     }
     
     setID(source) {
-	    this.setState({sourceID:source.id});
-	    this.setState({text:source.name});
+	    this.setState({text:source.name, sourceID:source.id});
     }
     
     renderSources() {
@@ -359,22 +358,24 @@ module.exports = class Home extends React.Component {
                         </Form.Group>
 
                         <Form.Group row>
-					        <Dropdown placement='bottom-start'>
-					            <Dropdown.Target>
-					                <Button outline color='primary'>
-					                    Källa
-					                </Button>
-					            </Dropdown.Target>
-					            
-					            <Dropdown.Menu>
-									{this.renderSources()}
-								</Dropdown.Menu>
-								
-			                    <Form.Label inline>
+
+						        <Dropdown placement='bottom-start'>
+						            <Dropdown.Target>
+						                <Form.Label>
+						                    Källa
+						                </Form.Label>
+						            </Dropdown.Target>
+						            
+						            <Dropdown.Menu>
+										{this.renderSources()}
+									</Dropdown.Menu>
+									
+								</Dropdown>
+	
+			                    <Form.Label float='right' margin={{left:2}} inline>
 			                        {this.state.text}
-			                    </Form.Label>								
-								
-							</Dropdown>
+			                    </Form.Label>	
+			                    															
                         </Form.Group>
 
                         <Form.Group row>
