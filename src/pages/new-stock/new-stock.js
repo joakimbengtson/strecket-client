@@ -53,7 +53,7 @@ module.exports = class Home extends React.Component {
 
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleOptionChange = this.handleOptionChange.bind(this);
-        this.state = {helptext: "", text: "", selectedOption: "option1", selectedCheck: false, sourceID: null, sources: [{name:"Twitter", id:1}, {name:"Min SQL", id:2}]};
+        this.state = {helptext: "", title: "Ange källa", selectedOption: "option1", selectedCheck: false, sourceID: null, sources: [{name:"Twitter", id:1}, {name:"Min SQL", id:2}]};
     }
 
     handleCheckChange(changeEvent) {
@@ -283,7 +283,7 @@ module.exports = class Home extends React.Component {
     }
     
     setID(source) {
-	    this.setState({text:source.name, sourceID:source.id});
+	    this.setState({title:source.name, sourceID:source.id});
     }
     
     renderSources() {
@@ -315,7 +315,7 @@ module.exports = class Home extends React.Component {
 
                         <Form.Group row>
                             <Form.Col sm={1} textAlign='right' >
-                                <Form.Label inline for='name' textColor='muted'>
+                                <Form.Label inline textColor='muted'>
                                     <small>Ticker</small>
                                 </Form.Label>
                             </Form.Col>
@@ -326,7 +326,7 @@ module.exports = class Home extends React.Component {
                         
                         <Form.Group row>
                             <Form.Col sm={1} textAlign='right' >
-                                <Form.Label inline for='name' textColor='muted'>
+                                <Form.Label inline textColor='muted'>
                                     <small>Namn</small>
                                 </Form.Label>
                             </Form.Col>
@@ -337,7 +337,7 @@ module.exports = class Home extends React.Component {
 
                         <Form.Group row>
                             <Form.Col sm={1} textAlign='right' >
-                                <Form.Label inline for='price' textColor='muted'>
+                                <Form.Label inline textColor='muted'>
                                     <small>Kurs</small>
                                 </Form.Label>
                             </Form.Col>
@@ -348,7 +348,7 @@ module.exports = class Home extends React.Component {
 
                         <Form.Group row>
                             <Form.Col sm={1} textAlign='right' >
-                                <Form.Label inline for='name' textColor='muted'>
+                                <Form.Label inline textColor='muted'>
                                     <small>Antal</small>
                                 </Form.Label>
                             </Form.Col>
@@ -358,29 +358,32 @@ module.exports = class Home extends React.Component {
                         </Form.Group>
 
                         <Form.Group row>
-
-						        <Dropdown placement='bottom-start'>
-						            <Dropdown.Target>
-						                <Form.Label>
-						                    Källa
-						                </Form.Label>
-						            </Dropdown.Target>
-						            
-						            <Dropdown.Menu>
+                        
+	                        <Form.Col sm={1} textAlign='right' >
+	                            <Form.Label inline textColor='muted'>
+	                                <small>
+	                                    Källa
+	                                </small>
+	                            </Form.Label>
+	                        </Form.Col>
+	                        <Form.Col sm={11}>
+	                            <Dropdown placement='bottom-start'>
+	                                <Dropdown.Target>
+	                                    <Button outline color='secondary'>
+	                                        {this.state.title == undefined ? 'Välj källa' : this.state.title}
+	                                    </Button>
+	                                </Dropdown.Target>
+	                                <Dropdown.Menu >
 										{this.renderSources()}
-									</Dropdown.Menu>
-									
-								</Dropdown>
-	
-			                    <Form.Label float='right' margin={{left:2}} inline>
-			                        {this.state.text}
-			                    </Form.Label>	
-			                    															
+	                                </Dropdown.Menu>
+	                            </Dropdown>
+	                        </Form.Col>                        
+
                         </Form.Group>
 
                         <Form.Group row>
                             <Form.Col sm={1} textAlign='right' >
-                                <Form.Label  for='name' inline textColor='muted'>
+                                <Form.Label inline textColor='muted'>
                                     <small>Stop loss</small>
                                 </Form.Label>
                             </Form.Col>
