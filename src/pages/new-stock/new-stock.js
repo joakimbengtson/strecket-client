@@ -53,7 +53,8 @@ module.exports = class Home extends React.Component {
 
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleOptionChange = this.handleOptionChange.bind(this);
-        this.state = {helptext: "", title: "Ange källa", selectedOption: "option1", selectedCheck: false, sourceID: null, sources: [{name:"Twitter", id:1}, {name:"Min SQL", id:2}]};
+        
+        this.state = {helptext: "", title: "Ange källa", selectedOption: "option1", selectedCheck: false, sourceID: null, sources: []};
     }
 
     handleCheckChange(changeEvent) {
@@ -69,8 +70,90 @@ module.exports = class Home extends React.Component {
         else ReactDOM.findDOMNode(this.refs.stoplossPercentage).focus();
     }
 
-    // Virtuell function som anropas då sidan visas
-    componentDidMount() {
+	componentDidMount() {
+        var self = this;
+        var stoplossOption = "option1";
+        var helpStr = "";
+        var request = require("client-request");
+
+        var options = {
+            uri: "http://app-o.se:3000/sources",
+            method: "GET",
+            json: true,
+            headers: {
+                "content-type": "application/json"
+            }
+        };
+
+        var req = request(options, function(err, response, body) {
+	    	if (!err) {
+		    	var sources = [];
+		    	var i;
+console.log(body);
+		    	for (i = 0; i < body.length; i++) {
+			    	sources.push(body[i]);
+				}
+				self.setState(sources: sources);
+
+		        // Om vi har ett ID, hämta aktien
+		        if (_stockID != undefined) {
+		
+		            options = {
+		                uri: "http://app-o.se:3000/stock/" + _stockID,
+		                method: "GET",
+		                json: true,
+		                headers: {
+		                    "content-type": "application/json"
+		                }
+		            };
+		
+		            var req = request(options, function(err, response, body) {
+		                if (!err) {
+		                    ReactDOM.findDOMNode(self.refs.stockticker).value = body[0].ticker;
+		                    ReactDOM.findDOMNode(self.refs.stockticker).disabled = true;
+		
+		                    ReactDOM.findDOMNode(self.refs.stockname).value = body[0].namn;
+		                    ReactDOM.findDOMNode(self.refs.stockname).focus();
+		
+		                    ReactDOM.findDOMNode(self.refs.stockprice).value = body[0].kurs;
+		                    ReactDOM.findDOMNode(self.refs.stockcount).value = body[0].antal;
+		
+		                    if (body[0].stoplossTyp == 1) {
+		                        ReactDOM.findDOMNode(self.refs.ATRMultiple).value = body[0].ATRMultipel;
+		                        stoplossOption = "option1";
+		                    } else if (body[0].stoplossTyp == 2) {
+		                        ReactDOM.findDOMNode(self.refs.stoplossQuote).value = body[0].stoplossKurs;
+		                        stoplossOption = "option2";
+		                    } else {
+		                        ReactDOM.findDOMNode(self.refs.stoplossPercentage).value = body[0].stoplossProcent * 100;
+		                        stoplossOption = "option3";
+		                    }
+		
+		                    _percentile10 = body[0].percentil10;
+		
+		                    helpStr = "(ATR = " + body[0].ATR.toFixed(2) + " ATR % = " + ((body[0].ATR / _stockQuote) * 100).toFixed(2) + "%)";
+		
+		                    self.setState({helptext: helpStr, selectedOption: stoplossOption, selectedCheck: _percentile10});
+		                } 
+		                else
+		                	console.log(err);
+	            	});
+		        } else {
+		            // Sätt fokus på ticker
+		            ReactDOM.findDOMNode(self.refs.stockticker).focus();
+		            self.setState({helptext: helpStr, selectedOption: stoplossOption, selectedCheck: false});
+		        }
+		
+		        _inputfield = ReactDOM.findDOMNode(self.refs.stockname);
+            } 
+            else
+            	console.log(err);
+	   	});
+	   	
+    }
+
+/* OLD
+	componentDidMount() {
         var self = this;
         var stoplossOption = "option1";
         var helpStr = "";
@@ -115,7 +198,9 @@ module.exports = class Home extends React.Component {
                     helpStr = "(ATR = " + body[0].ATR.toFixed(2) + " ATR % = " + ((body[0].ATR / _stockQuote) * 100).toFixed(2) + "%)";
 
                     self.setState({helptext: helpStr, selectedOption: stoplossOption, selectedCheck: _percentile10});
-                } else console.log(err);
+                } 
+                else
+                	console.log(err);
             });
         } else {
             // Sätt fokus på ticker
@@ -125,6 +210,7 @@ module.exports = class Home extends React.Component {
 
         _inputfield = ReactDOM.findDOMNode(this.refs.stockname);
     }
+*/
 
     onSave() {
         var rec = {};
@@ -292,7 +378,7 @@ module.exports = class Home extends React.Component {
 		var items = this.state.sources.map(function(source) {			
 			return (
                 <Dropdown.Item key={source.id} onClick={self.setID.bind(self, source)}>
-                    {source.name}
+                    {source.text}
                 </Dropdown.Item>
             );
         }); 
