@@ -74,6 +74,7 @@ module.exports = class Home extends React.Component {
         var self = this;
         var stoplossOption = "option1";
         var helpStr = "";
+        var sourceText;
         var request = require("client-request");
 
         var options = {
@@ -89,11 +90,11 @@ module.exports = class Home extends React.Component {
 	    	if (!err) {
 		    	var sources = [];
 		    	var i;
-console.log(body);
+
 		    	for (i = 0; i < body.length; i++) {
 			    	sources.push(body[i]);
 				}
-				self.setState(sources: sources);
+				self.setState({sources: sources});
 
 		        // Om vi har ett ID, hämta aktien
 		        if (_stockID != undefined) {
@@ -132,8 +133,8 @@ console.log(body);
 		                    _percentile10 = body[0].percentil10;
 		
 		                    helpStr = "(ATR = " + body[0].ATR.toFixed(2) + " ATR % = " + ((body[0].ATR / _stockQuote) * 100).toFixed(2) + "%)";
-		
-		                    self.setState({helptext: helpStr, selectedOption: stoplossOption, selectedCheck: _percentile10});
+							sourceText = sources.find(source => source.id === body[0].källa).text;
+		                    self.setState({helptext: helpStr, selectedOption: stoplossOption, selectedCheck: _percentile10, sourceID: body[0].källa, title: sourceText});
 		                } 
 		                else
 		                	console.log(err);
@@ -237,6 +238,9 @@ console.log(body);
             ReactDOM.findDOMNode(this.refs.stockcount).focus();
             return;
         }
+        
+        if (!isNumeric(this.state.sourceID))
+        	return;
 
         if (this.state.selectedOption == "option1") {
             if (!(ReactDOM.findDOMNode(this.refs.ATRMultiple).value.length > 0 && isNumeric(ReactDOM.findDOMNode(this.refs.ATRMultiple).value))) {
@@ -273,6 +277,7 @@ console.log(body);
         rec.namn = ReactDOM.findDOMNode(this.refs.stockname).value;
         rec.kurs = ReactDOM.findDOMNode(this.refs.stockprice).value;
         rec.antal = ReactDOM.findDOMNode(this.refs.stockcount).value;
+        rec.källa = this.state.sourceID;
 
         if (this.state.selectedOption == "option1") {
             rec.stoplossTyp = _stoplossType.StoplossTypeATR;
@@ -369,7 +374,7 @@ console.log(body);
     }
     
     setID(source) {
-	    this.setState({title:source.name, sourceID:source.id});
+	    this.setState({title:source.text, sourceID:source.id});
     }
     
     renderSources() {

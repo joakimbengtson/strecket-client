@@ -38,7 +38,7 @@
     "moment": "^2.14.1",
     "node-lessify": "^0.1.4",
     "react": "^15.6.2",
-    "react-bootify": "0.0.127",
+    "react-bootify": "0.0.133",
     "react-confirm-alert": "^2.0.6",
     "react-dom": "^15.3.1",
     "react-highcharts": "^16.0.2",

@@ -1,7 +1,6 @@
 import React from "react";
 import {Popover, Button, Container, Table, Row, Col} from 'react-bootify';
 import {isArray} from 'yow/is';
-import {confirmAlert} from 'react-confirm-alert';
 import {Sparklines, SparklinesLine, SparklinesReferenceLine, SparklinesBars} from 'react-sparklines';
 import {BarChart, Bar, Tooltip} from 'recharts';
 import PropTypes from 'prop-types';
@@ -57,47 +56,6 @@ module.exports = class Home extends React.Component {
     componentDidMount() {
         this.fetchStocks();
     }
-
-    deleteStock(id) {
-        var self = this;
-
-        console.log("Raderar aktie " + id);
-
-        var request = require("client-request");
-
-        var options = {
-            uri: "http://app-o.se:3000/stocks/" + id,
-            method: "DELETE",
-            timeout: 3000,
-            json: true,
-            headers: {
-                "content-type": "application/json" // setting headers is up to *you*
-            }
-        };
-
-        var req = request(options, function(err, response, body) {
-            if (!err) {
-                self.fetchStocks();
-            } else console.log(err);
-        });
-    }
-    
-	submit = (id) => {
-	    confirmAlert({
-	      title: 'SÄLJ',
-	      message: 'Säker på att du vill sälja aktien?',
-	      buttons: [
-	        {
-	          label: 'JA',
-	          onClick: () => this.deleteStock(id)
-	        },
-	        {
-	          label: 'AVBRYT',
-	          onClick: () => {}
-	        }
-	      ]
-	    })
-	}
 
     fetchStocks() {
         var self = this;
@@ -190,6 +148,7 @@ module.exports = class Home extends React.Component {
                         <td>
 							<BarChart width={130} height={30} margin={{top: 0, right: 0, left: 0, bottom: 0}} barGap={1} data={stock.spyProgress}>
 								<Bar dataKey="value" fill='mediumseagreen' shape={<RenderBar/>}/>
+								<Tooltip labelFormatter={(index) => (stock.spyProgress[index].name).slice(0, 10)} formatter={(value) => value.toFixed(2)+'%'}/>
 							</BarChart>
                         </td>
                         {stock.sma50 != -1 ? (
@@ -223,15 +182,15 @@ module.exports = class Home extends React.Component {
                         )}
                         <td>
                             <center>
-                                <Button size="sm" className="btn btn-secondary" onClick={self.submit.bind(self, stock.id)}>
-                                    Sell
+                                <Button size="sm" className="btn btn-secondary" href={"#sell-stock/?id=" + stock.id + "&senaste=" + stock.senaste + "&antal=" + stock.antal}>
+                                    Sälj
                                 </Button>
                             </center>
                         </td>
                         <td>
                             <center>
                                 <Button size="sm" className="btn btn-secondary" href={"#new-stock/?id=" + stock.id + "&senaste=" + stock.senaste}>
-                                    Edit
+                                    Ändra
                                 </Button>
                             </center>
                         </td>
@@ -306,7 +265,7 @@ module.exports = class Home extends React.Component {
                         <tr>
                             <th>Ticker</th>
                             <th style={{textAlign: "right"}}>Kurs</th>
-                            <th style={{textAlign: "center"}}>%</th>
+                            <th style={{textAlign: "center"}}>% (max)</th>
                             <th style={{textAlign: "center"}}>vs SPY</th>
                             <th style={{textAlign: "center"}}>ma50 </th>
                             <th style={{textAlign: "center"}}>ma200</th>
@@ -314,7 +273,7 @@ module.exports = class Home extends React.Component {
                             <th />
                             <th />
                             <th />
-                            <th style={{textAlign: "right"}}>yY</th>
+                            <th style={{textAlign: "right"}}>p/y, days, (yield)</th>
                             <th>Rapport</th>
                         </tr>
                     </thead>
@@ -330,7 +289,7 @@ module.exports = class Home extends React.Component {
                             <th>Valuta</th>
                             <th style={{textAlign: "right"}}>Kurs</th>
                             <th style={{textAlign: "center"}}>Graf</th>
-                            <th style={{textAlign: "center"}}>ma50 </th>
+                            <th style={{textAlign: "center"}}>ma50</th>
                             <th style={{textAlign: "center"}}>ma200</th>
                         </tr>
                     </thead>
@@ -362,6 +321,11 @@ module.exports = class Home extends React.Component {
                         <Button margin={{left:1, right:1}} className="btn-warning" size="lg" href="#meg">
                             Kandidater
                         </Button>
+                        <span>{' '}</span>
+                        <Button margin={{left:1, right:1}} className="btn-warning" size="lg" href="#evaluate">
+                            Utvärdera
+                        </Button>
+                        
                     </Container.Row>
                 </Container>
             </div>
