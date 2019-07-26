@@ -21,11 +21,11 @@ module.exports = class StockChart extends React.Component {
         // ready = false, dvs vi har inte läst in data än...
         this.state.ready = false;
 
-        // config = tomt än så länge.
         this.state.config = {};
 
         // Hämta parametrar från anropet <StockChart symbol='X'/>
         this.state.symbol = this.props.symbol;
+        this.state.sectors = this.props.sectors;
     }
 
     // Anropas efter konponenten är skapad och finns i DOM:en
@@ -42,7 +42,7 @@ module.exports = class StockChart extends React.Component {
         var then = new Date();
 		var oneYearAgo = new Date();
 
-        // Då är två år tillbaka i tiden
+        // Då är två år tillbaka i tiden, vi hämtar 2 år men visar 1, pga SMA200 visas inte korrekt annars
         then.setFullYear(now.getFullYear() - 2);
         
         // Håll koll på ett år tillbaks, vi visar bara ett år i grafen
@@ -65,7 +65,6 @@ module.exports = class StockChart extends React.Component {
         // Hämta data från Munch via ett '/mysql' anrop...
         request.get('/mysql', {query:query}).then(response => {
             var stocks = response.body;
-
 
             // Lägg till i vektorn 'data' på det format som Highcharts vill ha det
             stocks.forEach(stock => {
@@ -209,8 +208,6 @@ module.exports = class StockChart extends React.Component {
 		            }
 		            
 	        	}
-
-
 	        ]
 
             };
@@ -227,10 +224,8 @@ module.exports = class StockChart extends React.Component {
     }
 
     render() {
-        // Om allt är klart så...
         if (this.state.ready) {
 
-            // Lite styling kring grafen
             var style = {};
             style.border = '1px solid rgba(0, 0, 0, 0.1)';
             style.marginLeft = '10em';
@@ -238,11 +233,10 @@ module.exports = class StockChart extends React.Component {
             style.marginTop = '5em';
             style.marginBottom = '5em';
 
-            // Returnera grafen med angiven stil och genererad data...
             return (
                 <div style = {style}>
                     <ReactHighstock config={this.state.config} ref="chart"></ReactHighstock>
-                    <InfoBox symbol={this.state.symbol}></InfoBox>
+                    <InfoBox symbol={this.state.symbol} sectors={this.state.sectors}></InfoBox>
 
                 </div>
             );

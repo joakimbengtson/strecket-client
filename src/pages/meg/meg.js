@@ -4,11 +4,12 @@ import Request from 'yow/request';
 
 require('./meg.css'); 
 
+var _descr1;
+
 
 function pad(n) {
     return (n < 10) ? ("0" + n) : n; 
 }
-
 
 
 function sweDate(theDate) {
@@ -27,8 +28,31 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {spikes:null, dates:null, error: null};
+		this.state = {spikes:null, dates:null, error: null, sectors:[]};
 	};
+
+
+	getSectors() {
+        return new Promise((resolve, reject) => {
+	        var request = new Request('http://app-o.se:3012');
+	        var query = {};
+	        var sectors = [];
+	        
+	        query.sql = 'SELECT stocks.industry, sum(b.close>a.close)/count(b.close) as perc FROM stockquotes a INNER JOIN stockquotes b ON a.symbol = b.symbol INNER JOIN stocks ON stocks.symbol = a.symbol where a.date=? and b.date=? and sector <> "" and industry <> "" group by sector, industry order by perc desc';
+
+	        query.values = [this.state.dates[0], this.state.dates[1]];
+
+	        request.get('/mysql', {query:query}).then(response => {
+	            sectors = response.body;
+                resolve(sectors);
+	        })
+	        .catch(error => {
+                reject(error);
+	        })
+        });
+		
+	}
+
 
 	getDates() {
         return new Promise((resolve, reject) => {
@@ -37,7 +61,6 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	        var dates = [];
 
 			// Räkna ut de två senaste datumen som har kurser och troligen inte är helg (dvs mer än 1000 rader)
-	        //query.sql    = 'select distinct date from stockquotes order by date desc limit 2';
 	        query.sql = 'select distinct date from (SELECT COUNT(date) as c, date FROM stockquotes GROUP BY date HAVING c > 1000) tradeDays order by date desc limit 2';
 
 	        request.get('/mysql', {query:query}).then(response => {
@@ -59,17 +82,13 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	        var query = {};
 	        var spikes = [];
 	        
-			// 30% över normal volym
-			// stängt över gårdagen
-			// över 51 week high
-			// över sma200
+			_descr1 = "30% över normal volym, stängt över gårdagen, över 51 week high, över sma200";
 	        query.sql    = 'SELECT a.symbol, a.volume, b.volume, a.close as lastClose, b.close as previousClose FROM stockquotes a INNER JOIN stockquotes b ON a.symbol = b.symbol INNER JOIN stocks ON stocks.symbol = a.symbol WHERE a.date = ? AND b.date = ? AND a.volume > b.AV14*1.3 AND a.close > b.close AND a.close > a.SMA200 AND a.close*a.AV14 > 5000000 AND a.close > a.open AND a.close >= stocks.wh51';
 
 	        query.values = [this.state.dates[0], this.state.dates[1]];
 
 	        request.get('/mysql', {query:query}).then(response => {
 	            var tickers = response.body;
-	            console.log(tickers);
 	            tickers.forEach(ticker => {
 	                spikes.push(ticker.symbol);
 	            });
@@ -83,13 +102,21 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 
 	}
 
+
 	componentDidMount() {
 
 		this.getDates().then(dates => {
 	        this.setState({dates:dates});
-	        this.getSpikes().then(spikes => {
-	            this.setState({spikes:spikes});
-	        })
+			this.getSectors().then(sectors => {
+		        this.setState({sectors:sectors});
+		        this.getSpikes().then(spikes => {
+		            this.setState({spikes:spikes});
+		        })
+		        .catch(error => {
+		            console.log(error);
+		            this.setState({error:error});
+		        });
+		    })
 	        .catch(error => {
 	            console.log(error);
 	            this.setState({error:error});
@@ -102,12 +129,14 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 
     }
 
+
     render() {
         if (this.state.spikes) {
 	        return (
 		        <div>
 		        <h1 className="text-center">{this.state.dates[1] + " - " + this.state.dates[0] + " (" + this.state.spikes.length + " st)"}</h1>
-                <StockChartList symbols={this.state.spikes}/>
+		        <h4 className="text-center">({_descr1})</h4>
+                <StockChartList symbols={this.state.spikes} sectors={this.state.sectors}/>
                 </div>
 	        );
 	    }

@@ -4,7 +4,7 @@ import {isArray} from 'yow/is';
 import {Sparklines, SparklinesLine, SparklinesReferenceLine, SparklinesBars} from 'react-sparklines';
 import {BarChart, Bar, Tooltip} from 'recharts';
 import PropTypes from 'prop-types';
-
+ 
 
 require("./home.less");
 
@@ -22,10 +22,22 @@ RenderBar.propTypes = {
 };
 
 
+function dayDiffPosix(UNIX_timestamp) {
+    var dt1 = new Date(UNIX_timestamp * 1000);
+    var dt2 = new Date();
+    
+    if (UNIX_timestamp == null) return "n/a";    
+    
+    return Math.floor((Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate()) - Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate())) / (1000 * 60 * 60 * 24));
+}
+
+
 function dayDiff(d) {
     var dt1 = new Date(d);
     var dt2 = new Date();
-
+    
+    if (d == null) return "n/a";    
+    
     return Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate())) / (1000 * 60 * 60 * 24));
 }
 
@@ -33,6 +45,7 @@ function pad(n) {
     return n < 10 ? "0" + n : n;
 }
 
+// Format date to: YYMMDD
 function getSweDate(UNIX_timestamp) {
     var a = new Date(UNIX_timestamp * 1000);
     var year = a.getFullYear();
@@ -119,9 +132,11 @@ module.exports = class Home extends React.Component {
 
     renderStocks() {
         var self = this;
+        var earningsDateDiff;
 
         var items = this.state.stocks.map(function(stock, index) {
             if (stock.antal > 0) {
+				earningsDateDiff = dayDiffPosix(stock.earningsDate[0]);	            
                 return (
                     <tr key={index}>
                         <td>
@@ -212,16 +227,33 @@ module.exports = class Home extends React.Component {
                             </td>
                         )}
 
-                        {dayDiff(stock.earningsDate[0]) < 5 ? (
-							<td style={{backgroundColor: "red"}}>{getSweDate(stock.earningsDate[0])}</td>
-                        ) : (
+                        {(earningsDateDiff == "n/a" || earningsDateDiff >= 5) ? (
 							<td>{getSweDate(stock.earningsDate[0])}</td>
+                        ) : earningsDateDiff < 0 ? (
+							<td style={{color: "gray"}}>{getSweDate(stock.earningsDate[0])}</td>
+                        ) : (
+							<td style={{color: "red"}}>{getSweDate(stock.earningsDate[0])}</td>
                         )}
-                        
                     </tr>
                 );
             }
         }); 
+
+/*
+                        {dayDiffPosix(stock.earningsDate[0]) > 5 ? (
+							<td>{getSweDate(stock.earningsDate[0])}</td>
+                        ) : ( {}
+							<td style={{color: "red"}}>{getSweDate(stock.earningsDate[0])}</td>
+							<td>{getSweDate(stock.earningsDate[0])}</td>
+                        )}
+
+                        {dayDiffPosix(stock.earningsDate[0]) < 5 ? (
+							<td style={{color: "red"}}>{getSweDate(stock.earningsDate[0])}</td>
+                        ) : (
+							<td>{getSweDate(stock.earningsDate[0])}</td>
+                        )}
+*/                        
+
         
 //                                 <Button size="sm" className="btn btn-secondary" onClick={self.deleteStock.bind(self, stock.id)}>
 
@@ -243,7 +275,7 @@ module.exports = class Home extends React.Component {
             if (this.state.error)
                 var items = (
                     <tr>
-                        <td colSpan="10">
+                        <td colSpan="12">
                             <center>{"Kan inte nå servern: " + self.state.error.message}</center>
                         </td>
                     </tr>
@@ -251,7 +283,7 @@ module.exports = class Home extends React.Component {
             else
                 var items = (
                     <tr>
-                        <td colSpan="10">
+                        <td colSpan="12">
                             <center>{"Inga aktier"}</center>
                         </td>
                     </tr>
