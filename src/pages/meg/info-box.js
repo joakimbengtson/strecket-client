@@ -221,7 +221,7 @@ module.exports = class InfoBox extends React.Component {
                 </div>
             );
         } else {
-            return (<div>JBN</div>);
+            return (<div><Spinner type="grow"/></div>);
         }
     }
 
