@@ -2,7 +2,7 @@ import React from "react";
 import ReactHighcharts from "react-highcharts";
 import ReactHighstock from "react-highcharts/ReactHighstock";
 
-import {Table, Alert} from "react-bootify";
+import {Table, Alert, Spinner} from "react-bootify";
 
 import Request from "yow/request";
 import sprintf from "yow/sprintf";
@@ -12,9 +12,8 @@ module.exports = class InfoBox extends React.Component {
     constructor(args) {
         super(args);
 
-        this.state = {};
+        this.state = {}; 
 
-        // ready = false, dvs vi har inte läst in data än...
         this.state.ready = false;
         this.state.rawDump = null;
 
@@ -82,33 +81,151 @@ module.exports = class InfoBox extends React.Component {
 		var industry              = this.state.rawDump.summaryProfile.industry;
 		var longBusinessSummary   = this.state.rawDump.summaryProfile.longBusinessSummary;
 
-		var forwardPE             = this.state.rawDump.summaryDetail.forwardPE;
-		var trailingPE            = this.state.rawDump.summaryDetail.trailingPE;
-
+		var forwardPE             = (this.state.rawDump.summaryDetail.forwardPE !== undefined) ? this.state.rawDump.summaryDetail.forwardPE : 0;
+		var trailingPE            = (this.state.rawDump.summaryDetail.trailingPE !== undefined) ? this.state.rawDump.summaryDetail.trailingPE : 0;
+		
+		stockInfo.score = 0;
 	
-		stockInfo.push({"pegRatio": pegRatio, "pegRatio_OK": pegRatio <= 1.2});
+		stockInfo.pegRatio    = pegRatio;
+		stockInfo.pegRatio_OK = (pegRatio <= 1.2 && pegRatio > 0);
+		if (stockInfo.pegRatio_OK)
+			++stockInfo.score
 		
-		stockInfo.push({"sharesShort": parseFloat((1 - (sharesShortPriorMonth/sharesShort))*100).toFixed(2), "sharesShort_OK": sharesShort<sharesShortPriorMonth});
+		stockInfo.sharesShort    = parseFloat((1 - (sharesShortPriorMonth/sharesShort))*100).toFixed(2);
+		stockInfo.sharesShort_OK = (sharesShort<sharesShortPriorMonth);
+		if (stockInfo.sharesShort_OK)
+			++stockInfo.score
 		
-		stockInfo.push({"dividendYield": (dividendYield * 100).toFixed(2), "dividendYield_OK": dividendYield !== undefined});
+		stockInfo.dividendYield    = (dividendYield * 100).toFixed(2);
+		stockInfo.dividendYield_OK = (dividendYield !== undefined);
+		if (stockInfo.dividendYield_OK)
+			++stockInfo.score
+		else
+			stockInfo.dividendYield = 0;
 
-		stockInfo.push({"currentRatio": currentRatio, "currentRatio_OK": currentRatio <= 1});
-		stockInfo.push({"quickRatio":   quickRatio,   "quickRatio_OK":   quickRatio >= 1});
-		stockInfo.push({"debtToEquity": debtToEquity, "debtToEquity_OK": debtToEquity < 35});
+		stockInfo.currentRatio    = currentRatio;
+		stockInfo.currentRatio_OK = (currentRatio <= 1);
+		if (stockInfo.currentRatio_OK)
+			++stockInfo.score
 		
-		stockInfo.push({"forwardPE":  forwardPE,  "forwardPE_OK":  forwardPE < 15});
-		stockInfo.push({"trailingPE": trailingPE, "trailingPE_OK": trailingPE < 25});
-		stockInfo.push({"marketCap": marketCap,   "marketCap_OK":  marketCap < 5000000000}); // Market Cap < $5 billion
+		stockInfo.quickRatio    = quickRatio;
+		stockInfo.quickRatio_OK = (quickRatio >= 1);
+		if (stockInfo.quickRatio_OK)
+			++stockInfo.score
 		
-		stockInfo.push({"longName": longName});
-		stockInfo.push({"sector": sector});
-		stockInfo.push({"industry": industry});
-		stockInfo.push({"longBusinessSummary": longBusinessSummary});
-				
-		console.log(stockInfo);
+		stockInfo.debtToEquity    = debtToEquity;
+		stockInfo.debtToEquity_OK = (debtToEquity < 35);
+		if (stockInfo.debtToEquity_OK)
+			++stockInfo.score
 		
+		stockInfo.forwardPE    = (forwardPE).toFixed(0);
+		stockInfo.forwardPE_OK = (forwardPE < 15 && forwardPE > 0);
+		if (stockInfo.forwardPE_OK)
+			++stockInfo.score
+		
+		stockInfo.trailingPE    = (trailingPE).toFixed(0);
+		stockInfo.trailingPE_OK = (trailingPE < 25 && trailingPE > 0);
+		if (stockInfo.trailingPE_OK)
+			++stockInfo.score
+		
+		stockInfo.marketCap    = Intl.NumberFormat("SE").format(marketCap);
+		stockInfo.marketCap_OK = marketCap < 5000000000; // Market Cap < $5 billion
+		if (stockInfo.marketCap_OK)
+			++stockInfo.score
+		
+		stockInfo.longName            = longName;
+		stockInfo.sector              = sector;
+		stockInfo.industry            = industry;
+		stockInfo.longBusinessSummary = longBusinessSummary;
+						
+    }
+    
+	render() {
+        var self = this;
+        var stockInfo = [];
+        	    
+        if (this.state.ready) {
+            var style = {};
+            style.border = "1px solid rgba(0, 0, 0, 0.1)";
+            style.marginLeft = "10em";
+            style.marginRight = "10em";
+            style.marginTop = "5em";
+            style.marginBottom = "5em";
+        
+			self.getStatistics(stockInfo);
+                        
+            var x = this.state.rawDump.summaryProfile.industry;
+            
+			var sector = this.state.sectors.find(sector => sector.industry == x); // Är denna aktie i en trendande sektor, om så -> sektor.perc visar hur många aktier i sektorn som trendar upp
+			
+			if (sector.perc > 0.5)
+				++stockInfo.score;
+
+            return (
+                <div style={style}>
+                    <Table bordered={true} responsive={true} size={'sm'}>
+                        <tbody>
+                            <tr>
+                                <td className={ stockInfo.pegRatio_OK ? 'table-success' : 'table-danger'}>
+                                    <h3 className="text-white text-center">{"PEG: " + stockInfo.pegRatio}</h3>
+                                </td>
+                                <td className={ stockInfo.dividendYield_OK ? 'table-success' : 'table-danger'}>
+                                    <h3 className="text-white text-center">{"Utdelning: " + stockInfo.dividendYield}%</h3>
+                                </td>
+                                <td className={ stockInfo.currentRatio_OK ? 'table-success' : 'table-danger'}>
+                                    <h3 className="text-white text-center">{"Current ratio: " + stockInfo.currentRatio}</h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className={ stockInfo.quickRatio_OK ? 'table-success' : 'table-danger'}>
+                                    <h3 className="text-white text-center">{"Quick ratio: " + stockInfo.quickRatio}</h3>
+                                </td>
+                                <td className={ stockInfo.sharesShort_OK ? 'table-success' : 'table-danger'}>
+                                    <h3 className="text-white text-center">{"Blankare: " + stockInfo.sharesShort}%</h3>
+                                </td>
+                                <td className={ stockInfo.debtToEquity_OK ? 'table-success' : 'table-danger'}>
+                                    <h3 className="text-white text-center">{"Skuld/Eget kapital: " + stockInfo.debtToEquity}</h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className={ stockInfo.forwardPE_OK ? 'table-success' : 'table-danger'}>
+                                    <h3 className="text-white text-center">{"Forward P/E: " + stockInfo.forwardPE}</h3>
+                                </td>
+                                <td className={ stockInfo.trailingPE_OK ? 'table-success' : 'table-danger'}>
+                                    <h3 className="text-white text-center">{"Trailing P/E: " + stockInfo.trailingPE}</h3>
+                                </td>
+                                <td className={ stockInfo.marketCap_OK ? 'table-success' : 'table-danger'}>
+                                    <h3 className="text-white text-center">{"Marknadsvärde: " + stockInfo.marketCap}</h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td className="table-primary">
+                                    {stockInfo.longName}
+                                </td>
+                                <td className="table-primary">{stockInfo.sector}</td>
+                                <td className={self.getColor(sector.perc)}>{stockInfo.industry}</td>
+                            </tr>
+                            <tr>
+                                <td colSpan="3" className="table-primary">
+                                	<small>{stockInfo.longBusinessSummary}</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colSpan="3" className="table-primary">
+                                	<h1 className="text-center">{stockInfo.score}</h1>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </Table>
+                </div>
+            );
+        } else {
+            return (<div>JBN</div>);
+        }
     }
 
+/* OLD
     render() {
         var self = this;
         var stockInfo = [];
@@ -214,6 +331,6 @@ module.exports = class InfoBox extends React.Component {
         } else {
             return <div>-</div>;
         }
-    }
+    }*/
 };
 

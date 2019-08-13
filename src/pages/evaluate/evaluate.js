@@ -136,7 +136,7 @@ module.exports = class Home extends React.Component {
                     </thead>
 
                     <tbody>{items}
-                    <tr><td colSpan="5">{sum + " : " + this.state.stocks.length}%</td></tr>
+                    <tr><td colSpan="5">{(sum).toFixed(2)}%</td></tr>
                     </tbody>
                 </Table>
 
