@@ -22,9 +22,10 @@ module.exports = class InfoBox extends React.Component {
         this.state.atr = this.props.atr;
     }
     
+    
     getColor(percentage) {
 	    const climateGood = "table-success";
-	    const climateAcceptable = "table-warning";
+	    const climateAcceptable = "table-warning"; 
 	    const climateBad = "table-danger";
 	    
 	    var p = parseFloat(percentage);
@@ -138,6 +139,8 @@ module.exports = class InfoBox extends React.Component {
 		stockInfo.sector              = sector;
 		stockInfo.industry            = industry;
 		stockInfo.longBusinessSummary = longBusinessSummary;
+		
+		stockInfo.atr = ((this.state.atr/this.state.rawDump.price.regularMarketPrice)*100).toFixed(2) + "% (" + this.state.atr + ")";
 						
     }
     
@@ -213,7 +216,7 @@ module.exports = class InfoBox extends React.Component {
                             </tr>
                             <tr>
                                 <td colSpan="5" className="table-primary">
-                                	<h1 className="text-center">{stockInfo.score}</h1>
+                                	<h1 className="text-center">{stockInfo.score}  -  {stockInfo.atr}</h1>
                                 </td>
                             </tr>
 
