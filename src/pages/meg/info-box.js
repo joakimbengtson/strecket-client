@@ -19,6 +19,7 @@ module.exports = class InfoBox extends React.Component {
 
         this.state.symbol = this.props.symbol;
         this.state.sectors = this.props.sectors;
+        this.state.atr = this.props.atr;
     }
     
     getColor(percentage) {
@@ -156,7 +157,7 @@ module.exports = class InfoBox extends React.Component {
                         
             var x = this.state.rawDump.summaryProfile.industry;
             
-			var sector = this.state.sectors.find(sector => sector.industry == x); // Är denna aktie i en trendande sektor, om så -> sektor.perc visar hur många aktier i sektorn som trendar upp
+			var sector = this.state.sectors.find(sector => sector.industry == x); // Är denna aktie i en trendande sektor?, om så -> sektor.perc visar hur många aktier i sektorn som trendar upp
 			
 			if (sector.perc > 0.5)
 				++stockInfo.score;
@@ -175,19 +176,17 @@ module.exports = class InfoBox extends React.Component {
                                 <td className={ stockInfo.currentRatio_OK ? 'table-success' : 'table-danger'}>
                                     <h3 className="text-white text-center">{"Current ratio: " + stockInfo.currentRatio}</h3>
                                 </td>
-                            </tr>
-                            <tr>
                                 <td className={ stockInfo.quickRatio_OK ? 'table-success' : 'table-danger'}>
                                     <h3 className="text-white text-center">{"Quick ratio: " + stockInfo.quickRatio}</h3>
                                 </td>
                                 <td className={ stockInfo.sharesShort_OK ? 'table-success' : 'table-danger'}>
                                     <h3 className="text-white text-center">{"Blankare: " + stockInfo.sharesShort}%</h3>
                                 </td>
+                            </tr>
+                            <tr>
                                 <td className={ stockInfo.debtToEquity_OK ? 'table-success' : 'table-danger'}>
                                     <h3 className="text-white text-center">{"Skuld/Eget kapital: " + stockInfo.debtToEquity}</h3>
                                 </td>
-                            </tr>
-                            <tr>
                                 <td className={ stockInfo.forwardPE_OK ? 'table-success' : 'table-danger'}>
                                     <h3 className="text-white text-center">{"Forward P/E: " + stockInfo.forwardPE}</h3>
                                 </td>
@@ -197,21 +196,23 @@ module.exports = class InfoBox extends React.Component {
                                 <td className={ stockInfo.marketCap_OK ? 'table-success' : 'table-danger'}>
                                     <h3 className="text-white text-center">{"Marknadsvärde: " + stockInfo.marketCap}</h3>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td className="table-primary">
-                                    {stockInfo.longName}
+                                <td className={self.getColor(sector.perc)}>
+                                    <h3 className="text-white text-center">Industri</h3>
                                 </td>
-                                <td className="table-primary">{stockInfo.sector}</td>
-                                <td className={self.getColor(sector.perc)}>{stockInfo.industry}</td>
                             </tr>
                             <tr>
                                 <td colSpan="3" className="table-primary">
+                                    {stockInfo.longName}
+                                </td>
+                                <td colSpan="2" className="table-primary">{stockInfo.industry}({stockInfo.sector})</td>
+                            </tr>
+                            <tr>
+                                <td colSpan="5" className="table-primary">
                                 	<small>{stockInfo.longBusinessSummary}</small>
                                 </td>
                             </tr>
                             <tr>
-                                <td colSpan="3" className="table-primary">
+                                <td colSpan="5" className="table-primary">
                                 	<h1 className="text-center">{stockInfo.score}</h1>
                                 </td>
                             </tr>
@@ -225,112 +226,6 @@ module.exports = class InfoBox extends React.Component {
         }
     }
 
-/* OLD
-    render() {
-        var self = this;
-        var stockInfo = [];
-        	    
-        if (this.state.ready) {
-            var style = {};
-            style.border = "1px solid rgba(0, 0, 0, 0.1)";
-            style.marginLeft = "10em";
-            style.marginRight = "10em";
-            style.marginTop = "5em";
-            style.marginBottom = "5em";
-        
-			self.getStatistics(stockInfo);
-                        
-            var x = this.state.rawDump.summaryProfile.industry;
-            
-			var sector = this.state.sectors.find(sector => sector.industry == x);
 
-            return (
-                <div style={style}>
-                    <Table bordered={true} responsive={true} size={'sm'}>
-                        <tbody>
-                            <tr>
-                                {this.state.rawDump.defaultKeyStatistics.pegRatio >= 0 && this.state.rawDump.defaultKeyStatistics.pegRatio <= 1.2 ? (
-                                    <td className="table-success">
-                                        <h3 className="text-white text-center">{"PEG: " + this.state.rawDump.defaultKeyStatistics.pegRatio}</h3>
-                                    </td>
-                                ) : (
-                                    <td className="table-danger">
-                                        <h3 className="text-white text-center">{"PEG:" + this.state.rawDump.defaultKeyStatistics.pegRatio}</h3>
-                                    </td>
-                                )}
-                                {this.state.rawDump.summaryDetail.dividendYield !== undefined ? (
-                                    <td className="table-success">
-                                        <h3 className="text-white text-center">{"Utdelning: " + (this.state.rawDump.summaryDetail.dividendYield * 100).toFixed(2)}%</h3>
-                                    </td>
-                                ) : (
-                                    <td className="table-danger">
-                                        <h3 className="text-white text-center">{"Utdelning: 0"}</h3>
-                                    </td>
-                                )}
-                                {this.state.rawDump.financialData.currentRatio >= 0 && this.state.rawDump.financialData.currentRatio <= 1 ? (
-                                    <td className="table-danger">
-                                        <h3 className="text-white text-center">{"Current ratio: " + this.state.rawDump.financialData.currentRatio}</h3>
-                                    </td>
-                                ) : (
-                                    <td className="table-success">
-                                        <h3 className="text-white text-center">{"Current ratio:" + this.state.rawDump.financialData.currentRatio}</h3>
-                                    </td>
-                                )}
-                            </tr>
-                            <tr>
-                                {this.state.rawDump.financialData.quickRatio >= 1 ? (
-                                    <td className="table-success">
-                                        <h3 className="text-white text-center">{"Quick Ratio: " + this.state.rawDump.financialData.quickRatio}</h3>
-                                    </td>
-                                ) : (
-                                    <td className="table-danger">
-                                        <h3 className="text-white text-center">{"Quick Ratio:" + this.state.rawDump.financialData.quickRatio}</h3>
-                                    </td>
-                                )}
-                                {this.state.rawDump.defaultKeyStatistics.sharesShort < this.state.rawDump.defaultKeyStatistics.sharesShortPriorMonth ? (
-                                    <td className="table-success">
-                                        <h3 className="text-white text-center">{"Blankare minskar: " +
-                                            parseFloat((1 - (this.state.rawDump.defaultKeyStatistics.sharesShortPriorMonth / this.state.rawDump.defaultKeyStatistics.sharesShort))*100).toFixed(2)}%
-                                        </h3>
-                                    </td>
-                                ) : (
-                                    <td className="table-danger">
-                                        <h3 className="text-white text-center">{"Blankare ökar: " +
-                                            parseFloat((1 - (this.state.rawDump.defaultKeyStatistics.sharesShortPriorMonth / this.state.rawDump.defaultKeyStatistics.sharesShort))*100).toFixed(2)}%
-                                        </h3>                                            
-                                    </td>
-                                )}
-                                {this.state.rawDump.summaryDetail.fiftyTwoWeekHigh <= this.state.rawDump.price.regularMarketPrice ? (
-                                    <td className="table-success">
-                                        <h3 className="text-white text-center">{"> 52 veckor"}
-                                        </h3>
-                                    </td>
-                                ) : (
-                                    <td className="table-danger">
-                                        <h3 className="text-white text-center">{"< 52 veckor"}
-                                        </h3>                                            
-                                    </td>
-                                )}
-                            </tr>
-                            <tr>
-                                <td className="table-primary">
-                                    {this.state.rawDump.price.longName}
-                                </td>
-                                <td className="table-primary">{this.state.rawDump.summaryProfile.sector}</td>
-                                <td className={self.getColor(sector.perc)}>{this.state.rawDump.summaryProfile.industry}</td>
-                            </tr>
-                            <tr>
-                                <td colSpan="3" className="table-primary">
-                                	<small>{this.state.rawDump.summaryProfile.longBusinessSummary}</small>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </Table>
-                </div>
-            );
-        } else {
-            return <div>-</div>;
-        }
-    }*/
 };
 

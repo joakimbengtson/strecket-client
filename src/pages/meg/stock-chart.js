@@ -1,10 +1,8 @@
 import React from 'react';
 import ReactHighcharts from 'react-highcharts';
 import ReactHighstock from 'react-highcharts/ReactHighstock';
-
-
-
 import Indicators from 'highcharts/indicators/indicators';
+
 Indicators(ReactHighstock.Highcharts);
 
 import Request from 'yow/request';
@@ -22,6 +20,8 @@ module.exports = class StockChart extends React.Component {
         this.state.ready = false;
 
         this.state.config = {};
+        
+        this.state.atr = 0;
 
         // Hämta parametrar från anropet <StockChart symbol='X'/>
         this.state.symbol = this.props.symbol;
@@ -65,13 +65,26 @@ module.exports = class StockChart extends React.Component {
         // Hämta data från Munch via ett '/mysql' anrop...
         request.get('/mysql', {query:query}).then(response => {
             var stocks = response.body;
+            var prevClose;
+            const atrPeriod = 14; // ATR calculated for 14 days
 
             // Lägg till i vektorn 'data' på det format som Highcharts vill ha det
-            stocks.forEach(stock => {
+            stocks.forEach((stock, index) => {
                 var date = new Date(stock.date);
                 data.push([Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()), stock.open, stock.high, stock.low, stock.close, stock.volume]);
                 volume.push([Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()), stock.volume]);
+                
+                // Calculate ATR
+                if (stocks.length-index < atrPeriod+1) {
+	                this.state.atr = this.state.atr + Math.max(stock.high-stock.low, Math.abs(stock.high-prevClose), Math.abs(stock.low-prevClose));
+	                prevClose = stock.close;	                
+                }
+                else
+	                prevClose = stock.close;           
+                
             });
+            
+            this.state.atr = this.state.atr / atrPeriod;
 
             // Skapa en Highcharts 'config'...
             var config = {
@@ -236,7 +249,7 @@ module.exports = class StockChart extends React.Component {
             return (
                 <div style = {style}>
                     <ReactHighstock config={this.state.config} ref="chart"></ReactHighstock>
-                    <InfoBox symbol={this.state.symbol} sectors={this.state.sectors}></InfoBox>
+                    <InfoBox symbol={this.state.symbol} sectors={this.state.sectors} atr={this.state.atr}></InfoBox>
 
                 </div>
             );
