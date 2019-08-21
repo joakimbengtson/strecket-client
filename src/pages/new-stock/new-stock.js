@@ -51,7 +51,7 @@ module.exports = class Home extends React.Component {
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleOptionChange = this.handleOptionChange.bind(this);
         
-        this.state = {helptext: "", title: "Ange källa", selectedOption: "option1", sourceID: null, sources: [], inputs:{}};
+        this.state = {focus:'stockticker', helptext: "", title: "Ange källa", selectedOption: "option1", sourceID: null, sources: [], inputs:{}};
     }
 
 	componentDidMount() {
@@ -220,10 +220,14 @@ module.exports = class Home extends React.Component {
     
     handleOptionChange(changeEvent) {
         this.setState({selectedOption: changeEvent.target.value});
-/* MEG
-        if (changeEvent.target.value == "option1") ReactDOM.findDOMNode(this.refs.ATRMultiple).focus();
-        else if (changeEvent.target.value == "option2") ReactDOM.findDOMNode(this.refs.stoplossQuote).focus();
-        else ReactDOM.findDOMNode(this.refs.stoplossPercentage).focus();*/
+        
+        if (changeEvent.target.value == "option1")
+        	changeEvent.target.focus();
+        else if (changeEvent.target.value == "option2")
+        	ReactDOM.findDOMNode(this.refs.stoplossQuote).focus();
+        else
+        	ReactDOM.findDOMNode(this.refs.stoplossPercentage).focus();
+        
     }
     
 	onTextChange(event) {
@@ -281,8 +285,7 @@ module.exports = class Home extends React.Component {
                                 helpStr = "(ATR = " + body.ATR + " ATR % = " + Math.round(body.atrPercentage * 100 * 100) / 100 + "%) " + getSweDate(body.earningsDate[0]);
                                 _ATR = body.ATR;
 
-                                self.setState({helptext: helpStr});
-                                // ReactDOM.findDOMNode(self.refs.stockprice).focus(); MEG
+                                self.setState({helptext: helpStr, focus:'stockprice'});
                             }
                         });
                     }
@@ -329,7 +332,7 @@ module.exports = class Home extends React.Component {
                                 </Form.Label>
                             </Form.Col>
                             <Form.Col sm={11}>
-                                <Form.Input autoFocus padding={{bottom:1}} type="text" id="stockticker" placeholder="Kortnamn för aktien" onChange={this.onTextChange.bind(this)} onKeyPress={this.handleKeyPress.bind(this)}/>
+                                <Form.Input autoFocus={this.state.focus=='stockticker'} value={this.state.inputs.stockticker} padding={{bottom:1}} type="text" id="stockticker" placeholder="Kortnamn för aktien" onChange={this.onTextChange.bind(this)} onKeyPress={this.handleKeyPress.bind(this)}/>
                             </Form.Col>
                         </Form.Group>
                         
@@ -340,7 +343,7 @@ module.exports = class Home extends React.Component {
                                 </Form.Label>
                             </Form.Col>
                             <Form.Col sm={11}>
-                                <Form.Input padding={{bottom:1}} type="text" id="stockname" placeholder="Namnet på aktien" onChange={this.onTextChange.bind(this)}/>
+                                <Form.Input value={this.state.inputs.stockname} padding={{bottom:1}} type="text" id="stockname" placeholder="Namnet på aktien" onChange={this.onTextChange.bind(this)}/>
                             </Form.Col>
                         </Form.Group>
 
@@ -351,7 +354,7 @@ module.exports = class Home extends React.Component {
                                 </Form.Label>
                             </Form.Col>
                             <Form.Col sm={11}>
-                                <Form.Input padding={{bottom:1}} id='price' type="text" id="stockprice" placeholder="Köpt till kursen?"  onChange={this.onTextChange.bind(this)}/>
+                                <Form.Input autoFocus={this.state.focus=='stockprice'} value={this.state.inputs.stockprice} padding={{bottom:1}} type="text" id="stockprice" placeholder="Köpt till kursen?"  onChange={this.onTextChange.bind(this)}/>
                             </Form.Col>
                         </Form.Group>
 
@@ -362,7 +365,7 @@ module.exports = class Home extends React.Component {
                                 </Form.Label>
                             </Form.Col>
                             <Form.Col sm={11}>
-                                <Form.Input padding={{bottom:1}} type="text" id="stockcount" placeholder="Antal aktier"  onChange={this.onTextChange.bind(this)}/>
+                                <Form.Input value={this.state.inputs.stockcount} padding={{bottom:1}} type="text" id="stockcount" placeholder="Antal aktier"  onChange={this.onTextChange.bind(this)}/>
                             </Form.Col>
                         </Form.Group>
 
@@ -403,7 +406,7 @@ module.exports = class Home extends React.Component {
                                         Släpande
                                     </Form.Radio>
 
-                                    <Form.Input margin={{left:2, right:2}} type="text" id="atrmultiple" placeholder="x ATR?" onChange={this.onTextChange.bind(this)}/>
+                                    <Form.Input value={this.state.inputs.atrmultiple} margin={{left:2, right:2}} type="text" id="atrmultiple" placeholder="x ATR?" onChange={this.onTextChange.bind(this)}/>
 
                                     <span ref="stoplosshelper">
                                         <span style={{color: "#b2b2b2"}}>{this.state.helptext}</span>
@@ -416,14 +419,14 @@ module.exports = class Home extends React.Component {
                                         Under kurs
                                     </Form.Radio>
 
-                                    <Form.Input margin={{bottom:0, left:2, right:2}} type="text" id="stoplossquote" placeholder="Kurs?" onChange={this.onTextChange.bind(this)}/>
+                                    <Form.Input value={this.state.inputs.stoplossquote} margin={{bottom:0, left:2, right:2}} type="text" id="stoplossquote" placeholder="Kurs?" onChange={this.onTextChange.bind(this)}/>
                                 </Form>
                                 
                                 <Form inline padding={{bottom:1, top:1}}>
                                     <Form.Radio value="option3" checked={this.state.selectedOption === "option3"} onChange={this.handleOptionChange}>
                                         Släpande under procent
                                     </Form.Radio>
-                                    <Form.Input  margin={{left:2, right:2}} type="text" id="stoplosspercentage" placeholder="%" onChange={this.onTextChange.bind(this)}/>
+                                    <Form.Input  value={this.state.inputs.stoplosspercentage} margin={{left:2, right:2}} type="text" id="stoplosspercentage" placeholder="%" onChange={this.onTextChange.bind(this)}/>
                                 </Form>
                             </Form.Col>
                         </Form.Group>
