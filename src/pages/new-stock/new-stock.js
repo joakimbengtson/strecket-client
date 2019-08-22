@@ -163,6 +163,8 @@ module.exports = class Home extends React.Component {
 		// Dropdown vald
 	    if (!isNumeric(this.state.sourceID))
 	    	return true;
+	    	
+	    
         	
         return false;
     }
@@ -222,24 +224,31 @@ module.exports = class Home extends React.Component {
         this.setState({selectedOption: changeEvent.target.value});
         
         if (changeEvent.target.value == "option1")
-        	changeEvent.target.focus();
+        	ReactDOM.findDOMNode(this.refs.atrmultiple).focus();
         else if (changeEvent.target.value == "option2")
-        	ReactDOM.findDOMNode(this.refs.stoplossQuote).focus();
+        	ReactDOM.findDOMNode(this.refs.stoplossquote).focus();
         else
-        	ReactDOM.findDOMNode(this.refs.stoplossPercentage).focus();
-        
+        	ReactDOM.findDOMNode(this.refs.stoplosspercentage).focus();
     }
     
 	onTextChange(event) {
         var inputs = this.state.inputs;
+        console.log("ref", event.target.ref);
+        // Säkerställ decimaltal med '.'
+        if (event.target.id == 'stockprice' || event.target.id == 'atrmultiple' || event.target.id == 'stoplossquote' || event.target.id == 'stoplosspercentage') {
+	        if (isNaN(event.target.value))
+	        	event.target.value = event.target.value.slice(0, event.target.value.length-1);
+        }
+
+		// Säkerställ heltal
+        if (event.target.id == 'stockcount') {
+	        if (isNaN(event.target.value) || event.target.value.slice(event.target.value.length-1, event.target.value.length) == '.')
+	        	event.target.value = event.target.value.slice(0, event.target.value.length-1);
+        }
+
         
         inputs[event.target.id] = event.target.value;
         this.setState({inputs:inputs});
-    }
-
-    handleKeyDown(target) {
-        // Tillåt inte ','
-        if (target.keyCode == 188) target.preventDefault();
     }
 
     handleKeyPress(target) {
@@ -406,7 +415,7 @@ module.exports = class Home extends React.Component {
                                         Släpande
                                     </Form.Radio>
 
-                                    <Form.Input value={this.state.inputs.atrmultiple} margin={{left:2, right:2}} type="text" id="atrmultiple" placeholder="x ATR?" onChange={this.onTextChange.bind(this)}/>
+                                    <Form.Input value={this.state.inputs.atrmultiple} margin={{left:2, right:2}} type="text" ref="atrmultiple" id="atrmultiple" placeholder="x ATR?" onChange={this.onTextChange.bind(this)}/>
 
                                     <span ref="stoplosshelper">
                                         <span style={{color: "#b2b2b2"}}>{this.state.helptext}</span>
@@ -419,14 +428,14 @@ module.exports = class Home extends React.Component {
                                         Under kurs
                                     </Form.Radio>
 
-                                    <Form.Input value={this.state.inputs.stoplossquote} margin={{bottom:0, left:2, right:2}} type="text" id="stoplossquote" placeholder="Kurs?" onChange={this.onTextChange.bind(this)}/>
+                                    <Form.Input value={this.state.inputs.stoplossquote} margin={{bottom:0, left:2, right:2}} type="text" ref="stoplossquote" id="stoplossquote" placeholder="Kurs?" onChange={this.onTextChange.bind(this)}/>
                                 </Form>
                                 
                                 <Form inline padding={{bottom:1, top:1}}>
                                     <Form.Radio value="option3" checked={this.state.selectedOption === "option3"} onChange={this.handleOptionChange}>
                                         Släpande under procent
                                     </Form.Radio>
-                                    <Form.Input  value={this.state.inputs.stoplosspercentage} margin={{left:2, right:2}} type="text" id="stoplosspercentage" placeholder="%" onChange={this.onTextChange.bind(this)}/>
+                                    <Form.Input  value={this.state.inputs.stoplosspercentage} margin={{left:2, right:2}} type="text" ref="stoplosspercentage" id="stoplosspercentage" placeholder="%" onChange={this.onTextChange.bind(this)}/>
                                 </Form>
                             </Form.Col>
                         </Form.Group>

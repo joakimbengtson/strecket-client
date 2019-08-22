@@ -22,6 +22,8 @@ module.exports = class StockChart extends React.Component {
         this.state.config = {};
         
         this.state.atr = 0;
+        
+        this.state.drops = [];
 
         // Hämta parametrar från anropet <StockChart symbol='X'/>
         this.state.symbol = this.props.symbol;
@@ -57,15 +59,22 @@ module.exports = class StockChart extends React.Component {
         var query = {};
         query.sql        = 'select date, open, high, low, close, volume from quotes where symbol = ? and date >= ?';
         query.values     = [this.state.symbol, thenYMD];
-
+var _symb = this.state.symbol;
         var data = [];
         var volume = [];
-
 
         // Hämta data från Munch via ett '/mysql' anrop...
         request.get('/mysql', {query:query}).then(response => {
             var stocks = response.body;
             var prevClose;
+            var maxP = 0;
+            var minP = 0;
+            var directionFlip = false;
+            var drops = [];
+            var drop;
+
+//console.log(_symb, "-------------------------------------------------------------------");
+            
             const atrPeriod = 14; // ATR calculated for 14 days
 
             // Lägg till i vektorn 'data' på det format som Highcharts vill ha det
@@ -74,6 +83,7 @@ module.exports = class StockChart extends React.Component {
                 data.push([Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()), stock.open, stock.high, stock.low, stock.close, stock.volume]);
                 volume.push([Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()), stock.volume]);
                 
+                
                 // Calculate ATR
                 if (stocks.length-index < atrPeriod+1) {
 	                this.state.atr = this.state.atr + Math.max(stock.high-stock.low, Math.abs(stock.high-prevClose), Math.abs(stock.low-prevClose));
@@ -81,10 +91,33 @@ module.exports = class StockChart extends React.Component {
                 }
                 else
 	                prevClose = stock.close;           
+	                
+	            // Calculate maxdrop
+	            if (stocks.length-index < 100) {
+//console.log("Kollar ", stock.date, stock.close);		            
+		            if (directionFlip && stock.close > maxP) {
+//			            console.log("Ny max efter flip", ((1 - (maxP/minP))*100).toFixed(2) + "%");
+			            drop = ((1 - (maxP/minP))*100).toFixed(2);
+			            drops.push(drop);
+		            	maxP = stock.close;
+		            	minP = 0;
+		            	directionFlip = false;
+		            } else if (stock.close > maxP) {
+		            	maxP = stock.close;
+//			            console.log("Nytt max", maxP);
+		            }
+		            else if (minP == 0 || stock.close < minP) {
+		            	minP = stock.close;			            
+//			            console.log("Nytt min", minP);			             
+		            	directionFlip = true;
+		            }
+					
+				}	            
                 
             });
-            
+// console.log("---", _symb, drops, Math.min.apply(null, drops));             
             this.state.atr = this.state.atr / atrPeriod;
+            this.state.drops = drops;
 
             // Skapa en Highcharts 'config'...
             var config = {
@@ -249,7 +282,7 @@ module.exports = class StockChart extends React.Component {
             return (
                 <div style = {style}>
                     <ReactHighstock config={this.state.config} ref="chart"></ReactHighstock>
-                    <InfoBox symbol={this.state.symbol} sectors={this.state.sectors} atr={this.state.atr}></InfoBox>
+                    <InfoBox symbol={this.state.symbol} sectors={this.state.sectors} atr={this.state.atr} drops={this.state.drops}></InfoBox>
 
                 </div>
             );

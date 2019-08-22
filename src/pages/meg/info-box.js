@@ -20,6 +20,7 @@ module.exports = class InfoBox extends React.Component {
         this.state.symbol = this.props.symbol;
         this.state.sectors = this.props.sectors;
         this.state.atr = this.props.atr;
+        this.state.drops = this.props.drops;
     }
     
     
@@ -140,7 +141,8 @@ module.exports = class InfoBox extends React.Component {
 		stockInfo.industry            = industry;
 		stockInfo.longBusinessSummary = longBusinessSummary;
 		
-		stockInfo.atr = ((this.state.atr/this.state.rawDump.price.regularMarketPrice)*100).toFixed(2) + "% (" + this.state.atr + ")";
+		stockInfo.atr = ((this.state.atr/this.state.rawDump.price.regularMarketPrice)*100).toFixed(2) + "% (" + (this.state.atr).toFixed(2) + ")";
+		stockInfo.maxDrop = Math.min.apply(null, this.state.drops) + "%";
 						
     }
     
@@ -185,6 +187,9 @@ module.exports = class InfoBox extends React.Component {
                                 <td className={ stockInfo.sharesShort_OK ? 'table-success' : 'table-danger'}>
                                     <h3 className="text-white text-center">{"Blankare: " + stockInfo.sharesShort}%</h3>
                                 </td>
+                                <td className={ stockInfo.sharesShort_OK ? 'table-success' : 'table-danger'}>
+                                    <h3 className="text-white text-center">{stockInfo.maxDrop}</h3>
+                                </td>
                             </tr>
                             <tr>
                                 <td className={ stockInfo.debtToEquity_OK ? 'table-success' : 'table-danger'}>
@@ -202,21 +207,24 @@ module.exports = class InfoBox extends React.Component {
                                 <td className={self.getColor(sector.perc)}>
                                     <h3 className="text-white text-center">Industri</h3>
                                 </td>
+                                <td className={self.getColor(sector.perc)}>
+                                    <h3 className="text-white text-center">{stockInfo.atr}</h3>
+                                </td>
                             </tr>
                             <tr>
                                 <td colSpan="3" className="table-primary">
                                     {stockInfo.longName}
                                 </td>
-                                <td colSpan="2" className="table-primary">{stockInfo.industry}({stockInfo.sector})</td>
+                                <td colSpan="3" className="table-primary">{stockInfo.industry}({stockInfo.sector})</td>
                             </tr>
                             <tr>
-                                <td colSpan="5" className="table-primary">
+                                <td colSpan="6" className="table-primary">
                                 	<small>{stockInfo.longBusinessSummary}</small>
                                 </td>
                             </tr>
                             <tr>
-                                <td colSpan="5" className="table-primary">
-                                	<h1 className="text-center">{stockInfo.score}  -  {stockInfo.atr}</h1>
+                                <td colSpan="6" className="table-primary">
+                                	<h1 className="text-center">{stockInfo.score}</h1>
                                 </td>
                             </tr>
 
