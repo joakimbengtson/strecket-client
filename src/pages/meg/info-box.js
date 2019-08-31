@@ -20,7 +20,8 @@ module.exports = class InfoBox extends React.Component {
         this.state.symbol = this.props.symbol;
         this.state.sectors = this.props.sectors;
         this.state.atr = this.props.atr;
-        this.state.drops = this.props.drops;
+        this.state.drops = this.props.drops; 
+        
     }
     
     
@@ -142,7 +143,14 @@ module.exports = class InfoBox extends React.Component {
 		stockInfo.longBusinessSummary = longBusinessSummary;
 		
 		stockInfo.atr = ((this.state.atr/this.state.rawDump.price.regularMarketPrice)*100).toFixed(2) + "% (" + (this.state.atr).toFixed(2) + ")";
-		stockInfo.maxDrop = Math.min.apply(null, this.state.drops) + "%";
+		stockInfo.atr_OK = (this.state.atr < 2.5);
+		if (stockInfo.atr_OK)		
+			++stockInfo.score
+		
+		stockInfo.maxDrop = Math.min.apply(null, this.state.drops);
+		stockInfo.maxDrop_OK = (stockInfo.maxDrop > -6);
+		if (stockInfo.maxDrop_OK)		
+			++stockInfo.score
 						
     }
     
@@ -158,11 +166,12 @@ module.exports = class InfoBox extends React.Component {
             style.marginTop = "5em";
             style.marginBottom = "5em";
         
+        
 			self.getStatistics(stockInfo);
                         
             var x = this.state.rawDump.summaryProfile.industry;
             
-			var sector = this.state.sectors.find(sector => sector.industry == x); // Är denna aktie i en trendande sektor?, om så -> sektor.perc visar hur många aktier i sektorn som trendar upp
+			var sector = this.state.sectors.find(sector => sector.industry == x); // Är denna aktie i en trendande sektor? om så -> sektor.perc visar hur många aktier i sektorn som trendar upp
 			
 			if (sector.perc > 0.5)
 				++stockInfo.score;
@@ -173,61 +182,54 @@ module.exports = class InfoBox extends React.Component {
                         <tbody>
                             <tr>
                                 <td className={ stockInfo.pegRatio_OK ? 'table-success' : 'table-danger'}>
-                                    <h3 className="text-white text-center">{"PEG: " + stockInfo.pegRatio}</h3>
+                                    <h5 className="text-white text-center">{"PEG: " + stockInfo.pegRatio}</h5>
                                 </td>
                                 <td className={ stockInfo.dividendYield_OK ? 'table-success' : 'table-danger'}>
-                                    <h3 className="text-white text-center">{"Utdelning: " + stockInfo.dividendYield}%</h3>
+                                    <h5 className="text-white text-center">{"Utdelning: " + stockInfo.dividendYield}%</h5>
                                 </td>
                                 <td className={ stockInfo.currentRatio_OK ? 'table-success' : 'table-danger'}>
-                                    <h3 className="text-white text-center">{"Current ratio: " + stockInfo.currentRatio}</h3>
+                                    <h5 className="text-white text-center">{"Current ratio: " + stockInfo.currentRatio}</h5>
                                 </td>
                                 <td className={ stockInfo.quickRatio_OK ? 'table-success' : 'table-danger'}>
-                                    <h3 className="text-white text-center">{"Quick ratio: " + stockInfo.quickRatio}</h3>
+                                    <h5 className="text-white text-center">{"Quick ratio: " + stockInfo.quickRatio}</h5>
                                 </td>
                                 <td className={ stockInfo.sharesShort_OK ? 'table-success' : 'table-danger'}>
-                                    <h3 className="text-white text-center">{"Blankare: " + stockInfo.sharesShort}%</h3>
+                                    <h5 className="text-white text-center">{"Blankare: " + stockInfo.sharesShort}%</h5>
                                 </td>
-                                <td className={ stockInfo.sharesShort_OK ? 'table-success' : 'table-danger'}>
-                                    <h3 className="text-white text-center">{stockInfo.maxDrop}</h3>
+                                <td className={ stockInfo.maxDrop_OK ? 'table-success' : 'table-danger'}>
+                                    <h5 className="text-white text-center">{"Maxdrop (100d): " + stockInfo.maxDrop + "%"}</h5>
                                 </td>
                             </tr>
                             <tr>
                                 <td className={ stockInfo.debtToEquity_OK ? 'table-success' : 'table-danger'}>
-                                    <h3 className="text-white text-center">{"Skuld/Eget kapital: " + stockInfo.debtToEquity}</h3>
+                                    <h5 className="text-white text-center">{"Skuld/Eget kapital: " + stockInfo.debtToEquity}</h5>
                                 </td>
                                 <td className={ stockInfo.forwardPE_OK ? 'table-success' : 'table-danger'}>
-                                    <h3 className="text-white text-center">{"Forward P/E: " + stockInfo.forwardPE}</h3>
+                                    <h5 className="text-white text-center">{"Forward P/E: " + stockInfo.forwardPE}</h5>
                                 </td>
                                 <td className={ stockInfo.trailingPE_OK ? 'table-success' : 'table-danger'}>
-                                    <h3 className="text-white text-center">{"Trailing P/E: " + stockInfo.trailingPE}</h3>
+                                    <h5 className="text-white text-center">{"Trailing P/E: " + stockInfo.trailingPE}</h5>
                                 </td>
                                 <td className={ stockInfo.marketCap_OK ? 'table-success' : 'table-danger'}>
-                                    <h3 className="text-white text-center">{"Marknadsvärde: " + stockInfo.marketCap}</h3>
+                                    <h5 className="text-white text-center">{"Marknadsvärde: " + stockInfo.marketCap}</h5>
                                 </td>
                                 <td className={self.getColor(sector.perc)}>
-                                    <h3 className="text-white text-center">Industri</h3>
+                                    <h5 className="text-white text-center">Industri</h5>
                                 </td>
-                                <td className={self.getColor(sector.perc)}>
-                                    <h3 className="text-white text-center">{stockInfo.atr}</h3>
+                                <td className={stockInfo.atr_OK ? 'table-success' : 'table-danger'}>
+                                    <h5 className="text-white text-center">{"ATR: " + stockInfo.atr}</h5>
                                 </td>
                             </tr>
                             <tr>
-                                <td colSpan="3" className="table-primary">
-                                    {stockInfo.longName}
+                                <td colSpan="6" className="table-primary">
+                                    <h3>{stockInfo.longName + " (" + stockInfo.industry + ", " + stockInfo.sector + "), "}<strong>{stockInfo.score}</strong></h3>
                                 </td>
-                                <td colSpan="3" className="table-primary">{stockInfo.industry}({stockInfo.sector})</td>
                             </tr>
                             <tr>
                                 <td colSpan="6" className="table-primary">
                                 	<small>{stockInfo.longBusinessSummary}</small>
                                 </td>
                             </tr>
-                            <tr>
-                                <td colSpan="6" className="table-primary">
-                                	<h1 className="text-center">{stockInfo.score}</h1>
-                                </td>
-                            </tr>
-
                         </tbody>
                     </Table>
                 </div>
