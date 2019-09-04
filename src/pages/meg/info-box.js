@@ -143,7 +143,7 @@ module.exports = class InfoBox extends React.Component {
 		stockInfo.longBusinessSummary = longBusinessSummary;
 		
 		stockInfo.atr = ((this.state.atr/this.state.rawDump.price.regularMarketPrice)*100).toFixed(2) + "% (" + (this.state.atr).toFixed(2) + ")";
-		stockInfo.atr_OK = (this.state.atr < 2.5);
+		stockInfo.atr_OK = (((this.state.atr/this.state.rawDump.price.regularMarketPrice)*100) < 2.5);
 		if (stockInfo.atr_OK)		
 			++stockInfo.score
 		
@@ -153,6 +153,7 @@ module.exports = class InfoBox extends React.Component {
 			++stockInfo.score
 						
     }
+    
     
 	render() {
         var self = this;
