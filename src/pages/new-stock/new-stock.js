@@ -94,23 +94,19 @@ module.exports = class Home extends React.Component {
 		
 		            var req = request(options, function(err, response, body) {
 		                if (!err) {
-		                    ReactDOM.findDOMNode(self.refs.stockticker).value = body[0].ticker;
-		                    ReactDOM.findDOMNode(self.refs.stockticker).disabled = true;
-		
-		                    ReactDOM.findDOMNode(self.refs.stockname).value = body[0].namn;
-		                    ReactDOM.findDOMNode(self.refs.stockname).focus();
-		
-		                    ReactDOM.findDOMNode(self.refs.stockprice).value = body[0].kurs;
-		                    ReactDOM.findDOMNode(self.refs.stockcount).value = body[0].antal;
+							self.state.inputs.stockticker = body[0].ticker;  		
+							self.state.inputs.stockname   = body[0].namn;  		                    
+							self.state.inputs.stockprice  = body[0].kurs;
+							self.state.inputs.stockcount  = body[0].antal;		
 		
 		                    if (body[0].stoplossTyp == 1) {
-		                        ReactDOM.findDOMNode(self.refs.ATRMultiple).value = body[0].ATRMultipel;
+								self.state.inputs.atrmultiple = body[0].ATRMultipel;
 		                        stoplossOption = "option1";
 		                    } else if (body[0].stoplossTyp == 2) {
-		                        ReactDOM.findDOMNode(self.refs.stoplossQuote).value = body[0].stoplossKurs;
+								self.state.inputs.stoplossquote = body[0].stoplossKurs;
 		                        stoplossOption = "option2";
 		                    } else {
-		                        ReactDOM.findDOMNode(self.refs.stoplossPercentage).value = body[0].stoplossProcent * 100;
+								self.state.inputs.stoplosspercentage = body[0].stoplossProcent * 100;
 		                        stoplossOption = "option3";
 		                    }
 				
@@ -134,7 +130,7 @@ module.exports = class Home extends React.Component {
     
     unvalidInput() {
 	    
-        if (this.state.selectedOption == "option1") {
+/*        if (this.state.selectedOption == "option1") {
             if (!(this.state.inputs.atrmultiple != undefined && this.state.inputs.atrmultiple.length > 0 && isNumeric(this.state.inputs.atrmultiple))) {
                 return true;
             }
@@ -144,6 +140,20 @@ module.exports = class Home extends React.Component {
             }
         } else if (this.state.selectedOption == "option3") { 
         	if (!(this.state.inputs.stoplosspercentage != undefined && this.state.inputs.stoplosspercentage.length > 0 && isNumeric(this.state.inputs.stoplosspercentage))) {
+                return true;
+            }
+        }	    
+*/
+        if (this.state.selectedOption == "option1") {
+            if (!(this.state.inputs.atrmultiple != undefined && isNumeric(this.state.inputs.atrmultiple))) {
+                return true;
+            }
+        } else if (this.state.selectedOption == "option2") {
+            if (!(this.state.inputs.stoplossquote != undefined && isNumeric(this.state.inputs.stoplossquote))) {
+                return true;
+            }
+        } else if (this.state.selectedOption == "option3") { 
+        	if (!(this.state.inputs.stoplosspercentage != undefined && isNumeric(this.state.inputs.stoplosspercentage))) {
                 return true;
             }
         }	    
@@ -163,8 +173,6 @@ module.exports = class Home extends React.Component {
 		// Dropdown vald
 	    if (!isNumeric(this.state.sourceID))
 	    	return true;
-	    	
-	    
         	
         return false;
     }
@@ -341,7 +349,7 @@ module.exports = class Home extends React.Component {
                                 </Form.Label>
                             </Form.Col>
                             <Form.Col sm={11}>
-                                <Form.Input autoFocus={this.state.focus=='stockticker'} value={this.state.inputs.stockticker} padding={{bottom:1}} type="text" id="stockticker" placeholder="Kortnamn för aktien" onChange={this.onTextChange.bind(this)} onKeyPress={this.handleKeyPress.bind(this)}/>
+                                <Form.Input autoFocus={this.state.focus=='stockticker'} disabled={_stockID != undefined} value={this.state.inputs.stockticker} padding={{bottom:1}} type="text" id="stockticker" placeholder="Kortnamn för aktien" onChange={this.onTextChange.bind(this)} onKeyPress={this.handleKeyPress.bind(this)}/>
                             </Form.Col>
                         </Form.Group>
                         
