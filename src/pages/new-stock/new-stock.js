@@ -27,6 +27,7 @@ function pad(n) {
     return n < 10 ? "0" + n : n;
 }
 
+
 function getSweDate(UNIX_timestamp) {
     var a = new Date(UNIX_timestamp * 1000); 
     var year = a.getFullYear();
@@ -39,6 +40,7 @@ function getSweDate(UNIX_timestamp) {
 
     return time;
 }
+
 
 module.exports = class Home extends React.Component {
 	
