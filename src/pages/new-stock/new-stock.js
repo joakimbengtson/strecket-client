@@ -1,11 +1,14 @@
 import React from "react";
 import Request from "rest-request";
 
-import {Form, Button, Container, Row, Col, Dropdown} from 'react-bootify';
+import {Form, Button, Container, Row, Col, Dropdown, Alert, Card} from 'react-bootify';
 
 require("./new-stock.less");
 
 const ReactDOM = require("react-dom");
+
+const _portfolioSize = 4890000;
+const _risc = 0.5;
 
 var _ATR;
 var _stockID;
@@ -43,21 +46,21 @@ module.exports = class Home extends React.Component {
         super(props);
 
         _stockID = props.location.query.id;
-        _stockQuote = props.location.query.senaste;
+        _stockQuote = props.location.query.senaste; // Om vi editerar sparad aktie kommer senaste kurs här.
 
-        this.url = "http://app-o.se:3000";
-        this.api = new Request(this.url);
+//        this.url = "http://app-o.se:3000";
+//        this.api = new Request(this.url);
 
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleOptionChange = this.handleOptionChange.bind(this);
         
-        this.state = {focus:'stockticker', helptext: "", title: "Ange källa", selectedOption: "option1", sourceID: null, sources: [], inputs:{}};
+        this.state = {focus:'stockticker', helpATR: "", helpReport: "", helpPercentage: "", title: "Ange källa", selectedOption: "option1", sourceID: null, sources: [], inputs:{}};
     }
 
 	componentDidMount() {
         var self = this;
         var stoplossOption = "option1";
-        var helpStr = "";
+        var helpATR = "";
         var sourceText;
         var request = require("client-request");
 
@@ -110,15 +113,15 @@ module.exports = class Home extends React.Component {
 		                        stoplossOption = "option3";
 		                    }
 				
-		                    helpStr = "(ATR = " + body[0].ATR.toFixed(2) + " ATR % = " + ((body[0].ATR / _stockQuote) * 100).toFixed(2) + "%)";
+		                    helpATR = ((body[0].ATR / _stockQuote) * 100).toFixed(2) + "% (" + body[0].ATR.toFixed(2) + ")";
 							sourceText = sources.find(source => source.id === body[0].källa).text;
-		                    self.setState({helptext: helpStr, selectedOption: stoplossOption, sourceID: body[0].källa, title: sourceText});
+		                    self.setState({helpATR: helpATR, selectedOption: stoplossOption, sourceID: body[0].källa, title: sourceText});
 		                } 
 		                else
 		                	console.log(err);
 	            	});
 		        } else {
-		            self.setState({helptext: helpStr, selectedOption: stoplossOption});
+		            self.setState({helptext: helpATR, selectedOption: stoplossOption});
 		        }
 		
             } 
@@ -180,9 +183,6 @@ module.exports = class Home extends React.Component {
     onSave() {
         var rec = {};
         var today = new Date();
-
-        // ---- SAVE
-
         var request = require("client-request");
 
         rec.ticker = this.state.inputs.stockticker.toUpperCase();
@@ -241,26 +241,40 @@ module.exports = class Home extends React.Component {
     
 	onTextChange(event) {
         var inputs = this.state.inputs;
-        console.log("ref", event.target.ref);
-        // Säkerställ decimaltal med '.'
+
+        // Säkerställ decimaltal '.' på pris, atr-multipel och stoploss
         if (event.target.id == 'stockprice' || event.target.id == 'atrmultiple' || event.target.id == 'stoplossquote' || event.target.id == 'stoplosspercentage') {
 	        if (isNaN(event.target.value))
 	        	event.target.value = event.target.value.slice(0, event.target.value.length-1);
         }
 
-		// Säkerställ heltal
+		// Säkerställ heltal på antal
         if (event.target.id == 'stockcount') {
 	        if (isNaN(event.target.value) || event.target.value.slice(event.target.value.length-1, event.target.value.length) == '.')
 	        	event.target.value = event.target.value.slice(0, event.target.value.length-1);
         }
-
         
+        if (event.target.id == 'stoplossquote') {	        
+	        if (!Number.isNaN(_stockQuote) && !Number.isNaN(event.target.value) && event.target.value != "") {
+	            this.setState({helpPercentage: ((1 - (_stockQuote/event.target.value))*100).toFixed(2)+"%"});		        
+	        }
+	        else
+	            this.setState({helpPercentage: "n/a"});
+        }
+
+        if (event.target.id == 'atrmultiple') {	        
+	        if (!Number.isNaN(_stockQuote) && !Number.isNaN(event.target.value) && event.target.value != "" && !Number.isNaN(_ATR)) {
+	            this.setState({helpPercentage: ((1 - (_stockQuote/(_stockQuote-event.target.value*_ATR)))*100).toFixed(2)+"%"});		        
+	        }
+	        else
+	            this.setState({helpPercentage: "n/a"});
+        }
+                
         inputs[event.target.id] = event.target.value;
         this.setState({inputs:inputs});
     }
 
     handleKeyPress(target) {
-        // Kolla att tickern finns
         if (target.key == "Enter") {
             var self = this;
 
@@ -273,7 +287,7 @@ module.exports = class Home extends React.Component {
                 timeout: 1000,
                 json: true,
                 headers: {
-                    "content-type": "application/json" // setting headers is up to *you*
+                    "content-type": "application/json"
                 }
             };
 
@@ -291,18 +305,22 @@ module.exports = class Home extends React.Component {
                             timeout: 1000,
                             json: true,
                             headers: {
-                                "content-type": "application/json" // setting headers is up to *you*
+                                "content-type": "application/json"
                             }
                         };
 
                         var req = request(options, function(err, response, body) {
                             if (!err) {
-                                var helpStr;
+                                var helpATR;
+                                var helpReport;
 
-                                helpStr = "(ATR = " + body.ATR + " ATR % = " + Math.round(body.atrPercentage * 100 * 100) / 100 + "%) " + getSweDate(body.earningsDate[0]);
                                 _ATR = body.ATR;
+								_stockQuote = body.quote;                                
+                                
+                                helpATR = Math.round(body.atrPercentage * 100 * 100) / 100 + "% (" + _ATR + ")";
+                                helpReport = getSweDate(body.earningsDate[0]);
 
-                                self.setState({helptext: helpStr, focus:'stockprice'});
+                                self.setState({helpATR: helpATR, helpReport: helpReport, focus:'stockprice'});
                             }
                         });
                     }
@@ -411,9 +429,9 @@ module.exports = class Home extends React.Component {
                         </Form.Group>
 
                         <Form.Group row>
-                            <Form.Col sm={1} textAlign='right' >
+                            <Form.Col sm={2} textAlign='right' >
                                 <Form.Label inline textColor='muted'>
-                                    <small>Stop loss</small>
+                                    Stop loss
                                 </Form.Label>
                             </Form.Col>
 
@@ -425,13 +443,15 @@ module.exports = class Home extends React.Component {
 
                                     <Form.Input value={this.state.inputs.atrmultiple} margin={{left:2, right:2}} type="text" ref="atrmultiple" id="atrmultiple" placeholder="x ATR?" onChange={this.onTextChange.bind(this)}/>
 
-                                    <span ref="stoplosshelper">
-                                        <span style={{color: "#b2b2b2"}}>{this.state.helptext}</span>
-                                    </span>
+	                                <Alert color='warning' ref="infobox" id="infobox">
+										<small>ATR: {this.state.helpATR}<br/>
+										Rapport: {this.state.helpReport}<br/>
+										Procent: {this.state.helpPercentage}</small>
+									</Alert>
 
                                 </Form>
 
-                                <Form inline  padding={{bottom:1, top:1}}>
+                                <Form inline padding={{bottom:1, top:1}}>
                                     <Form.Radio value="option2" checked={this.state.selectedOption === "option2"} onChange={this.handleOptionChange}>
                                         Under kurs
                                     </Form.Radio>
@@ -449,9 +469,11 @@ module.exports = class Home extends React.Component {
                         </Form.Group>
 
                         <Form.Group row>
+                        
                             <Form.Col sm={1}>
-                                
+                            
                             </Form.Col>
+                            
                             <Form.Col sm={11}>
                                 <Button color='success' outline onClick={this.onCancel.bind(this)}>
                                     Avbryt
@@ -464,6 +486,47 @@ module.exports = class Home extends React.Component {
                             </Form.Col>
     
                         </Form.Group>
+
+                    <Form.Group>
+                        <Form.Row>
+                            <Form.Group xs={12} sm={12} md={6}>
+                                <Card>
+							        <Card.Header>
+										Stop Loss
+							        </Card.Header>                                
+                                    <Card.Body>
+	                                    <Form.Radio value="option1" checked={this.state.selectedOption === "option1"} onChange={this.handleOptionChange}>
+	                                        Släpande
+	                                    </Form.Radio>
+	
+	                                    <Form.Input value={this.state.inputs.atrmultiple} margin={{left:2, right:2}} type="text" ref="atrmultiple" id="atrmultiple" placeholder="x ATR?" onChange={this.onTextChange.bind(this)}/>
+
+	                                    <Form.Radio value="option2" checked={this.state.selectedOption === "option2"} onChange={this.handleOptionChange}>
+	                                        Under kurs
+	                                    </Form.Radio>
+	
+	                                    <Form.Input value={this.state.inputs.stoplossquote} margin={{bottom:0, left:2, right:2}} type="text" ref="stoplossquote" id="stoplossquote" placeholder="Kurs?" onChange={this.onTextChange.bind(this)}/>
+                                
+	                                    <Form.Radio value="option3" checked={this.state.selectedOption === "option3"} onChange={this.handleOptionChange}>
+	                                        Släpande under procent
+	                                    </Form.Radio>
+	                                    <Form.Input  value={this.state.inputs.stoplosspercentage} margin={{left:2, right:2}} type="text" ref="stoplosspercentage" id="stoplosspercentage" placeholder="%" onChange={this.onTextChange.bind(this)}/>
+                                    </Card.Body>
+                                </Card>
+                            </Form.Group>
+                            <Form.Group xs={12} sm={12} md={6}>
+                                <Card>
+                                    <Card.Body>
+										<small>ATR: {this.state.helpATR}<br/>
+										Rapport: {this.state.helpReport}<br/>
+										Procent: {this.state.helpPercentage}</small>                                    
+                                    </Card.Body>
+                                </Card>
+                            </Form.Group>
+                        </Form.Row>
+                    </Form.Group>
+                        
+                                                
                     </Form>
                 </Container>
             </div>

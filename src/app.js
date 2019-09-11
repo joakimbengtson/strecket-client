@@ -1,21 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {IndexRoute, hashHistory, Router, Route} from 'react-router';
-/*
-
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.1.3/cerulean/bootstrap.css" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.1.3/flatly/bootstrap.css" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.1.3/cyborg/bootstrap.css" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.1.3/materia/bootstrap.css" crossorigin="anonymous">
-
-*/
-
-//import css from '../bootswatch/flatly/bootstrap.css';
-//import css from '../bootswatch/cerulean/bootstrap.min.css';
-//import css from '../bootswatch/materia/bootstrap.min.css';
-//import css from '../bootstrap/bootstrap.min.css';
-//require('./less/styles.less');
 
 
 var App = React.createClass({
