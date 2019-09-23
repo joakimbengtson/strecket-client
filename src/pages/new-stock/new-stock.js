@@ -9,6 +9,7 @@ const ReactDOM = require("react-dom");
 
 const _portfolioSize = 4890000;
 const _risc = 0.5;
+var _perc = 0.0;
 
 var _ATR;
 var _stockID;
@@ -42,6 +43,7 @@ function getSweDate(UNIX_timestamp) {
 }
 
 
+
 module.exports = class Home extends React.Component {
 	
     constructor(props) {
@@ -56,13 +58,14 @@ module.exports = class Home extends React.Component {
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleOptionChange = this.handleOptionChange.bind(this);
         
-        this.state = {focus:'stockticker', helpATR: "", helpReport: "", helpPercentage: "", title: "Ange källa", selectedOption: "option1", sourceID: null, sources: [], inputs:{}};
+        this.state = {focus:'stockticker', helpATR: "", helpReport: "", helpPercentage: "", helpQuote: "", title: "Ange källa", selectedOption: "option1", sourceID: null, sources: [], inputs:{}};
     }
 
 	componentDidMount() {
         var self = this;
         var stoplossOption = "option1";
         var helpATR = "";
+        var helpQuote = "";
         var sourceText;
         var request = require("client-request");
 
@@ -116,8 +119,9 @@ module.exports = class Home extends React.Component {
 		                    }
 				
 		                    helpATR = ((body[0].ATR / _stockQuote) * 100).toFixed(2) + "% (" + body[0].ATR.toFixed(2) + ")";
+		                    helpQuote = _stockQuote;
 							sourceText = sources.find(source => source.id === body[0].källa).text;
-		                    self.setState({helpATR: helpATR, selectedOption: stoplossOption, sourceID: body[0].källa, title: sourceText});
+		                    self.setState({helpATR: helpATR, helpQuote: helpQuote, selectedOption: stoplossOption, sourceID: body[0].källa, title: sourceText});
 		                } 
 		                else
 		                	console.log(err);
@@ -201,7 +205,7 @@ module.exports = class Home extends React.Component {
             rec.stoplossKurs = this.state.inputs.stoplossquote;
         } else {
             rec.stoplossTyp = _stoplossType.StoplossTypePercent;
-            rec.stoplossProcent = (this.state.inputs.stoplosspercentage / 100).toFixed(2);
+            rec.stoplossProcent = this.state.inputs.stoplosspercentage/100;
         }
 
         rec.ATR = _ATR;
@@ -258,19 +262,31 @@ module.exports = class Home extends React.Component {
         
         if (event.target.id == 'stoplossquote') {	        
 	        if (!Number.isNaN(_stockQuote) && !Number.isNaN(event.target.value) && event.target.value != "") {
-	            this.setState({helpPercentage: ((1 - (_stockQuote/event.target.value))*100).toFixed(2)+"%"});		        
+	            _perc = ((1 - (_stockQuote/event.target.value))*100).toFixed(2);
+	            this.setState({helpPercentage: _perc + "%"});
+		        
 	        }
-	        else
-	            this.setState({helpPercentage: "n/a"});
+	        else {
+		        _perc = 0.0;
+	            this.setState({helpPercentage: "n/a"});		        
+	        }
         }
 
         if (event.target.id == 'atrmultiple') {	        
 	        if (!Number.isNaN(_stockQuote) && !Number.isNaN(event.target.value) && event.target.value != "" && !Number.isNaN(_ATR)) {
-	            this.setState({helpPercentage: ((1 - (_stockQuote/(_stockQuote-event.target.value*_ATR)))*100).toFixed(2)+"%"});		        
+		        _perc = ((1 - (_stockQuote/(_stockQuote-event.target.value*_ATR)))*100).toFixed(2);
+	            this.setState({helpPercentage: _perc + "%"});		        
 	        }
-	        else
-	            this.setState({helpPercentage: "n/a"});
+	        else {
+		        _perc = 0.0;
+	            this.setState({helpPercentage: "n/a"});		        
+	        }
         }
+        
+        if (event.target.id == 'stoplosspercentage') {	        
+			_perc = event.target.value;
+	        this.setState({helpPercentage: _perc + "%"});		        
+		}        
                 
         inputs[event.target.id] = event.target.value;
         this.setState({inputs:inputs});
@@ -315,14 +331,15 @@ module.exports = class Home extends React.Component {
                             if (!err) {
                                 var helpATR;
                                 var helpReport;
+                                var helpQuote;
 
                                 _ATR = body.ATR;
 								_stockQuote = body.quote;                                
-                                
+                                helpQuote = _stockQuote;
                                 helpATR = Math.round(body.atrPercentage * 100 * 100) / 100 + "% (" + _ATR + ")";
                                 helpReport = getSweDate(body.earningsDate[0]);
 
-                                self.setState({helpATR: helpATR, helpReport: helpReport, focus:'stockprice'});
+                                self.setState({helpATR: helpATR, helpReport: helpReport, helpQuote: helpQuote, focus:'stockprice'});
                             }
                         });
                     }
@@ -348,7 +365,7 @@ module.exports = class Home extends React.Component {
         
         return items;
     }
-
+    
     render() {
         return (
             <div id="new_stock">
@@ -430,45 +447,54 @@ module.exports = class Home extends React.Component {
 
                         </Form.Group>
 
-                        <Form.Group row>
-                            <Form.Col sm={2} textAlign='right' >
-                                <Form.Label inline textColor='muted'>
-                                    Stop loss
-                                </Form.Label>
-                            </Form.Col>
-
-                            <Form.Col sm={11}>
-                                <Form inline  padding={{bottom:1, top:1}}>
-                                    <Form.Radio value="option1" checked={this.state.selectedOption === "option1"} onChange={this.handleOptionChange}>
-                                        Släpande
-                                    </Form.Radio>
-
-                                    <Form.Input value={this.state.inputs.atrmultiple} margin={{left:2, right:2}} type="text" ref="atrmultiple" id="atrmultiple" placeholder="x ATR?" onChange={this.onTextChange.bind(this)}/>
-
-	                                <Alert color='warning' ref="infobox" id="infobox">
-										<small>ATR: {this.state.helpATR}<br/>
-										Rapport: {this.state.helpReport}<br/>
-										Procent: {this.state.helpPercentage}</small>
-									</Alert>
-
-                                </Form>
-
-                                <Form inline padding={{bottom:1, top:1}}>
-                                    <Form.Radio value="option2" checked={this.state.selectedOption === "option2"} onChange={this.handleOptionChange}>
-                                        Under kurs
-                                    </Form.Radio>
-
-                                    <Form.Input value={this.state.inputs.stoplossquote} margin={{bottom:0, left:2, right:2}} type="text" ref="stoplossquote" id="stoplossquote" placeholder="Kurs?" onChange={this.onTextChange.bind(this)}/>
-                                </Form>
-                                
-                                <Form inline padding={{bottom:1, top:1}}>
-                                    <Form.Radio value="option3" checked={this.state.selectedOption === "option3"} onChange={this.handleOptionChange}>
-                                        Släpande under procent
-                                    </Form.Radio>
-                                    <Form.Input  value={this.state.inputs.stoplosspercentage} margin={{left:2, right:2}} type="text" ref="stoplosspercentage" id="stoplosspercentage" placeholder="%" onChange={this.onTextChange.bind(this)}/>
-                                </Form>
-                            </Form.Col>
-                        </Form.Group>
+	                    <Form.Group>
+	                        <Form.Row>
+	                            <Form.Group xs={12} sm={12} md={6}>
+	                                <Card>
+								        <Card.Header>
+											Stop Loss
+								        </Card.Header>                                
+	                                    <Card.Body>
+	                                    
+										<Form inline padding={{vertical:1}}>                                    	
+		                                    <Form.Radio value="option1" checked={this.state.selectedOption === "option1"} onChange={this.handleOptionChange}>
+		                                        Släpande
+		                                    </Form.Radio>
+		
+		                                    <Form.Input value={this.state.inputs.atrmultiple} margin={{left:2, right:2}} type="text" ref="atrmultiple" id="atrmultiple" placeholder="x ATR?" onChange={this.onTextChange.bind(this)}/>
+		                                </Form>
+	
+										<Form inline padding={{vertical:1}}>                                    	
+		                                    <Form.Radio value="option2" checked={this.state.selectedOption === "option2"} onChange={this.handleOptionChange}>
+		                                        Under kurs
+		                                    </Form.Radio>
+		
+		                                    <Form.Input value={this.state.inputs.stoplossquote} margin={{bottom:0, left:2, right:2}} type="text" ref="stoplossquote" id="stoplossquote" placeholder="Kurs?" onChange={this.onTextChange.bind(this)}/>
+		                                </Form>
+		                                                                
+										<Form inline padding={{vertical:1}}>                                    	
+		                                    <Form.Radio value="option3" checked={this.state.selectedOption === "option3"} onChange={this.handleOptionChange}>
+		                                        Släpande under procent
+		                                    </Form.Radio>
+		                                    <Form.Input  value={this.state.inputs.stoplosspercentage} margin={{left:2, right:2}} type="text" ref="stoplosspercentage" id="stoplosspercentage" placeholder="%" onChange={this.onTextChange.bind(this)}/>
+										</Form>
+										
+	                                    </Card.Body>
+	                                </Card>
+	                            </Form.Group>
+	                            <Form.Group xs={12} sm={12} md={6}>
+	                                <Card>
+	                                    <Card.Body>
+											ATR: {this.state.helpATR}<br/>
+											Rapport: {this.state.helpReport}<br/>
+											Risk: {this.state.helpPercentage > 0 ? "-" + this.state.helpPercentage : this.state.helpPercentage}<br/>
+											Kurs nu: {this.state.helpQuote}<br/>
+											Köpesumma: {Math.trunc((_risc*_portfolioSize)/(Math.abs(_perc))) > _portfolioSize? _portfolioSize.toLocaleString() : Math.trunc((_risc*_portfolioSize)/(Math.abs(_perc))).toLocaleString()}
+	                                    </Card.Body>
+	                                </Card>
+	                            </Form.Group>
+	                        </Form.Row>
+	                    </Form.Group>
 
                         <Form.Group row>
                         
@@ -487,47 +513,7 @@ module.exports = class Home extends React.Component {
                             
                             </Form.Col>
     
-                        </Form.Group>
-
-                    <Form.Group>
-                        <Form.Row>
-                            <Form.Group xs={12} sm={12} md={6}>
-                                <Card>
-							        <Card.Header>
-										Stop Loss
-							        </Card.Header>                                
-                                    <Card.Body>
-	                                    <Form.Radio value="option1" checked={this.state.selectedOption === "option1"} onChange={this.handleOptionChange}>
-	                                        Släpande
-	                                    </Form.Radio>
-	
-	                                    <Form.Input value={this.state.inputs.atrmultiple} margin={{left:2, right:2}} type="text" ref="atrmultiple" id="atrmultiple" placeholder="x ATR?" onChange={this.onTextChange.bind(this)}/>
-
-	                                    <Form.Radio value="option2" checked={this.state.selectedOption === "option2"} onChange={this.handleOptionChange}>
-	                                        Under kurs
-	                                    </Form.Radio>
-	
-	                                    <Form.Input value={this.state.inputs.stoplossquote} margin={{bottom:0, left:2, right:2}} type="text" ref="stoplossquote" id="stoplossquote" placeholder="Kurs?" onChange={this.onTextChange.bind(this)}/>
-                                
-	                                    <Form.Radio value="option3" checked={this.state.selectedOption === "option3"} onChange={this.handleOptionChange}>
-	                                        Släpande under procent
-	                                    </Form.Radio>
-	                                    <Form.Input  value={this.state.inputs.stoplosspercentage} margin={{left:2, right:2}} type="text" ref="stoplosspercentage" id="stoplosspercentage" placeholder="%" onChange={this.onTextChange.bind(this)}/>
-                                    </Card.Body>
-                                </Card>
-                            </Form.Group>
-                            <Form.Group xs={12} sm={12} md={6}>
-                                <Card>
-                                    <Card.Body>
-										<small>ATR: {this.state.helpATR}<br/>
-										Rapport: {this.state.helpReport}<br/>
-										Procent: {this.state.helpPercentage}</small>                                    
-                                    </Card.Body>
-                                </Card>
-                            </Form.Group>
-                        </Form.Row>
-                    </Form.Group>
-                        
+                        </Form.Group>                        
                                                 
                     </Form>
                 </Container>
