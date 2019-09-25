@@ -1,20 +1,22 @@
 import React from "react";
 import Request from "rest-request";
 
-import {Form, Button, Container, Row, Col, Dropdown, Alert, Card} from 'react-bootify';
+import {Form, Button, Container, Row, Col, Dropdown, Alert, Card, Tag} from 'react-bootify';
 
 require("./new-stock.less");
 
 const ReactDOM = require("react-dom");
 
 const _portfolioSize = 4890000;
-const _risc = 0.5;
+const _risc = 0.25;
 var _perc = 0.0;
 
 var _ATR;
 var _stockID;
 var _stockQuote;
-var _stoplossType = {
+var _xrate = 9.72;
+
+const _stoplossType = {
     StoplossTypeATR: 1,
     StoplossTypeQuote: 2,
     StoplossTypePercent: 3
@@ -51,9 +53,6 @@ module.exports = class Home extends React.Component {
 
         _stockID = props.location.query.id;
         _stockQuote = props.location.query.senaste; // Om vi editerar sparad aktie kommer senaste kurs här.
-
-//        this.url = "http://app-o.se:3000";
-//        this.api = new Request(this.url);
 
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleOptionChange = this.handleOptionChange.bind(this);
@@ -137,22 +136,7 @@ module.exports = class Home extends React.Component {
 	   	
     }
     
-    unvalidInput() {
-	    
-/*        if (this.state.selectedOption == "option1") {
-            if (!(this.state.inputs.atrmultiple != undefined && this.state.inputs.atrmultiple.length > 0 && isNumeric(this.state.inputs.atrmultiple))) {
-                return true;
-            }
-        } else if (this.state.selectedOption == "option2") {
-            if (!(this.state.inputs.stoplossquote != undefined && this.state.inputs.stoplossquote.length > 0 && isNumeric(this.state.inputs.stoplossquote))) {
-                return true;
-            }
-        } else if (this.state.selectedOption == "option3") { 
-        	if (!(this.state.inputs.stoplosspercentage != undefined && this.state.inputs.stoplosspercentage.length > 0 && isNumeric(this.state.inputs.stoplosspercentage))) {
-                return true;
-            }
-        }	    
-*/
+    unvalidInput() {	    
         if (this.state.selectedOption == "option1") {
             if (!(this.state.inputs.atrmultiple != undefined && isNumeric(this.state.inputs.atrmultiple))) {
                 return true;
@@ -237,13 +221,24 @@ module.exports = class Home extends React.Component {
     handleOptionChange(changeEvent) {
         this.setState({selectedOption: changeEvent.target.value});
         
-        if (changeEvent.target.value == "option1")
-        	ReactDOM.findDOMNode(this.refs.atrmultiple).focus();
-        else if (changeEvent.target.value == "option2")
-        	ReactDOM.findDOMNode(this.refs.stoplossquote).focus();
-        else
-        	ReactDOM.findDOMNode(this.refs.stoplosspercentage).focus();
+        if (changeEvent.target.value == "option1") // ATR
+			this.setPercentageHelp(this.state.inputs.atrmultiple, changeEvent.target.value);
+        else if (changeEvent.target.value == "option2") // Fixed quote
+			this.setPercentageHelp(this.state.inputs.stoplossquote, changeEvent.target.value);        
+        else // Trailing stoploss
+			this.setPercentageHelp(this.state.inputs.stoplosspercentage, changeEvent.target.value);
     }
+    
+	setPercentageHelp(val, option) {
+        if (option == "option1")
+	        _perc = ((1 - (_stockQuote/(_stockQuote-val*_ATR)))*100).toFixed(2);
+        else if (option == "option2")
+			_perc = ((1 - (_stockQuote/val))*100).toFixed(2);
+		else
+			_perc = -1*val;
+	    
+	    this.setState({helpPercentage: _perc + "%"});
+	}    
     
 	onTextChange(event) {
         var inputs = this.state.inputs;
@@ -259,34 +254,28 @@ module.exports = class Home extends React.Component {
 	        if (isNaN(event.target.value) || event.target.value.slice(event.target.value.length-1, event.target.value.length) == '.')
 	        	event.target.value = event.target.value.slice(0, event.target.value.length-1);
         }
-        
-        if (event.target.id == 'stoplossquote') {	        
-	        if (!Number.isNaN(_stockQuote) && !Number.isNaN(event.target.value) && event.target.value != "") {
-	            _perc = ((1 - (_stockQuote/event.target.value))*100).toFixed(2);
-	            this.setState({helpPercentage: _perc + "%"});
-		        
-	        }
-	        else {
-		        _perc = 0.0;
-	            this.setState({helpPercentage: "n/a"});		        
-	        }
-        }
+
 
         if (event.target.id == 'atrmultiple') {	        
-	        if (!Number.isNaN(_stockQuote) && !Number.isNaN(event.target.value) && event.target.value != "" && !Number.isNaN(_ATR)) {
-		        _perc = ((1 - (_stockQuote/(_stockQuote-event.target.value*_ATR)))*100).toFixed(2);
-	            this.setState({helpPercentage: _perc + "%"});		        
-	        }
+	        if (!Number.isNaN(_stockQuote) && !Number.isNaN(event.target.value) && event.target.value != "" && !Number.isNaN(_ATR))
+		        this.setPercentageHelp(event.target.value, 'option1');
 	        else {
 		        _perc = 0.0;
 	            this.setState({helpPercentage: "n/a"});		        
 	        }
         }
         
-        if (event.target.id == 'stoplosspercentage') {	        
-			_perc = event.target.value;
-	        this.setState({helpPercentage: _perc + "%"});		        
-		}        
+        if (event.target.id == 'stoplossquote') {	        
+	        if (!Number.isNaN(_stockQuote) && !Number.isNaN(event.target.value) && event.target.value != "")
+		        this.setPercentageHelp(event.target.value, 'option2');		        
+	        else {
+		        _perc = 0.0;
+	            this.setState({helpPercentage: "n/a"});		        
+	        }
+        }
+        
+        if (event.target.id == 'stoplosspercentage')
+			this.setPercentageHelp(event.target.value, 'option3');
                 
         inputs[event.target.id] = event.target.value;
         this.setState({inputs:inputs});
@@ -328,7 +317,7 @@ module.exports = class Home extends React.Component {
                         };
 
                         var req = request(options, function(err, response, body) {
-                            if (!err) {
+                            if (!err && body.length > 0) {
                                 var helpATR;
                                 var helpReport;
                                 var helpQuote;
@@ -485,11 +474,10 @@ module.exports = class Home extends React.Component {
 	                            <Form.Group xs={12} sm={12} md={6}>
 	                                <Card>
 	                                    <Card.Body>
-											ATR: {this.state.helpATR}<br/>
-											Rapport: {this.state.helpReport}<br/>
-											Risk: {this.state.helpPercentage > 0 ? "-" + this.state.helpPercentage : this.state.helpPercentage}<br/>
-											Kurs nu: {this.state.helpQuote}<br/>
-											Köpesumma: {Math.trunc((_risc*_portfolioSize)/(Math.abs(_perc))) > _portfolioSize? _portfolioSize.toLocaleString() : Math.trunc((_risc*_portfolioSize)/(Math.abs(_perc))).toLocaleString()}
+											<Tag tag="span" text="muted">kurs nu:</Tag> {this.state.helpQuote}<Tag tag="span" text="muted float-right">rapport: {this.state.helpReport}</Tag><br/>
+											<Tag tag="span" text="muted">atr:</Tag> {this.state.helpATR}<br/>
+											<Tag tag="span" text="muted">risk:</Tag> {this.state.helpPercentage > 0 ? "-" + this.state.helpPercentage : this.state.helpPercentage}<br/>
+											<Tag tag="span" text="muted">köpesumma:</Tag> {Math.trunc((_risc*_portfolioSize)/(Math.abs(_perc))) > _portfolioSize? _portfolioSize.toLocaleString() : Math.trunc((_risc*_portfolioSize)/(Math.abs(_perc))).toLocaleString()}<Tag tag="span" text="muted float-right">antal: {Math.trunc(((_risc*_portfolioSize)/(Math.abs(_perc))/_xrate)/_stockQuote)}</Tag>
 	                                    </Card.Body>
 	                                </Card>
 	                            </Form.Group>
