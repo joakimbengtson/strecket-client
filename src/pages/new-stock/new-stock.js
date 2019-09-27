@@ -302,35 +302,33 @@ module.exports = class Home extends React.Component {
                 if (!err) {
                     if (body != null) {
 						var inputs = self.state.inputs;
+                        var helpATR;
+                        var helpReport;
+                        var helpQuote;
         
-						inputs.stockname = body;
+						inputs.stockname = body.price.shortName;
+
+						if (body.price.currency == 'USD')
+							_xrate = 9.75;
+						else if (body.price.currency == 'CAD')
+							_xrate = 7.34;
+						else if (body.price.currency == 'EUR')
+							_xrate = 10.68;
+						else if (body.price.currency == 'SEK')
+							_xrate = 1;
+						
+						console.log("_xrate=", _xrate);
+						
 						self.setState({inputs:inputs});
 
-                        options = {
-                            uri: "http://app-o.se:3000/atr/" + ticker,
-                            method: "GET",
-                            timeout: 1000,
-                            json: true,
-                            headers: {
-                                "content-type": "application/json"
-                            }
-                        };
+                        _ATR = body.misc.atr14;
+						_stockQuote = (body.price.regularMarketPrice).toFixed(2);
+						
+                        helpQuote = _stockQuote;
+                        helpATR = ((_ATR/_stockQuote)*100).toFixed(2) + "% (" + _ATR + ")";
+                        helpReport = getSweDate(body.calendarEvents.earnings.earningsDate[0]);
 
-                        var req = request(options, function(err, response, body) {
-                            if (!err && body.length > 0) {
-                                var helpATR;
-                                var helpReport;
-                                var helpQuote;
-
-                                _ATR = body.ATR;
-								_stockQuote = body.quote;                                
-                                helpQuote = _stockQuote;
-                                helpATR = Math.round(body.atrPercentage * 100 * 100) / 100 + "% (" + _ATR + ")";
-                                helpReport = getSweDate(body.earningsDate[0]);
-
-                                self.setState({helpATR: helpATR, helpReport: helpReport, helpQuote: helpQuote, focus:'stockprice'});
-                            }
-                        });
+                        self.setState({helpATR: helpATR, helpReport: helpReport, helpQuote: helpQuote, focus:'stockprice'});
                     }
                 }
             });
@@ -354,7 +352,7 @@ module.exports = class Home extends React.Component {
         
         return items;
     }
-    
+        
     render() {
         return (
             <div id="new_stock">
@@ -473,11 +471,30 @@ module.exports = class Home extends React.Component {
 	                            </Form.Group>
 	                            <Form.Group xs={12} sm={12} md={6}>
 	                                <Card>
+										<Card.Header>
+										Info
+										</Card.Header>
 	                                    <Card.Body>
-											<Tag tag="span" text="muted">kurs nu:</Tag> {this.state.helpQuote}<Tag tag="span" text="muted float-right">rapport: {this.state.helpReport}</Tag><br/>
-											<Tag tag="span" text="muted">atr:</Tag> {this.state.helpATR}<br/>
-											<Tag tag="span" text="muted">risk:</Tag> {this.state.helpPercentage > 0 ? "-" + this.state.helpPercentage : this.state.helpPercentage}<br/>
-											<Tag tag="span" text="muted">köpesumma:</Tag> {Math.trunc((_risc*_portfolioSize)/(Math.abs(_perc))) > _portfolioSize? _portfolioSize.toLocaleString() : Math.trunc((_risc*_portfolioSize)/(Math.abs(_perc))).toLocaleString()}<Tag tag="span" text="muted float-right">antal: {Math.trunc(((_risc*_portfolioSize)/(Math.abs(_perc))/_xrate)/_stockQuote)}</Tag>
+											<Container>
+										        <Container.Row>
+										            <Container.Col text="info text-right font-weight-light">Kurs nu</Container.Col>
+										            <Container.Col>{this.state.helpQuote}</Container.Col>
+										            <Container.Col text="info text-right font-weight-light">Rapport</Container.Col>
+										            <Container.Col text="float-left">{this.state.helpReport}</Container.Col>										            
+										        </Container.Row>
+										        <Container.Row>
+										            <Container.Col text="info text-right font-weight-light">ATR</Container.Col>
+										            <Container.Col>{this.state.helpATR}</Container.Col>
+										            <Container.Col text="info text-right font-weight-light">Risk</Container.Col>
+										            <Container.Col>{this.state.helpPercentage > 0 ? "-" + this.state.helpPercentage : this.state.helpPercentage}</Container.Col>										            
+										        </Container.Row>
+										        <Container.Row>
+										            <Container.Col text="info text-right font-weight-light">Köpesumma</Container.Col>
+										            <Container.Col>{Math.trunc((_risc*_portfolioSize)/(Math.abs(_perc))) > _portfolioSize? _portfolioSize.toLocaleString() : Math.trunc((_risc*_portfolioSize)/(Math.abs(_perc))).toLocaleString()}</Container.Col>
+										            <Container.Col text="info text-right font-weight-light">Antal</Container.Col>
+										            <Container.Col>{Math.trunc(((_risc*_portfolioSize)/(Math.abs(_perc))/_xrate)/_stockQuote).toLocaleString()}</Container.Col>										            
+										        </Container.Row>
+										    </Container>	                                    
 	                                    </Card.Body>
 	                                </Card>
 	                            </Form.Group>
