@@ -5,7 +5,7 @@ import {Form, Button, Container, Row, Col, Dropdown, Alert, Card, Tag} from 'rea
 
 require("./new-stock.less");
 
-const ReactDOM = require("react-dom");
+//const ReactDOM = require("react-dom");
 
 const _portfolioSize = 4890000;
 const _risc = 0.25;

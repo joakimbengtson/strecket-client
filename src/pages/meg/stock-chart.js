@@ -283,7 +283,6 @@ var _symb = this.state.symbol;
                 <div style = {style}>
                     <ReactHighstock config={this.state.config} ref="chart"></ReactHighstock>
                     <InfoBox symbol={this.state.symbol} sectors={this.state.sectors} atr={this.state.atr} drops={this.state.drops}></InfoBox>
-
                 </div>
             );
 

@@ -2,7 +2,7 @@ import React from "react";
 import ReactHighcharts from "react-highcharts";
 import ReactHighstock from "react-highcharts/ReactHighstock";
 
-import {Table, Alert, Spinner} from "react-bootify";
+import {Table, Alert, Spinner, Form, Checkbox} from "react-bootify";
 
 import Request from "yow/request";
 import sprintf from "yow/sprintf";
@@ -22,8 +22,10 @@ module.exports = class InfoBox extends React.Component {
         this.state.atr = this.props.atr;
         this.state.drops = this.props.drops; 
         
+        this.state.checkBox = false;        
+        this.onClick = this.onClick.bind(this);
+        
     }
-    
     
     getColor(percentage) {
 	    const climateGood = "table-success";
@@ -65,6 +67,10 @@ module.exports = class InfoBox extends React.Component {
                 this.setState({ready: true});
             });
     }
+    
+	onClick() {
+    	this.setState({ checkBox: !this.state.checkBox });
+	}    
     
     getStatistics(stockInfo) {
 
@@ -179,7 +185,7 @@ module.exports = class InfoBox extends React.Component {
 
             return (
                 <div style={style}>
-                    <Table bordered={true} responsive={true} size={'sm'}>
+                    <Table responsive={true} size={'sm'}>
                         <tbody>
                             <tr>
                                 <td className={ stockInfo.pegRatio_OK ? 'table-success' : 'table-danger'}>
@@ -230,6 +236,11 @@ module.exports = class InfoBox extends React.Component {
                                 <td colSpan="6" className="table-primary">
                                 	<small>{stockInfo.longBusinessSummary}</small>
                                 </td>
+                            </tr>
+                            <tr>
+								<td colSpan="6" className="text-center">
+	                            	<Form.Checkbox id={this.state.symbol} checked={this.state.checkBox} onClick={this.onClick}>Kandidat</Form.Checkbox>
+	                            </td>
                             </tr>
                         </tbody>
                     </Table>
