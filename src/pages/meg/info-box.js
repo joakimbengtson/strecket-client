@@ -1,6 +1,6 @@
 import React from "react";
+import Highcharts from 'highcharts';
 import ReactHighcharts from "react-highcharts";
-import ReactHighstock from "react-highcharts/ReactHighstock";
 
 import {Table, Alert, Spinner, Form, Checkbox} from "react-bootify";
 
@@ -8,7 +8,7 @@ import Request from "yow/request";
 import sprintf from "yow/sprintf";
 
 module.exports = class InfoBox extends React.Component {
-	
+		
     constructor(args) {
         super(args);
 
@@ -37,6 +37,8 @@ module.exports = class InfoBox extends React.Component {
         if (p >= 0.7) return climateGood;
 
         if (p >= 0.5) return climateAcceptable;
+        
+        if (p == 0) return "table-secondary";
 
         else return climateBad;
     }    
@@ -157,7 +159,19 @@ module.exports = class InfoBox extends React.Component {
 		stockInfo.maxDrop_OK = (stockInfo.maxDrop > -6);
 		if (stockInfo.maxDrop_OK)		
 			++stockInfo.score
-						
+		
+		if (this.state.rawDump.earnings.financialsChart.quarterly !== undefined) {
+			
+			stockInfo.earnings = [];
+			stockInfo.revenue = [];
+			stockInfo.quarters = [];			
+			
+			for (var i in this.state.rawDump.earnings.financialsChart.quarterly) {
+				stockInfo.earnings.push(this.state.rawDump.earnings.financialsChart.quarterly[i].earnings);
+				stockInfo.revenue.push(this.state.rawDump.earnings.financialsChart.quarterly[i].revenue);
+				stockInfo.quarters.push(this.state.rawDump.earnings.financialsChart.quarterly[i].date);				
+			}
+		}			
     }
     
     
@@ -172,21 +186,78 @@ module.exports = class InfoBox extends React.Component {
             style.marginRight = "10em";
             style.marginTop = "5em";
             style.marginBottom = "5em";
-        
-        
+                    
 			self.getStatistics(stockInfo);
+			
+			var configEarnings = {
+				chart: {
+				    type: 'column'
+				},
+				title: {
+					text: ''	
+				},
+			    xAxis: {
+			        categories: stockInfo.quarters
+			    },
+				yAxis: {
+			        title: {
+			            text: ''
+			        }
+			    },			    				
+				series: [{
+					name: 'Vinst',
+					data: stockInfo.earnings
+				}]
+			}	            			
+
+			var configRevenue = {
+				chart: {
+				    type: 'column'
+				},
+				title: {
+					text: ''	
+				},
+			    xAxis: {
+			        categories: stockInfo.quarters
+			    },
+				yAxis: {
+			        title: {
+			            text: ''
+			        }
+			    },			    				
+				series: [{
+					name: 'Omsättning',
+					data: stockInfo.revenue
+				}]
+			}
                         
             var x = this.state.rawDump.summaryProfile.industry;
             
 			var sector = this.state.sectors.find(sector => sector.industry == x); // Är denna aktie i en trendande sektor? om så -> sektor.perc visar hur många aktier i sektorn som trendar upp
 			
-			if (sector.perc > 0.5)
-				++stockInfo.score;
+			if (sector !== undefined) {
+				if (sector.perc > 0.5)
+					++stockInfo.score;
+			}
+			else {
+				sector = {};
+				sector.perc = 0;
+			}
 
             return (
                 <div style={style}>
                     <Table responsive={true} size={'sm'}>
                         <tbody>
+                            <tr>
+                                <td colSpan="6" className="table-primary">
+                                    <h3>{stockInfo.longName + " (" + stockInfo.industry + ", " + stockInfo.sector + "), "}<strong>{stockInfo.score}</strong></h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colSpan="6" className="table-primary">
+                                	<small>{stockInfo.longBusinessSummary}</small>
+                                </td>
+                            </tr>                        
                             <tr>
                                 <td className={ stockInfo.pegRatio_OK ? 'table-success' : 'table-danger'}>
                                     <h5 className="text-white text-center">{"PEG: " + stockInfo.pegRatio}</h5>
@@ -228,14 +299,18 @@ module.exports = class InfoBox extends React.Component {
                                 </td>
                             </tr>
                             <tr>
-                                <td colSpan="6" className="table-primary">
-                                    <h3>{stockInfo.longName + " (" + stockInfo.industry + ", " + stockInfo.sector + "), "}<strong>{stockInfo.score}</strong></h3>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colSpan="6" className="table-primary">
-                                	<small>{stockInfo.longBusinessSummary}</small>
-                                </td>
+                                <td colSpan="3" className="text-center">
+									<ReactHighcharts
+									    highcharts={Highcharts}
+									    config={configEarnings}
+									  />                                
+								</td>
+                                <td colSpan="3" className="text-center">
+									<ReactHighcharts
+									    highcharts={Highcharts}
+									    config={configRevenue}
+									  />                                
+								</td>
                             </tr>
                             <tr>
 								<td colSpan="6" className="text-center">

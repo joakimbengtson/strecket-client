@@ -70,6 +70,17 @@ module.exports = class Home extends React.Component {
         });
     }
     
+	getStoplossInfo(stock) {		
+		if (stock.stoplossTyp == 1)
+			return "ATR: " + stock.ATRMultipel;
+		else if (stock.stoplossTyp == 2)
+			return "Fast kurs: " + stock.stoplossKurs;		
+		else if (stock.stoplossTyp == 3)
+			return "Släpande procent: " + (stock.stoplossProcent * 100).toFixed(2) + "%";
+		else
+			return "Okänd stoploss";	
+	}
+    
     onCancel() {
         window.history.back();
     }    
@@ -90,8 +101,18 @@ module.exports = class Home extends React.Component {
                             <span>{parseFloat((1 - stock.kurs / stock.såld_kurs) * 100).toFixed(2)}%</span>
                         </td>
                         <td style={{textAlign: "right"}}>
+                            <span>{stock.max}%</span>
+                        </td>
+                        <td style={{textAlign: "right"}}>
+                            <span>{stock.min}%</span>
+                        </td>
+                        <td style={{textAlign: "right"}}>
                             <span>{parseFloat(stock.utfall).toFixed(2)}%</span>
                         </td>
+						<td style={{textAlign: "center"}}><Sparklines data={stock.quotes} width={130} height={25} svgWidth={130} svgHeight={30} margin={0}><SparklinesLine color="LightSkyBlue" /></Sparklines></td>                        
+                        <td>
+                            <span>{self.getStoplossInfo(stock)}</span>
+                        </td>                        
                         <td>
                             <span>{stock.text}</span>
                         </td>                        
@@ -107,7 +128,7 @@ module.exports = class Home extends React.Component {
             if (this.state.error)
                 var items = (
                     <tr>
-                        <td colSpan="5">
+                        <td colSpan="9">
                             <center>{"Kan inte nå server: " + self.state.error.message}</center>
                         </td>
                     </tr>
@@ -115,7 +136,7 @@ module.exports = class Home extends React.Component {
             else
                 var items = (
                     <tr>
-                        <td colSpan="5">
+                        <td colSpan="9">
                             <center>{"Inga aktier"}</center>
                         </td>
                     </tr>
@@ -128,15 +149,19 @@ module.exports = class Home extends React.Component {
                     <thead>
                         <tr>
                             <th>Ticker</th>
-                            <th style={{textAlign: "right"}}>Utfall</th>
-                            <th style={{textAlign: "right"}}>Utfall nu</th>
+                            <th style={{textAlign: "right"}}>P/L</th>
+                            <th style={{textAlign: "right"}}>Max</th>
+                            <th style={{textAlign: "right"}}>Min</th>                            
+                            <th style={{textAlign: "right"}}>Om behållt</th>
+                            <th>Senaste 30</th>
+                            <th>Stoploss</th>
                             <th>Källa</th>
                             <th>Såld</th>
                         </tr>
                     </thead>
 
                     <tbody>{items}
-                    <tr><td colSpan="5">{(sum).toFixed(2)}%</td></tr>
+                    <tr><td colSpan="9">{(sum).toFixed(2)}%</td></tr>
                     </tbody>
                 </Table>
 
