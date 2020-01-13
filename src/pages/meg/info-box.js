@@ -19,6 +19,7 @@ module.exports = class InfoBox extends React.Component {
 
         this.state.symbol = this.props.symbol;
         this.state.sectors = this.props.sectors;
+        this.state.callback = this.props.callback;
         this.state.atr = this.props.atr;
         this.state.drops = this.props.drops; 
         
@@ -72,6 +73,8 @@ module.exports = class InfoBox extends React.Component {
     
 	onClick() {
     	this.setState({ checkBox: !this.state.checkBox });
+    	
+    	this.state.callback;
 	}    
     
     getStatistics(stockInfo) {
