@@ -28,7 +28,7 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {spikes:null, dates:null, error: null, sectors:[]};
+		this.state = {spikes:null, dates:null, error:null, sectors:[], tickers: ""};
 		
 		this.handleCheck = this.handleCheck.bind(this);
 		
@@ -132,8 +132,10 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 
     }
     
-	handleCheck(event){
-		console.log("E:", event);
+	handleCheck = (childData) => {
+		console.log("check:", childData);
+		
+		this.setState({tickers: this.state.tickers + ", " + childData});
 	}    
 
     render() {
@@ -143,7 +145,7 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 		        <h1 className="text-center">{this.state.dates[1] + " - " + this.state.dates[0] + " (" + this.state.spikes.length + " st)"}</h1>
 		        <h4 className="text-center">({_descr1})</h4>
                 <StockChartList symbols={this.state.spikes} sectors={this.state.sectors} callback={this.handleCheck}/>
-                <textarea name="candidates" rows="4" placeholder="Kandidater"></textarea>
+                <textarea name="candidates" rows="4" cols="80" placeholder="Kandidater" value={this.state.tickers}></textarea>
                 </div>
 	        );
 	    }

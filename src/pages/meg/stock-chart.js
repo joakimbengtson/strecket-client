@@ -28,7 +28,7 @@ module.exports = class StockChart extends React.Component {
         // Hämta parametrar från anropet <StockChart symbol='X'/>
         this.state.symbol = this.props.symbol;
         this.state.sectors = this.props.sectors;        
-        this.state.callback = this.props.callback;
+        //this.state.callback = this.props.callback;
     }
 
     // Anropas efter konponenten är skapad och finns i DOM:en
@@ -283,7 +283,7 @@ var _symb = this.state.symbol;
             return (
                 <div style = {style}>
                     <ReactHighstock config={this.state.config} ref="chart"></ReactHighstock>
-                    <InfoBox symbol={this.state.symbol} sectors={this.state.sectors} atr={this.state.atr} drops={this.state.drops} callback={this.state.callback}></InfoBox>
+                    <InfoBox symbol={this.state.symbol} sectors={this.state.sectors} atr={this.state.atr} drops={this.state.drops} callback={this.props.callback}></InfoBox>
                 </div>
             );
 

@@ -19,7 +19,7 @@ module.exports = class InfoBox extends React.Component {
 
         this.state.symbol = this.props.symbol;
         this.state.sectors = this.props.sectors;
-        this.state.callback = this.props.callback;
+        //this.state.callback = this.props.callback;
         this.state.atr = this.props.atr;
         this.state.drops = this.props.drops; 
         
@@ -74,7 +74,7 @@ module.exports = class InfoBox extends React.Component {
 	onClick() {
     	this.setState({ checkBox: !this.state.checkBox });
     	
-    	this.state.callback;
+    	this.props.callback(this.state.symbol);
 	}    
     
     getStatistics(stockInfo) {
@@ -162,19 +162,21 @@ module.exports = class InfoBox extends React.Component {
 		stockInfo.maxDrop_OK = (stockInfo.maxDrop > -6);
 		if (stockInfo.maxDrop_OK)		
 			++stockInfo.score
-		
-		if (this.state.rawDump.earnings.financialsChart.quarterly !== undefined) {
-			
-			stockInfo.earnings = [];
-			stockInfo.revenue = [];
-			stockInfo.quarters = [];			
-			
-			for (var i in this.state.rawDump.earnings.financialsChart.quarterly) {
-				stockInfo.earnings.push(this.state.rawDump.earnings.financialsChart.quarterly[i].earnings);
-				stockInfo.revenue.push(this.state.rawDump.earnings.financialsChart.quarterly[i].revenue);
-				stockInfo.quarters.push(this.state.rawDump.earnings.financialsChart.quarterly[i].date);				
-			}
-		}			
+
+		if (this.state.rawDump.earnings !== undefined) {		
+			if (this.state.rawDump.earnings.financialsChart.quarterly !== undefined) {
+				
+				stockInfo.earnings = [];
+				stockInfo.revenue = [];
+				stockInfo.quarters = [];			
+				
+				for (var i in this.state.rawDump.earnings.financialsChart.quarterly) {
+					stockInfo.earnings.push(this.state.rawDump.earnings.financialsChart.quarterly[i].earnings);
+					stockInfo.revenue.push(this.state.rawDump.earnings.financialsChart.quarterly[i].revenue);
+					stockInfo.quarters.push(this.state.rawDump.earnings.financialsChart.quarterly[i].date);				
+				}
+			}			
+		}
     }
     
     

@@ -309,11 +309,11 @@ module.exports = class Home extends React.Component {
 						inputs.stockname = body.price.shortName;
 
 						if (body.price.currency == 'USD')
-							_xrate = 9.75;
+							_xrate = 9.48;
 						else if (body.price.currency == 'CAD')
-							_xrate = 7.34;
+							_xrate = 7.26;
 						else if (body.price.currency == 'EUR')
-							_xrate = 10.68;
+							_xrate = 10.55;
 						else if (body.price.currency == 'SEK')
 							_xrate = 1;
 						
