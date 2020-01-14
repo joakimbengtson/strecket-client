@@ -8,6 +8,10 @@ module.exports = class StockChartList extends React.Component {
         super(args);
     }
     
+	shouldComponentUpdate(nextProps, nextState) {
+		return nextProps.tickers == "";
+	}    
+    
     render() {
         var children = this.props.symbols.map((symbol, index) => {
             return (

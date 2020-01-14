@@ -2,7 +2,7 @@ import React from 'react';
 import ReactHighcharts from 'react-highcharts';
 import ReactHighstock from 'react-highcharts/ReactHighstock';
 import Indicators from 'highcharts/indicators/indicators';
-import {Button} from 'react-bootify';
+import {Button, Form} from 'react-bootify';
 
 Indicators(ReactHighstock.Highcharts);
 
@@ -15,21 +15,16 @@ module.exports = class StockChart extends React.Component {
     constructor(args) {
         super(args);
 
-        this.state = {};
-
-        // ready = false, dvs vi har inte läst in data än...
-        this.state.ready = false;
-
-        this.state.config = {};
-        
-        this.state.atr = 0;
-        
-        this.state.drops = [];
+        this.state = {
+	        ready: false,	
+	        config: {},
+	        atr: 0,
+	        drops: []
+        };
 
 		this.onClick = this.onClick.bind(this);
-        
     }
-
+    
     // Anropas efter konponenten är skapad och finns i DOM:en
     componentDidMount() {
         this.generate();
@@ -72,8 +67,7 @@ module.exports = class StockChart extends React.Component {
             var directionFlip = false;
             var drops = [];
             var drop;
-
-//console.log(_symb, "-------------------------------------------------------------------");
+			var atr = 0;
             
             const atrPeriod = 14; // ATR calculated for 14 days
 
@@ -85,8 +79,8 @@ module.exports = class StockChart extends React.Component {
                 
                 
                 // Calculate ATR
-                if (stocks.length-index < atrPeriod+1) {
-	                this.state.atr = this.state.atr + Math.max(stock.high-stock.low, Math.abs(stock.high-prevClose), Math.abs(stock.low-prevClose));
+                if (stocks.length-index < atrPeriod+1) {	                
+	                atr = atr + Math.max(stock.high-stock.low, Math.abs(stock.high-prevClose), Math.abs(stock.low-prevClose));
 	                prevClose = stock.close;	                
                 }
                 else
@@ -116,8 +110,7 @@ module.exports = class StockChart extends React.Component {
                 
             });
 // console.log("---", _symb, drops, Math.min.apply(null, drops));             
-            this.state.atr = this.state.atr / atrPeriod;
-            this.state.drops = drops;
+            atr = atr / atrPeriod;
 
             // Skapa en Highcharts 'config'...
             var config = {
@@ -260,8 +253,8 @@ module.exports = class StockChart extends React.Component {
             
             config.xAxis.min = Date.UTC(oneYearAgo.getFullYear(), oneYearAgo.getMonth(), oneYearAgo.getDate());
             
-            // Sätt denna komponents 'tillstånd' till klar och datan finns under 'config'...
-            this.setState({ready:true, config:config});
+            this.setState({ready:true, config:config, atr:atr, drops:drops});
+
         })
         .catch(error => {
             console.error(error.message);
@@ -277,7 +270,7 @@ module.exports = class StockChart extends React.Component {
         if (this.state.ready) {
 
             var style = {};
-            style.border = '1px solid rgba(0, 0, 0, 0.1)';
+            style.border = '5px solid rgba(0, 0, 0, 0.1)';
             style.marginLeft = '10em';
             style.marginRight = '10em';
             style.marginTop = '5em';
@@ -285,16 +278,18 @@ module.exports = class StockChart extends React.Component {
 
             return (
                 <div style = {style}>
-                    <ReactHighstock config={this.state.config} ref="chart"></ReactHighstock>
-                    <InfoBox symbol={this.props.symbol} sectors={this.props.sectors} atr={this.state.atr} drops={this.state.drops} callback={this.props.callback}></InfoBox>
-                    <Button id={this.props.symbol} onClick={this.onClick}>Kandidat</Button>                    
+	                <ReactHighstock config={this.state.config}></ReactHighstock>
+	                <InfoBox symbol={this.props.symbol} sectors={this.props.sectors} atr={this.state.atr} drops={this.state.drops}></InfoBox>
+	                <Form><Form.Group textAlign='center'>
+	                <Button size='lg' onClick={this.onClick}>Kandidat</Button>
+	                </Form.Group></Form>
                 </div>
             );
 
         }
         // Annars visa en tom graf...
         else {
-            return (<div></div>);
+            return (<div>Tomt</div>);
         }
     }
 

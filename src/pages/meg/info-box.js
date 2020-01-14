@@ -8,17 +8,14 @@ import Request from "yow/request";
 import sprintf from "yow/sprintf";
 
 module.exports = class InfoBox extends React.Component {
-		
+	
     constructor(args) {
         super(args);
 
-        this.state = {}; 
-
-        this.state.ready = false;
-        this.state.rawDump = null;
-
-        this.state.atr = this.props.atr;
-        this.state.drops = this.props.drops;         
+        this.state = {
+	        ready: false,
+	        rawDump: null
+        }
     }
     
     getColor(percentage) {
@@ -140,12 +137,12 @@ module.exports = class InfoBox extends React.Component {
 		stockInfo.industry            = industry;
 		stockInfo.longBusinessSummary = longBusinessSummary;
 		
-		stockInfo.atr = ((this.state.atr/this.state.rawDump.price.regularMarketPrice)*100).toFixed(2) + "% (" + (this.state.atr).toFixed(2) + ")";
-		stockInfo.atr_OK = (((this.state.atr/this.state.rawDump.price.regularMarketPrice)*100) < 2.5);
+		stockInfo.atr = ((this.props.atr/this.state.rawDump.price.regularMarketPrice)*100).toFixed(2) + "% (" + (this.props.atr).toFixed(2) + ")";
+		stockInfo.atr_OK = (((this.props.atr/this.state.rawDump.price.regularMarketPrice)*100) < 2.5);
 		if (stockInfo.atr_OK)		
 			++stockInfo.score
 		
-		stockInfo.maxDrop = Math.min.apply(null, this.state.drops);
+		stockInfo.maxDrop = Math.min.apply(null, this.props.drops);
 		stockInfo.maxDrop_OK = (stockInfo.maxDrop > -6);
 		if (stockInfo.maxDrop_OK)		
 			++stockInfo.score

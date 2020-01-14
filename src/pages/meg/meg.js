@@ -31,10 +31,10 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 		this.state = {spikes:null, dates:null, error:null, sectors:[], tickers: ""};
 		
 		this.handleCheck = this.handleCheck.bind(this);
+		this.handleChange = this.handleChange.bind(this);		
 		
 	};
-
-
+	
 	getSectors() {
         return new Promise((resolve, reject) => {
 	        var request = new Request('http://app-o.se:3012');
@@ -78,7 +78,34 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	        })
         });
 	}
+	/*
+	getFearAndGreed() {
+        return new Promise((resolve, reject) => {
+	        
+			const request = require('request');
 
+			request('http://stackabuse.com', function(err, res, body) {  
+			  console.log(body);
+			});	        
+	        
+	        
+	        var request = new Request('http://app-o.se:3012');
+	        var query = {};
+	        var dates = [];
+
+	        request.get('/mysql', {query:query}).then(response => {
+
+		        dates[0] = sweDate(new Date(response.body[0].date));
+		        dates[1] = sweDate(new Date(response.body[1].date));
+
+                resolve(dates);
+	        })
+	        .catch(error => {
+                reject(error);
+	        })
+        });		
+	}
+*/
 	getSpikes() {
         return new Promise((resolve, reject) => {
 	        var request = new Request('http://app-o.se:3012');
@@ -104,8 +131,7 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
         });
 
 	}
-
-
+	
 	componentDidMount() {
 
 		this.getDates().then(dates => {
@@ -132,20 +158,29 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 
     }
     
-	handleCheck = (childData) => {
-		console.log("check:", childData);
-		
-		this.setState({tickers: this.state.tickers + ", " + childData});		
+	handleCheck = (childData) => {		
+		this.setState({tickers: this.state.tickers == "" ? childData : this.state.tickers + ", " + childData});		
+	}
+	
+	handleChange(event) {
+		this.setState({tickers: event.target.value});
 	}
 	
     render() {
         if (this.state.spikes) {
+	        
+            var style = {};
+            style.display = 'block';
+            style.marginLeft = 'auto';
+            style.marginRight = 'auto';
+            style.resize = 'none';	        
+
 	        return (
 		        <div>
 		        <h1 className="text-center">{this.state.dates[1] + " - " + this.state.dates[0] + " (" + this.state.spikes.length + " st)"}</h1>
 		        <h4 className="text-center">({_descr1})</h4>
-                <StockChartList symbols={this.state.spikes} sectors={this.state.sectors} callback={this.handleCheck}/>
-                <textarea name="candidates" rows="4" cols="80" placeholder="Kandidater" value={this.state.tickers}></textarea>
+                <StockChartList symbols={this.state.spikes} sectors={this.state.sectors} tickers={this.state.tickers} callback={this.handleCheck}/>
+                <textarea style={style} name="candidates" rows="4" cols="100" placeholder="Kandidater" value={this.state.tickers} onChange={this.handleChange}></textarea>
                 </div>
 	        );
 	    }
