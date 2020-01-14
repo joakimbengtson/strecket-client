@@ -2,6 +2,7 @@ import React from 'react';
 import ReactHighcharts from 'react-highcharts';
 import ReactHighstock from 'react-highcharts/ReactHighstock';
 import Indicators from 'highcharts/indicators/indicators';
+import {Button} from 'react-bootify';
 
 Indicators(ReactHighstock.Highcharts);
 
@@ -25,10 +26,8 @@ module.exports = class StockChart extends React.Component {
         
         this.state.drops = [];
 
-        // Hämta parametrar från anropet <StockChart symbol='X'/>
-        this.state.symbol = this.props.symbol;
-        this.state.sectors = this.props.sectors;        
-        //this.state.callback = this.props.callback;
+		this.onClick = this.onClick.bind(this);
+        
     }
 
     // Anropas efter konponenten är skapad och finns i DOM:en
@@ -59,8 +58,8 @@ module.exports = class StockChart extends React.Component {
         // Skapa frågan
         var query = {};
         query.sql        = 'select date, open, high, low, close, volume from quotes where symbol = ? and date >= ?';
-        query.values     = [this.state.symbol, thenYMD];
-var _symb = this.state.symbol;
+        query.values     = [this.props.symbol, thenYMD];
+		var _symb = this.props.symbol;
         var data = [];
         var volume = [];
 
@@ -123,7 +122,7 @@ var _symb = this.state.symbol;
             // Skapa en Highcharts 'config'...
             var config = {
               title: {
-                text: this.state.symbol
+                text: this.props.symbol
               },
 
               subtitle: {
@@ -223,7 +222,7 @@ var _symb = this.state.symbol;
 
             series: [
               	{
-	                name: this.state.symbol,
+	                name: this.props.symbol,
 	                id: 'STOCK',
 	                type: 'ohlc',
 	                data: data,
@@ -269,7 +268,11 @@ var _symb = this.state.symbol;
         })
 
     }
-
+    
+	onClick() {
+    	this.props.callback(this.props.symbol);
+	}    
+        
     render() {
         if (this.state.ready) {
 
@@ -283,7 +286,8 @@ var _symb = this.state.symbol;
             return (
                 <div style = {style}>
                     <ReactHighstock config={this.state.config} ref="chart"></ReactHighstock>
-                    <InfoBox symbol={this.state.symbol} sectors={this.state.sectors} atr={this.state.atr} drops={this.state.drops} callback={this.props.callback}></InfoBox>
+                    <InfoBox symbol={this.props.symbol} sectors={this.props.sectors} atr={this.state.atr} drops={this.state.drops} callback={this.props.callback}></InfoBox>
+                    <Button id={this.props.symbol} onClick={this.onClick}>Kandidat</Button>                    
                 </div>
             );
 

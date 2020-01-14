@@ -2,7 +2,7 @@ import React from "react";
 import Highcharts from 'highcharts';
 import ReactHighcharts from "react-highcharts";
 
-import {Table, Alert, Spinner, Form, Checkbox} from "react-bootify";
+import {Table, Alert, Spinner, Form, Checkbox, Button} from "react-bootify";
 
 import Request from "yow/request";
 import sprintf from "yow/sprintf";
@@ -17,15 +17,8 @@ module.exports = class InfoBox extends React.Component {
         this.state.ready = false;
         this.state.rawDump = null;
 
-        this.state.symbol = this.props.symbol;
-        this.state.sectors = this.props.sectors;
-        //this.state.callback = this.props.callback;
         this.state.atr = this.props.atr;
-        this.state.drops = this.props.drops; 
-        
-        this.state.checkBox = false;        
-        this.onClick = this.onClick.bind(this);
-        
+        this.state.drops = this.props.drops;         
     }
     
     getColor(percentage) {
@@ -49,7 +42,7 @@ module.exports = class InfoBox extends React.Component {
             var request = new Request("http://app-o.se:3000");
 
             request
-                .get("/rawdump/" + this.state.symbol)
+                .get("/rawdump/" + this.props.symbol)
                 .then(response => {
                     resolve(response.body);
                 })
@@ -70,12 +63,6 @@ module.exports = class InfoBox extends React.Component {
                 this.setState({ready: true});
             });
     }
-    
-	onClick() {
-    	this.setState({ checkBox: !this.state.checkBox });
-    	
-    	this.props.callback(this.state.symbol);
-	}    
     
     getStatistics(stockInfo) {
 
@@ -238,7 +225,7 @@ module.exports = class InfoBox extends React.Component {
                         
             var x = this.state.rawDump.summaryProfile.industry;
             
-			var sector = this.state.sectors.find(sector => sector.industry == x); // Är denna aktie i en trendande sektor? om så -> sektor.perc visar hur många aktier i sektorn som trendar upp
+			var sector = this.props.sectors.find(sector => sector.industry == x); // Är denna aktie i en trendande sektor? om så -> sektor.perc visar hur många aktier i sektorn som trendar upp
 			
 			if (sector !== undefined) {
 				if (sector.perc > 0.5)
@@ -317,13 +304,9 @@ module.exports = class InfoBox extends React.Component {
 									  />                                
 								</td>
                             </tr>
-                            <tr>
-								<td colSpan="6" className="text-center">
-	                            	<Form.Checkbox id={this.state.symbol} checked={this.state.checkBox} onClick={this.onClick}>Kandidat</Form.Checkbox>
-	                            </td>
-                            </tr>
                         </tbody>
                     </Table>
+                    
                 </div>
             );
         } else {
@@ -333,4 +316,5 @@ module.exports = class InfoBox extends React.Component {
 
 
 };
+
 
