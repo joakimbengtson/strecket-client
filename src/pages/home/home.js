@@ -357,6 +357,10 @@ module.exports = class Home extends React.Component {
                         <Button margin={{left:1, right:1}} className="btn-warning" size="lg" href="#evaluate">
                             Utvärdera
                         </Button>
+                        <span>{' '}</span>
+                        <Button margin={{left:1, right:1}} className="btn-warning" size="lg" href="#looker">
+                            Leta
+                        </Button>
                         
                     </Container.Row>
                 </Container>
