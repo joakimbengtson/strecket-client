@@ -1,11 +1,10 @@
 import React from "react";
 import Request from "rest-request";
 
-import {Form, Button, Container, Row, Col, Dropdown, Alert, Card, Tag} from 'react-bootify';
+import {Form, Button, Container, Row, Col, Dropdown, Card, Tag, Pill} from 'react-bootify';
 
 require("./new-stock.less");
 
-//const ReactDOM = require("react-dom");
 
 const _portfolioSize = 4890000;
 const _risc = 0.25;
@@ -14,12 +13,14 @@ var _perc = 0.0;
 var _ATR;
 var _stockID;
 var _stockQuote;
+var _sma20 = 0;
 var _xrate = 9.72;
 
 const _stoplossType = {
     StoplossTypeATR: 1,
     StoplossTypeQuote: 2,
-    StoplossTypePercent: 3
+    StoplossTypePercent: 3,
+    StoplossTypeSMA: 4    
 };
 
 function isNumeric(n) {
@@ -57,7 +58,7 @@ module.exports = class Home extends React.Component {
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleOptionChange = this.handleOptionChange.bind(this);
         
-        this.state = {focus:'stockticker', helpATR: "", helpReport: "", helpPercentage: "", helpQuote: "", title: "Ange källa", selectedOption: "option1", sourceID: null, sources: [], inputs:{}};
+        this.state = {focus:'stockticker', helpATR: "", helpReport: "", helpPercentage: "", helpQuote: "", title: "Ange källa", selectedOption: "option1", sourceID: null, sources: [], inputs:{}, smaColor:"light"};
     }
 
 	componentDidMount() {
@@ -112,9 +113,11 @@ module.exports = class Home extends React.Component {
 		                    } else if (body[0].stoplossTyp == 2) {
 								self.state.inputs.stoplossquote = body[0].stoplossKurs;
 		                        stoplossOption = "option2";
-		                    } else {
+		                    } else if (body[0].stoplossTyp == 3) {
 								self.state.inputs.stoplosspercentage = body[0].stoplossProcent * 100;
 		                        stoplossOption = "option3";
+		                    } else {
+		                        stoplossOption = "option4";			                    
 		                    }
 				
 		                    helpATR = ((body[0].ATR / _stockQuote) * 100).toFixed(2) + "% (" + body[0].ATR.toFixed(2) + ")";
@@ -187,9 +190,11 @@ module.exports = class Home extends React.Component {
         } else if (this.state.selectedOption == "option2") {
             rec.stoplossTyp = _stoplossType.StoplossTypeQuote;
             rec.stoplossKurs = this.state.inputs.stoplossquote;
-        } else {
+        } else if (this.state.selectedOption == "option3") {
             rec.stoplossTyp = _stoplossType.StoplossTypePercent;
             rec.stoplossProcent = this.state.inputs.stoplosspercentage/100;
+        } else {
+            rec.stoplossTyp = _stoplossType.StoplossTypeSMA;	        
         }
 
         rec.ATR = _ATR;
@@ -225,17 +230,21 @@ module.exports = class Home extends React.Component {
 			this.setPercentageHelp(this.state.inputs.atrmultiple, changeEvent.target.value);
         else if (changeEvent.target.value == "option2") // Fixed quote
 			this.setPercentageHelp(this.state.inputs.stoplossquote, changeEvent.target.value);        
-        else // Trailing stoploss
+        else if (changeEvent.target.value == "option3") // Trailing stoploss
 			this.setPercentageHelp(this.state.inputs.stoplosspercentage, changeEvent.target.value);
+		else // SMA
+			this.setPercentageHelp(this.state.inputs.stoplosssma, changeEvent.target.value);		
     }
     
 	setPercentageHelp(val, option) {
         if (option == "option1")
-	        _perc = ((1 - (_stockQuote/(_stockQuote-val*_ATR)))*100).toFixed(2);
+	        _perc = (((_stockQuote/(_stockQuote-val*_ATR))-1)*100).toFixed(2);
         else if (option == "option2")
-			_perc = ((1 - (_stockQuote/val))*100).toFixed(2);
-		else
+			_perc = (((_stockQuote/val)-1)*100).toFixed(2);
+		else if (option == "option3")
 			_perc = -1*val;
+		else
+			_perc = (((_stockQuote/_sma20)-1)*100).toFixed(2);
 	    
 	    this.setState({helpPercentage: _perc + "%"});
 	}    
@@ -309,11 +318,11 @@ module.exports = class Home extends React.Component {
 						inputs.stockname = body.price.shortName;
 
 						if (body.price.currency == 'USD')
-							_xrate = 9.48;
+							_xrate = 9.66;
 						else if (body.price.currency == 'CAD')
-							_xrate = 7.26;
+							_xrate = 7.27;
 						else if (body.price.currency == 'EUR')
-							_xrate = 10.55;
+							_xrate = 10.58;
 						else if (body.price.currency == 'SEK')
 							_xrate = 1;
 						
@@ -323,11 +332,14 @@ module.exports = class Home extends React.Component {
 
                         _ATR = body.misc.atr14;
 						_stockQuote = (body.price.regularMarketPrice).toFixed(2);
+						_sma20 = body.misc.sma20;
 						
                         helpQuote = _stockQuote;
                         helpATR = ((_ATR/_stockQuote)*100).toFixed(2) + "% (" + _ATR + ")";
                         helpReport = getSweDate(body.calendarEvents.earnings.earningsDate[0]);
-
+                        
+						self.setState({smaColor: _stockQuote > _sma20 ? "success" : "danger"});
+							
                         self.setState({helpATR: helpATR, helpReport: helpReport, helpQuote: helpQuote, focus:'stockprice'});
                     }
                 }
@@ -352,6 +364,9 @@ module.exports = class Home extends React.Component {
         
         return items;
     }
+    
+    // 		                                    <Form.Badge color={this.state.smaColor} margin={{left:2}}>{_sma20 == 0 ? '-' : _sma20 }</Form.Badge>
+
         
     render() {
         return (
@@ -365,7 +380,6 @@ module.exports = class Home extends React.Component {
                                 </Form.Label>
                             </Form.Col>
                         </Form.Group>
-
                         <Form.Group row>
                             <Form.Col sm={1} textAlign='right' >
                                 <Form.Label inline textColor='muted'>
@@ -464,6 +478,13 @@ module.exports = class Home extends React.Component {
 		                                        Släpande under procent
 		                                    </Form.Radio>
 		                                    <Form.Input  value={this.state.inputs.stoplosspercentage} margin={{left:2, right:2}} type="text" ref="stoplosspercentage" id="stoplosspercentage" placeholder="%" onChange={this.onTextChange.bind(this)}/>
+										</Form>
+
+										<Form inline padding={{vertical:1}}>                                    	
+		                                    <Form.Radio value="option4" checked={this.state.selectedOption === "option4"} onChange={this.handleOptionChange}>
+		                                        Släpande under SMA20
+		                                    </Form.Radio>
+		                                    <span className={_stockQuote > _sma20 ? 'badge badge-success' : 'badge badge-danger'} style={{margin: '4px 4px'}}>{_sma20 == 0 ? '-' : _sma20}</span>
 										</Form>
 										
 	                                    </Card.Body>

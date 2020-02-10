@@ -127,9 +127,21 @@ module.exports = class Home extends React.Component {
         if (p > -15) return red3;
 
         if (p > -20) return red4;
+        
         else return red5;
     }
-
+    
+	getStopLossInfo(stock) {		
+		if (stock.stoplossTyp == 4)
+			return '> ' + (stock.sma20).toFixed(2);
+		else if (stock.stoplossTyp == 3)
+			return (stock.stoplossProcent * 100).toFixed(2) + '%';
+		else if (stock.stoplossTyp == 2)
+			return '> ' + stock.stoplossKurs;
+		else		 
+			return (stock.atrStoploss * 100).toFixed(2) + '*';	
+	}
+    
     renderStocks() {
         var self = this;
         var earningsDateDiff;
@@ -176,15 +188,7 @@ module.exports = class Home extends React.Component {
                         ) : (
                             <td style={{backgroundColor: "#f2f2a4"}}>{}</td>
                         )}
-                        {stock.stoplossTyp == 3 ? (
-                            <td style={{textAlign: "right"}}>{(stock.stoplossProcent * 100).toFixed(2)}%</td>
-                        ) : stock.stoplossTyp == 2 ? (
-                            <td style={{textAlign: "right"}}>&gt; {stock.stoplossKurs}</td>
-                        ) : (
-                            <td style={{textAlign: "right"}}>
-                                {(stock.atrStoploss * 100).toFixed(2)}%<sup>*</sup>
-                            </td>
-                        )}
+                        <td style={{textAlign: "right"}}>{self.getStopLossInfo(stock)}</td>   
                         {stock.larm == 1 ? (
                             <td>
                                 <center>
