@@ -198,6 +198,7 @@ module.exports = class Home extends React.Component {
         }
 
         rec.ATR = _ATR;
+        rec.SMA20 = _sma20;
 
         var options = {
             uri: "http://app-o.se:3000/save",

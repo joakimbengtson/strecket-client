@@ -27,7 +27,7 @@ ReactDOM.render((
 			<Route path="candidates"  component={require('./pages/candidates/candidates.js')} />
             <Route path="meg"         component={require('./pages/meg/meg.js')} />
             <Route path="looker"      component={require('./pages/looker/looker.js')} />
-            
+            <Route path="evaluate"    component={require('./pages/evaluate/evaluate.js')} />            
 
 		</Route>
 	</Router>

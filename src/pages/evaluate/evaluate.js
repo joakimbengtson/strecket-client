@@ -77,10 +77,13 @@ module.exports = class Home extends React.Component {
 			return "Fast kurs: " + stock.stoplossKurs;		
 		else if (stock.stoplossTyp == 3)
 			return "Släpande procent: " + (stock.stoplossProcent * 100).toFixed(2) + "%";
+		else if (stock.stoplossTyp == 4)
+			return "SMA20";		
 		else
 			return "Okänd stoploss";	
 	}
-    
+     
+     
     onCancel() {
         window.history.back();
     }    
@@ -91,14 +94,14 @@ module.exports = class Home extends React.Component {
 
         var items = this.state.stocks.map(function(stock, index) {
             if (stock.antal > 0) {
-	            sum = sum + (1 - stock.kurs / stock.såld_kurs);
+	            sum = sum + ((stock.såld_kurs / stock.kurs) - 1);
                 return (
                     <tr key={index}>
                         <td>
 	                        <span >{stock.ticker}</span>
                         </td>
                         <td style={{textAlign: "right"}}>
-                            <span>{parseFloat((1 - stock.kurs / stock.såld_kurs) * 100).toFixed(2)}%</span>
+                            <span>{parseFloat(((stock.såld_kurs/stock.kurs)-1) * 100).toFixed(2)}%</span>
                         </td>
                         <td style={{textAlign: "right"}}>
                             <span>{stock.max}%</span>

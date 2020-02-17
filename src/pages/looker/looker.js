@@ -28,7 +28,24 @@ module.exports = class Home extends React.Component {
                 });
         });
     }
-        
+    
+    loop(symbol) {
+		return new Promise((resolve, reject) => {
+            var request = new Request("http://app-o.se:3000");
+
+            request
+                .get("/rawdump/" + symbol)
+                .then(response => {
+					var loop = () => {
+						setImmediate(loop);	
+					}	                
+                    resolve(response.body);
+                })
+                .catch(error => {
+                    reject(error);
+                });
+		});    
+    }
     
     componentDidMount() {
         var self = this;
