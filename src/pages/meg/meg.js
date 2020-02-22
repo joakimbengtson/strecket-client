@@ -159,7 +159,7 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
     }
     
 	handleCheck = (childData) => {		
-		this.setState({tickers: this.state.tickers == "" ? childData : this.state.tickers + ", " + childData});		
+		this.setState({tickers: this.state.tickers == "" ? childData : this.state.tickers + "\n" + childData});		
 	}
 	
 	handleChange(event) {

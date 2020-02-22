@@ -181,6 +181,7 @@ module.exports = class Home extends React.Component {
         rec.ticker = this.state.inputs.stockticker.toUpperCase();
         rec.namn = this.state.inputs.stockname;
         rec.kurs = this.state.inputs.stockprice;
+        rec.maxkurs = this.state.inputs.stockprice;        
         rec.antal = this.state.inputs.stockcount;
         rec.källa = this.state.sourceID;
 
@@ -365,9 +366,6 @@ module.exports = class Home extends React.Component {
         
         return items;
     }
-    
-    // 		                                    <Form.Badge color={this.state.smaColor} margin={{left:2}}>{_sma20 == 0 ? '-' : _sma20 }</Form.Badge>
-
         
     render() {
         return (

@@ -13,9 +13,11 @@ module.exports = class Home extends React.Component {
 
         this.state = {stocks:[], busy:false};
     }
-
+    
+    
     fetch(symbol) {
         return new Promise((resolve, reject) => {
+
             var request = new Request("http://app-o.se:3000");
 
             request
@@ -24,73 +26,70 @@ module.exports = class Home extends React.Component {
                     resolve(response.body);
                 })
                 .catch(error => {
+	                console.log("FEL: fetch:", error);
                     reject(error);
                 });
         });
     }
     
-    loop(symbol) {
-		return new Promise((resolve, reject) => {
-            var request = new Request("http://app-o.se:3000");
-
-            request
-                .get("/rawdump/" + symbol)
-                .then(response => {
-					var loop = () => {
-						setImmediate(loop);	
-					}	                
-                    resolve(response.body);
-                })
-                .catch(error => {
-                    reject(error);
-                });
-		});    
-    }
     
     componentDidMount() {
         var self = this;
         var request = new Request('http://app-o.se:3012');
         var query = {};
+        var stocks;
         const increaseLimit = 0.20;
         
         query.sql = 'select symbol from stocks';
 
         request.get('/mysql', {query:query}).then(response => {
 	            
-            var stocks = response.body;
+            stocks = response.body;
             
-            for (var i in stocks) {
-                            
-		        self.fetch(stocks[i].symbol)
-		            .then(rawDump => {
-						if (rawDump.earnings !== undefined) {		
-							if (rawDump.earnings.financialsChart.quarterly !== undefined) {
-								var incr1, incr2, incr3;
-								
-								console.log("---Ticker:", rawDump.price.symbol);
-								console.log("earnings=", rawDump.earnings.financialsChart.quarterly[0].earnings, rawDump.earnings.financialsChart.quarterly[1].earnings, rawDump.earnings.financialsChart.quarterly[2].earnings, rawDump.earnings.financialsChart.quarterly[3].earnings);			
-								
-								incr1 = (rawDump.earnings.financialsChart.quarterly[1].earnings / rawDump.earnings.financialsChart.quarterly[0].earnings) - 1;
-								incr2 = (rawDump.earnings.financialsChart.quarterly[2].earnings / rawDump.earnings.financialsChart.quarterly[1].earnings) - 1;
-								incr3 = (rawDump.earnings.financialsChart.quarterly[3].earnings / rawDump.earnings.financialsChart.quarterly[2].earnings) - 1;						
-								
-								console.log("increase=", incr1.toFixed(2), incr2.toFixed(2), incr3.toFixed(2));
-								
-								if (incr1 > increaseLimit && incr2 > increaseLimit && incr3 > increaseLimit) {
-									var candidate = {ticker:rawDump.price.symbol, incr1:incr1, incr2:incr2, incr3:incr3};
+            var loop = (index) => {
+                if (index < stocks.length) {
+                    self.fetch(stocks[index].symbol).then(rawDump => {
+
+						if (typeof rawDump !== 'undefined' && rawDump != '[]') {		
+							if (typeof rawDump.earnings !== 'undefined' && rawDump.earnings != '[]') {		
+								if (typeof rawDump.earnings.financialsChart.quarterly !== 'undefined' && rawDump.earnings.financialsChart.quarterly.length) {
+									var incr1, incr2, incr3;
 									
-									self.setState({stocks: this.state.stocks.concat(candidate)});
+									console.log("---Ticker:", rawDump.price.symbol);
+									console.log("earnings=", rawDump.earnings.financialsChart.quarterly[0].earnings, rawDump.earnings.financialsChart.quarterly[1].earnings, rawDump.earnings.financialsChart.quarterly[2].earnings, rawDump.earnings.financialsChart.quarterly[3].earnings);			
+									var q = rawDump.earnings.financialsChart.quarterly;
 									
-								}
-							}			
+									if (q[0].earnings > 0 && q[1].earnings > 0 && q[2].earnings > 0 && q[3].earnings > 0) {
+										incr1 = (q[1].earnings / q[0].earnings) - 1;
+										incr2 = (q[2].earnings / q[1].earnings) - 1;
+										incr3 = (q[3].earnings / q[2].earnings) - 1;						
+										
+										console.log("increase=", incr1.toFixed(2), incr2.toFixed(2), incr3.toFixed(2));
+										
+										if (incr1 > increaseLimit && incr2 > increaseLimit && incr3 > increaseLimit) {
+											var candidate = {ticker:rawDump.price.symbol, incr1:incr1, incr2:incr2, incr3:incr3};
+
+											self.setState({stocks: this.state.stocks.concat(candidate)});	
+										}										
+									}
+									
+								}			
+							}
 						}
-							            
-		            })
-		            .catch(error => {
-			            console.log("Fel", error);
-		                this.setState({ready: true});
-		            });
-		    }
+								            			            
+                        loop(index + 1);
+                    })
+                    .catch((error) => {
+                        console.log("FEL: från fetch:", error);
+                    });
+                }
+                else {
+	                console.log("Done!");
+                }    
+            };
+    
+            loop(0);            
+            
         })
         .catch(error => {
             console.error(error.message);

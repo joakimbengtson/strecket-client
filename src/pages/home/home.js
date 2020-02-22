@@ -8,6 +8,13 @@ import PropTypes from 'prop-types';
 
 require("./home.less");
 
+const stoplossType = {
+    StoplossTypeATR : 1,
+    StoplossTypeQuote : 2,
+    StoplossTypePercent : 3,
+    StoplossTypeSMA20 : 4
+}
+
 const RenderBar = (props) => {
   const { fill, x, y, width, height } = props;
   return <rect x={x} y={height>0?y:y+height} width={width} height={Math.abs(height)} stroke="none" fill={height>0?fill:"lightcoral"}/>;
@@ -131,15 +138,32 @@ module.exports = class Home extends React.Component {
         else return red5;
     }
     
-	getStopLossInfo(stock) {		
-		if (stock.stoplossTyp == 4)
-			return '> ' + (stock.sma20).toFixed(2);
-		else if (stock.stoplossTyp == 3)
-			return (stock.stoplossProcent * 100).toFixed(2) + '%';
-		else if (stock.stoplossTyp == 2)
-			return '> ' + stock.stoplossKurs;
-		else		 
-			return (stock.atrStoploss * 100).toFixed(2) + '*';	
+	getStopLossInfo(stock) {
+		var stoplossTxt = "";
+		
+		switch (stock.stoplossTyp) {
+			case stoplossType.StoplossTypeSMA20:
+				stoplossTxt = stock.sma20 + ' (sma20)';
+				break;
+				
+			case stoplossType.StoplossTypePercent:
+				stoplossTxt = (stock.maxkurs - (stock.maxkurs * stock.stoplossProcent)).toFixed(2) + ' (' + (stock.stoplossProcent * 100).toFixed(2) + '%)';
+				break;
+				
+			case stoplossType.StoplossTypeQuote:
+				stoplossTxt = stock.stoplossKurs  + ' (fk)';
+				break;
+
+			case stoplossType.StoplossTypeATR:
+				stoplossTxt = (stock.atrStoploss).toFixed(2) + ' (atr' + stock.ATRMultipel + '*' + stock.ATR + ')';
+				break;
+				
+			default:
+				stoplossTxt = 'Okänd stoploss';
+		}
+		
+		return stoplossTxt;
+		
 	}
     
     renderStocks() {
@@ -170,7 +194,7 @@ module.exports = class Home extends React.Component {
                         </td>
                         <td style={{textAlign: "right"}}>
                             {parseFloat(stock.utfall).toFixed(2)}
-                            <span style={{color: "#b2b2b2"}}> ({parseFloat((1 - stock.kurs / stock.maxkurs) * 100).toFixed(2)})</span>
+                            <span style={{color: "#b2b2b2"}}> ({parseFloat(((stock.maxkurs/stock.kurs)-1) * 100).toFixed(2)})</span>
                         </td>
                         <td>
 							<BarChart width={130} height={30} margin={{top: 0, right: 0, left: 0, bottom: 0}} barGap={1} data={stock.spyProgress}>
@@ -178,6 +202,11 @@ module.exports = class Home extends React.Component {
 								<Tooltip labelFormatter={(index) => (stock.spyProgress[index].name).slice(0, 10)} formatter={(value) => value.toFixed(2)+'%'}/>
 							</BarChart>
                         </td>
+                        {stock.sma20 != -1 ? (
+                            <td style={self.getColor(parseFloat((1 - stock.sma20 / stock.senaste) * 100).toFixed(2))}>{}</td>
+                        ) : (
+                            <td style={{backgroundColor: "#f2f2a4"}}>{}</td>
+                        )}
                         {stock.sma50 != -1 ? (
                             <td style={self.getColor(parseFloat((1 - stock.sma50 / stock.senaste) * 100).toFixed(2))}>{}</td>
                         ) : (
@@ -279,7 +308,7 @@ module.exports = class Home extends React.Component {
             if (this.state.error)
                 var items = (
                     <tr>
-                        <td colSpan="12">
+                        <td colSpan="13">
                             <center>{"Kan inte nå servern: " + self.state.error.message}</center>
                         </td>
                     </tr>
@@ -287,7 +316,7 @@ module.exports = class Home extends React.Component {
             else
                 var items = (
                     <tr>
-                        <td colSpan="12">
+                        <td colSpan="13">
                             <center>{"Inga aktier"}</center>
                         </td>
                     </tr>
@@ -303,7 +332,8 @@ module.exports = class Home extends React.Component {
                             <th style={{textAlign: "right"}}>Kurs</th>
                             <th style={{textAlign: "center"}}>% (max)</th>
                             <th style={{textAlign: "center"}}>vs SPY</th>
-                            <th style={{textAlign: "center"}}>ma50 </th>
+                            <th style={{textAlign: "center"}}>ma20</th>
+                            <th style={{textAlign: "center"}}>ma50</th>
                             <th style={{textAlign: "center"}}>ma200</th>
                             <th style={{textAlign: "right"}}>S/L</th>
                             <th />
@@ -314,7 +344,7 @@ module.exports = class Home extends React.Component {
                         </tr>
                     </thead>
 
-                    <tbody>{items}</tbody>
+                    <tbody>{items}</tbody> 
                 </Table>
 
                 <br />
@@ -339,7 +369,7 @@ module.exports = class Home extends React.Component {
     render() {
         return (
             <div id="home">
-                <Container>
+                <Container fluid={true}>
                     <Container.Row>
                         <br/>
                     </Container.Row>
@@ -362,7 +392,7 @@ module.exports = class Home extends React.Component {
                             Utvärdera
                         </Button>
                         <span>{' '}</span>
-                        <Button margin={{left:1, right:1}} className="btn-warning" size="lg" href="#looker">
+                        <Button margin={{left:1, right:1}} className="btn-danger" size="lg" href="#looker">
                             Leta
                         </Button>
                         
