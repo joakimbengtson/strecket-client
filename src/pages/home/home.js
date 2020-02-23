@@ -4,16 +4,9 @@ import {isArray} from 'yow/is';
 import {Sparklines, SparklinesLine, SparklinesReferenceLine, SparklinesBars} from 'react-sparklines';
 import {BarChart, Bar, Tooltip} from 'recharts';
 import PropTypes from 'prop-types';
- 
 
 require("./home.less");
-
-const stoplossType = {
-    StoplossTypeATR : 1,
-    StoplossTypeQuote : 2,
-    StoplossTypePercent : 3,
-    StoplossTypeSMA20 : 4
-}
+var config = require('../config.js');
 
 const RenderBar = (props) => {
   const { fill, x, y, width, height } = props;
@@ -142,19 +135,19 @@ module.exports = class Home extends React.Component {
 		var stoplossTxt = "";
 		
 		switch (stock.stoplossTyp) {
-			case stoplossType.StoplossTypeSMA20:
+			case config.stoplossType.StoplossTypeSMA20:
 				stoplossTxt = stock.sma20 + ' (sma20)';
 				break;
 				
-			case stoplossType.StoplossTypePercent:
+			case config.stoplossType.StoplossTypePercent:
 				stoplossTxt = (stock.maxkurs - (stock.maxkurs * stock.stoplossProcent)).toFixed(2) + ' (' + (stock.stoplossProcent * 100).toFixed(2) + '%)';
 				break;
 				
-			case stoplossType.StoplossTypeQuote:
+			case config.stoplossType.StoplossTypeQuote:
 				stoplossTxt = stock.stoplossKurs  + ' (fk)';
 				break;
 
-			case stoplossType.StoplossTypeATR:
+			case config.stoplossType.StoplossTypeATR:
 				stoplossTxt = (stock.atrStoploss).toFixed(2) + ' (atr' + stock.ATRMultipel + '*' + stock.ATR + ')';
 				break;
 				

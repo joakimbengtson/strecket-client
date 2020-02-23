@@ -56,7 +56,6 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 		
 	}
 
-
 	getDates() {
         return new Promise((resolve, reject) => {
 	        var request = new Request('http://app-o.se:3012');
@@ -78,34 +77,21 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	        })
         });
 	}
-	/*
+
 	getFearAndGreed() {
         return new Promise((resolve, reject) => {
-	        
-			const request = require('request');
+	      	var request = new Request('http://stackabuse.com');
 
-			request('http://stackabuse.com', function(err, res, body) {  
-			  console.log(body);
-			});	        
-	        
-	        
-	        var request = new Request('http://app-o.se:3012');
-	        var query = {};
-	        var dates = [];
-
-	        request.get('/mysql', {query:query}).then(response => {
-
-		        dates[0] = sweDate(new Date(response.body[0].date));
-		        dates[1] = sweDate(new Date(response.body[1].date));
-
-                resolve(dates);
+	        request.get().then(response => {
+			  console.log(response);
+			  resolve(response);
 	        })
 	        .catch(error => {
                 reject(error);
-	        })
+			})
         });		
 	}
-*/
+
 	getSpikes() {
         return new Promise((resolve, reject) => {
 	        var request = new Request('http://app-o.se:3012');
@@ -134,13 +120,19 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	
 	componentDidMount() {
 
-		this.getDates().then(dates => {
-	        this.setState({dates:dates});
-			this.getSectors().then(sectors => {
-		        this.setState({sectors:sectors});
-		        this.getSpikes().then(spikes => {
-		            this.setState({spikes:spikes});
-		        })
+		this.getFearAndGreed().then(body => {
+			this.getDates().then(dates => {
+		        this.setState({dates:dates});
+				this.getSectors().then(sectors => {
+			        this.setState({sectors:sectors});
+			        this.getSpikes().then(spikes => {
+			            this.setState({spikes:spikes});
+			        })
+			        .catch(error => {
+			            console.log(error);
+			            this.setState({error:error});
+			        });
+			    })
 		        .catch(error => {
 		            console.log(error);
 		            this.setState({error:error});
@@ -149,13 +141,12 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	        .catch(error => {
 	            console.log(error);
 	            this.setState({error:error});
-	        });
+	        })
 	    })
         .catch(error => {
             console.log(error);
             this.setState({error:error});
-        });
-
+        })
     }
     
 	handleCheck = (childData) => {		

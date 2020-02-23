@@ -7,6 +7,8 @@ import PropTypes from 'prop-types';
 
 
 require("./evaluate.less");
+var config = require('../config.js');
+
 
 function dayDiff(d) {
     var dt1 = new Date(d);
@@ -71,13 +73,13 @@ module.exports = class Home extends React.Component {
     }
     
 	getStoplossInfo(stock) {		
-		if (stock.stoplossTyp == 1)
+		if (stock.stoplossTyp == config.stoplossType.StoplossTypeATR)
 			return "ATR: " + stock.ATRMultipel;
-		else if (stock.stoplossTyp == 2)
+		else if (stock.stoplossTyp == config.stoplossType.StoplossTypeQuote)
 			return "Fast kurs: " + stock.stoplossKurs;		
-		else if (stock.stoplossTyp == 3)
+		else if (stock.stoplossTyp == config.stoplossType.StoplossTypePercent)
 			return "Släpande procent: " + (stock.stoplossProcent * 100).toFixed(2) + "%";
-		else if (stock.stoplossTyp == 4)
+		else if (stock.stoplossTyp == config.stoplossType.StoplossTypeSMA20)
 			return "SMA20";		
 		else
 			return "Okänd stoploss";	
