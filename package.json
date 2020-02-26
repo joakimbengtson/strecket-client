@@ -46,6 +46,7 @@
     "react-sparklines": "^1.7.0",
     "react-spinkit": "^1.1.10",
     "recharts": "^1.6.2",
+    "request-promise": "^4.2.5",
     "rest-request": "^1.0.10",
     "uglify-js": "^2.7.3",
     "urify": "^2.0.2",
