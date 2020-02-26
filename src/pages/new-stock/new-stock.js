@@ -54,9 +54,16 @@ module.exports = class Home extends React.Component {
     constructor(props) {
         super(props);
 
+		var query = new URLSearchParams(props.location.search);
+
+		_stockID = query.get('id');
+		_stockQuote = query.get('senaste');
+
+		/*
         _stockID = props.location.query.id;
         _stockQuote = props.location.query.senaste; // Om vi editerar sparad aktie kommer senaste kurs här.
-
+		*/
+		
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleOptionChange = this.handleOptionChange.bind(this);
         

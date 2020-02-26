@@ -3,7 +3,7 @@ import StockChartList from './stock-chart-list.js';
 import Request from 'yow/request';
 import {Container, Table, Row, Col} from 'react-bootify';
 
-const puppeteer = require('puppeteer');
+//const puppeteer = require('puppeteer');
 
 require('./meg.css'); 
 
