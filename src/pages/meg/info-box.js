@@ -62,105 +62,136 @@ module.exports = class InfoBox extends React.Component {
     }
     
     getStatistics(stockInfo) {
+	    
+	    if (this.state.rawDump != []) {
+			var pegRatio = 0;
+			var sharesShort = 0;
+			var sharesShortPriorMonth = 0;			
+			var dividendYield = 0;
+			var marketCap = 0;	
+			var currentRatio = 0;
+			var quickRatio = 0;
+			var debtToEquity = 0;
+			var longName = "-";
+			var sector = "-";
+			var industry = "-";
+			var longBusinessSummary = "-";
+			var forwardPE = 0;
+			var trailingPE = 0;
+			var regularMarketPrice = 0;
 
-		var pegRatio              = this.state.rawDump.defaultKeyStatistics.pegRatio;
-		var sharesShort           = this.state.rawDump.defaultKeyStatistics.sharesShort;
-		var sharesShortPriorMonth = this.state.rawDump.defaultKeyStatistics.sharesShortPriorMonth;
-		
-		var dividendYield         = this.state.rawDump.summaryDetail.dividendYield;
-		var marketCap             = this.state.rawDump.summaryDetail.marketCap;
+		    if (this.state.rawDump.defaultKeyStatistics !== undefined) {			    
+				pegRatio              = this.state.rawDump.defaultKeyStatistics.pegRatio;
+				sharesShort           = this.state.rawDump.defaultKeyStatistics.sharesShort;
+				sharesShortPriorMonth = this.state.rawDump.defaultKeyStatistics.sharesShortPriorMonth;
+			}
 
-		var currentRatio          = this.state.rawDump.financialData.currentRatio;
-		var quickRatio            = this.state.rawDump.financialData.quickRatio;
-		var debtToEquity          = this.state.rawDump.financialData.debtToEquity;
-		
-		var longName              = this.state.rawDump.price.longName;
-
-		var sector                = this.state.rawDump.summaryProfile.sector;
-		var industry              = this.state.rawDump.summaryProfile.industry;
-		var longBusinessSummary   = this.state.rawDump.summaryProfile.longBusinessSummary;
-
-		var forwardPE             = (this.state.rawDump.summaryDetail.forwardPE !== undefined) ? this.state.rawDump.summaryDetail.forwardPE : 0;
-		var trailingPE            = (this.state.rawDump.summaryDetail.trailingPE !== undefined) ? this.state.rawDump.summaryDetail.trailingPE : 0;
-		
-		stockInfo.score = 0;
+		    if (this.state.rawDump.summaryDetail !== undefined) {
+				dividendYield         = this.state.rawDump.summaryDetail.dividendYield;
+				marketCap             = this.state.rawDump.summaryDetail.marketCap;
+				forwardPE             = (this.state.rawDump.summaryDetail.forwardPE !== undefined) ? this.state.rawDump.summaryDetail.forwardPE : 0;
+				trailingPE            = (this.state.rawDump.summaryDetail.trailingPE !== undefined) ? this.state.rawDump.summaryDetail.trailingPE : 0;
+			}
 	
-		stockInfo.pegRatio    = pegRatio;
-		stockInfo.pegRatio_OK = (pegRatio <= 1.2 && pegRatio > 0);
-		if (stockInfo.pegRatio_OK)
-			++stockInfo.score
-		
-		stockInfo.sharesShort    = parseFloat((1 - (sharesShortPriorMonth/sharesShort))*100).toFixed(2);
-		stockInfo.sharesShort_OK = (sharesShort<sharesShortPriorMonth);
-		if (stockInfo.sharesShort_OK)
-			++stockInfo.score
-		
-		stockInfo.dividendYield    = (dividendYield * 100).toFixed(2);
-		stockInfo.dividendYield_OK = (dividendYield !== undefined);
-		if (stockInfo.dividendYield_OK)
-			++stockInfo.score
-		else
-			stockInfo.dividendYield = 0;
+		    if (this.state.rawDump.financialData !== undefined) {			
+				currentRatio          = this.state.rawDump.financialData.currentRatio;
+				quickRatio            = this.state.rawDump.financialData.quickRatio;
+				debtToEquity          = this.state.rawDump.financialData.debtToEquity;
+			}
 
-		stockInfo.currentRatio    = currentRatio;
-		stockInfo.currentRatio_OK = (currentRatio <= 1);
-		if (stockInfo.currentRatio_OK)
-			++stockInfo.score
+		    if (this.state.rawDump.price !== undefined) {
+				longName              = this.state.rawDump.price.longName;
+			    regularMarketPrice    = this.state.rawDump.price.regularMarketPrice;			    
+		    }
+	
+		    if (this.state.rawDump.summaryProfile !== undefined) {
+				sector                = this.state.rawDump.summaryProfile.sector;
+				industry              = this.state.rawDump.summaryProfile.industry;
+				longBusinessSummary   = this.state.rawDump.summaryProfile.longBusinessSummary;			    
+		    }
+		    			
+			stockInfo.score = 0;
 		
-		stockInfo.quickRatio    = quickRatio;
-		stockInfo.quickRatio_OK = (quickRatio >= 1);
-		if (stockInfo.quickRatio_OK)
-			++stockInfo.score
-		
-		stockInfo.debtToEquity    = debtToEquity;
-		stockInfo.debtToEquity_OK = (debtToEquity < 35);
-		if (stockInfo.debtToEquity_OK)
-			++stockInfo.score
-		
-		stockInfo.forwardPE    = (forwardPE).toFixed(0);
-		stockInfo.forwardPE_OK = (forwardPE < 15 && forwardPE > 0);
-		if (stockInfo.forwardPE_OK)
-			++stockInfo.score
-		
-		stockInfo.trailingPE    = (trailingPE).toFixed(0);
-		stockInfo.trailingPE_OK = (trailingPE < 25 && trailingPE > 0);
-		if (stockInfo.trailingPE_OK)
-			++stockInfo.score
-		
-		stockInfo.marketCap    = Intl.NumberFormat("SE").format(marketCap);
-		stockInfo.marketCap_OK = marketCap < 5000000000; // Market Cap < $5 billion
-		if (stockInfo.marketCap_OK)
-			++stockInfo.score
-		
-		stockInfo.longName            = longName;
-		stockInfo.sector              = sector;
-		stockInfo.industry            = industry;
-		stockInfo.longBusinessSummary = longBusinessSummary;
-		
-		stockInfo.atr = ((this.props.atr/this.state.rawDump.price.regularMarketPrice)*100).toFixed(2) + "% (" + (this.props.atr).toFixed(2) + ")";
-		stockInfo.atr_OK = (((this.props.atr/this.state.rawDump.price.regularMarketPrice)*100) < 2.5);
-		if (stockInfo.atr_OK)		
-			++stockInfo.score
-		
-		stockInfo.maxDrop = Math.min.apply(null, this.props.drops);
-		stockInfo.maxDrop_OK = (stockInfo.maxDrop > -6);
-		if (stockInfo.maxDrop_OK)		
-			++stockInfo.score
-
-		if (this.state.rawDump.earnings !== undefined) {		
-			if (this.state.rawDump.earnings.financialsChart.quarterly !== undefined) {
-				
-				stockInfo.earnings = [];
-				stockInfo.revenue = [];
-				stockInfo.quarters = [];			
-				
-				for (var i in this.state.rawDump.earnings.financialsChart.quarterly) {
-					stockInfo.earnings.push(this.state.rawDump.earnings.financialsChart.quarterly[i].earnings);
-					stockInfo.revenue.push(this.state.rawDump.earnings.financialsChart.quarterly[i].revenue);
-					stockInfo.quarters.push(this.state.rawDump.earnings.financialsChart.quarterly[i].date);				
-				}
-			}			
+			stockInfo.pegRatio    = pegRatio;
+			stockInfo.pegRatio_OK = (pegRatio <= 1.2 && pegRatio > 0);
+			if (stockInfo.pegRatio_OK)
+				++stockInfo.score
+			
+			stockInfo.sharesShort    = parseFloat((1 - (sharesShortPriorMonth/sharesShort))*100).toFixed(2);
+			stockInfo.sharesShort_OK = (sharesShort<sharesShortPriorMonth);
+			if (stockInfo.sharesShort_OK)
+				++stockInfo.score
+			
+			stockInfo.dividendYield    = (dividendYield * 100).toFixed(2);
+			stockInfo.dividendYield_OK = (dividendYield !== undefined && dividendYield !== 0);
+			if (stockInfo.dividendYield_OK)
+				++stockInfo.score
+	
+			stockInfo.currentRatio    = currentRatio;
+			stockInfo.currentRatio_OK = (currentRatio <= 1 && currentRatio > 0);
+			if (stockInfo.currentRatio_OK)
+				++stockInfo.score
+			
+			stockInfo.quickRatio    = quickRatio;
+			stockInfo.quickRatio_OK = (quickRatio >= 1 && quickRatio > 0);
+			if (stockInfo.quickRatio_OK)
+				++stockInfo.score
+			
+			stockInfo.debtToEquity    = debtToEquity;
+			stockInfo.debtToEquity_OK = (debtToEquity < 35 && debtToEquity > 0);
+			if (stockInfo.debtToEquity_OK)
+				++stockInfo.score
+			
+			stockInfo.forwardPE    = (forwardPE).toFixed(0);
+			stockInfo.forwardPE_OK = (forwardPE < 15 && forwardPE > 0);
+			if (stockInfo.forwardPE_OK)
+				++stockInfo.score
+			
+			stockInfo.trailingPE    = (trailingPE).toFixed(0);
+			stockInfo.trailingPE_OK = (trailingPE < 25 && trailingPE > 0);
+			if (stockInfo.trailingPE_OK)
+				++stockInfo.score
+			
+			stockInfo.marketCap    = Intl.NumberFormat("SE").format(marketCap);
+			stockInfo.marketCap_OK = (marketCap < 5000000000 && marketCap > 0); // Market Cap < $5 billion
+			if (stockInfo.marketCap_OK)
+				++stockInfo.score
+			
+			stockInfo.longName            = longName;
+			stockInfo.sector              = sector;
+			stockInfo.industry            = industry;
+			stockInfo.longBusinessSummary = longBusinessSummary;
+			
+			if (regularMarketPrice != 0) {
+				stockInfo.atr = ((this.props.atr/regularMarketPrice)*100).toFixed(2) + "% (" + (this.props.atr).toFixed(2) + ")";
+				stockInfo.atr_OK = (((this.props.atr/regularMarketPrice)*100) < 2.5);
+				if (stockInfo.atr_OK)		
+					++stockInfo.score				
+			}
+			else
+				stockInfo.atr_OK = false;
+			
+			stockInfo.maxDrop = Math.min.apply(null, this.props.drops);
+			stockInfo.maxDrop_OK = (stockInfo.maxDrop > -6);
+			if (stockInfo.maxDrop_OK)		
+				++stockInfo.score
+	
+			if (this.state.rawDump.earnings !== undefined) {		
+				if (this.state.rawDump.earnings.financialsChart.quarterly !== undefined) {
+					
+					stockInfo.earnings = [];
+					stockInfo.revenue = [];
+					stockInfo.quarters = [];			
+					
+					for (var i in this.state.rawDump.earnings.financialsChart.quarterly) {
+						stockInfo.earnings.push(this.state.rawDump.earnings.financialsChart.quarterly[i].earnings);
+						stockInfo.revenue.push(this.state.rawDump.earnings.financialsChart.quarterly[i].revenue);
+						stockInfo.quarters.push(this.state.rawDump.earnings.financialsChart.quarterly[i].date);				
+					}
+				}			
+			}
 		}
+
     }
     
     
@@ -177,6 +208,23 @@ module.exports = class InfoBox extends React.Component {
             style.marginBottom = "5em";
                     
 			self.getStatistics(stockInfo);
+			
+			if (this.state.rawDump.length == 0) {
+	            return (
+	                <div style={style}>
+	                    <Table responsive={true} size={'sm'}>
+	                        <tbody>
+	                            <tr>
+	                                <td colSpan="6" className="table-primary">
+	                                    <h3 className="text-center">Info saknas.</h3>
+	                                </td>
+	                            </tr>
+	                        </tbody>
+	                    </Table>
+	                    
+	                </div>
+	            );				
+			}
 			
 			var configEarnings = {
 				chart: {
@@ -220,7 +268,7 @@ module.exports = class InfoBox extends React.Component {
 				}]
 			}
                         
-            var x = this.state.rawDump.summaryProfile.industry;
+            var x = stockInfo.industry;
             
 			var sector = this.props.sectors.find(sector => sector.industry == x); // Är denna aktie i en trendande sektor? om så -> sektor.perc visar hur många aktier i sektorn som trendar upp
 			

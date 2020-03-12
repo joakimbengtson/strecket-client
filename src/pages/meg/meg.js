@@ -2,12 +2,12 @@ import React from 'react';
 import StockChartList from './stock-chart-list.js';
 import Request from 'yow/request';
 import {Container, Table, Row, Col} from 'react-bootify';
+import {Sparklines, SparklinesLine, SparklinesReferenceLine, SparklinesBars} from 'react-sparklines';
 
-//const puppeteer = require('puppeteer');
-
-require('./meg.css'); 
+require('./meg.css');
 
 var _descr1;
+
 
 
 function pad(n) {
@@ -25,13 +25,13 @@ function sweDate(theDate) {
   return time;
 }
 
-
+ 
 class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 
 	constructor(props) {
 		super(props);
 
-		this.state = {spikes:null, dates:null, error:null, sectors:[], tickers: "", mmth:"-"};
+		this.state = {spikes:null, dates:null, error:null, sectors:[], tickers: "", mmth:"-", fearandgreed:"-"};
 		
 		this.handleCheck = this.handleCheck.bind(this);
 		this.handleChange = this.handleChange.bind(this);		
@@ -101,26 +101,32 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	}
 
 	getFearAndGreed() {
-		axios.defaults.headers.post['Content-Type'] ='application/x-www-form-urlencoded';
-		
-        return new Promise((resolve, reject) => {
-			axios.get('https://money.cnn.com/data/fear-and-greed/')
-			  .then(function (response) {
-			    console.log(response.data);
-			    console.log(response.status);
-			    console.log(response.statusText);
-			    console.log(response.headers);
-			    console.log(response.config);
-			    resolve(response.data);
-			  })
-			.catch((error) => {
-				console.log(error);
-				reject(error);				
-			})			  
+        return new Promise((resolve, reject) => {	
+	        var request = require("client-request");
+	
+	        var options = {
+	            uri: "http://app-o.se:3000/fearandgreed",
+	            method: "GET",
+	            json: true,
+	            headers: {
+	                "content-type": "application/json"
+	            }
+	        };
+	
+	        var req = request(options, function(err, response, body) {
+	            if (!err) {
+		            body.pop(); // Ta bort värdet för ett år sen
+		            body.reverse(); // Äldst värde först
+	                resolve(body);
+	            } else {
+	            	console.log("Err: getFearAndGreed:", err);
+	                reject(err);
+	            }
+	        });
 		});		
 	}
 
-	getSpikes() {
+	getSpikes() {  
         return new Promise((resolve, reject) => {
 	        var request = new Request('http://app-o.se:3012');
 	        var query = {};
@@ -129,7 +135,7 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 			_descr1 = "60% över normal volym, stängt över gårdagen, över 51 week high, över sma200, omsatt mer än 5 miljoner $";
 	        query.sql    = 'SELECT a.symbol, a.volume, b.volume, a.close as lastClose, b.close as previousClose FROM stockquotes a INNER JOIN stockquotes b ON a.symbol = b.symbol INNER JOIN stocks ON stocks.symbol = a.symbol WHERE a.date = ? AND b.date = ? AND a.volume > b.AV14*1.6 AND a.close > b.close AND a.close > a.SMA200 AND a.close*a.AV14 > 5000000 AND a.close > a.open AND a.close >= stocks.wh51';
 
-	        query.values = [this.state.dates[1], this.state.dates[0]];
+	        query.values = [this.state.dates[0], this.state.dates[1]];
 
 	        request.get('/mysql', {query:query}).then(response => {
 	            var tickers = response.body;
@@ -148,7 +154,8 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	
 	componentDidMount() {
 
-		this.getFearAndGreed().then(body => {
+		this.getFearAndGreed().then(numbers => {
+			this.setState({fearandgreed:numbers});
 			this.getDates().then(dates => {
 		        this.setState({dates:dates});
 				this.getMMTH().then(perc => {		   
@@ -205,6 +212,27 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	handleChange(event) {
 		this.setState({tickers: event.target.value});
 	}
+	
+	getGreedBalls() {
+		var colors=[];
+		var index;
+		
+		for (index = 0; index < this.state.fearandgreed.length; ++index) {
+			if (this.state.fearandgreed[index] >= 50)
+				colors[index] = "numberCircleGreen";
+			else
+				colors[index] = "numberCircleRed";				
+		}
+		
+		return (
+			<span>
+			<span className={colors[0]}>{this.state.fearandgreed[0]}</span>
+			<span className={colors[1]}>{this.state.fearandgreed[1]}</span>
+			<span className={colors[2]}>{this.state.fearandgreed[2]}</span>
+			<span className={colors[3]}>{this.state.fearandgreed[3]}</span>			
+			</span>
+		)
+	}
 
     render() {
         if (this.state.spikes) {
@@ -227,14 +255,20 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 		        <h4 className="text-center">({_descr1})</h4>
 		        <Container fluid={true}>
                     <Container.Row style={styleContainer}>
-                    <Container.Col>
+                    <Container.Col  style={{backgroundColor: "aliceblue"}}>
+                    <small style={{color: "lightgray"}}>Sektorer i topp</small>
+                    <br/>                    
 		        	{this.getTopSectors()}
                     </Container.Col>
-                    <Container.Col>
-		        	<h1 className="text-center">{this.state.mmth}</h1>
+                    <Container.Col className="text-center" style={{backgroundColor: "aliceblue"}}>
+                    <small style={{color: "lightgray"}}>Antal aktier över sma200</small>
+                    <br/>
+		        	<h1>{this.state.mmth}</h1>
                     </Container.Col>                    
-                    <Container.Col>
-		        	i lingonskogen
+                    <Container.Col className="text-center"  style={{backgroundColor: "aliceblue"}}>
+                    <small style={{color: "lightgray"}}>Fear & Greed</small>
+                    <br/><br/>
+                    {this.getGreedBalls()}
                     </Container.Col>                    
                     </Container.Row>		        	
 		        </Container>

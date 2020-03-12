@@ -6,6 +6,8 @@ import {Form, Button, Container, Row, Col, Dropdown, Card, Tag, Pill, Alert} fro
 require("./new-stock.less");
 var config = require('../config.js');
 
+
+
 const _portfolioSize = 4890000;
 const _maxBuyAmount = 400000;
 const _risc = 0.25;
@@ -444,6 +446,10 @@ module.exports = class Home extends React.Component {
 
 	    return countTxt;		    
     }    
+    
+	dismissAlert() {
+		this.setState({showAlert:!this.state.showAlert});
+	}    
         
     render() {
         return (
@@ -465,15 +471,9 @@ module.exports = class Home extends React.Component {
                             </Form.Col>
                             <Form.Col sm={11}>
                                 <Form.Input autoFocus={this.state.focus=='stockticker'} disabled={_stockID != undefined} value={this.state.inputs.stockticker} padding={{bottom:1}} type="text" id="stockticker" placeholder="Kortnamn för aktien" onChange={this.onTextChange.bind(this)} onKeyPress={this.handleKeyPress.bind(this)}/>
-                            </Form.Col>
-                        </Form.Group>
-                        <Form.Group row>
-                            <Form.Col sm={1}>
-                            </Form.Col>
-                            <Form.Col sm={11}>
-						    <Alert dismiss color='warning'>
-						        Hittar inte denna ticker.
-						    </Alert>                            
+							    <Alert show={this.state.showAlert} dismiss={this.dismissAlert.bind(this)} color='warning'>
+							        Hittar inte denna ticker.
+							    </Alert>                                                            
                             </Form.Col>
                         </Form.Group>
                         <Form.Group row>
@@ -512,7 +512,7 @@ module.exports = class Home extends React.Component {
                         <Form.Group row>
                         
 	                        <Form.Col sm={1} textAlign='right' >
-	                            <Form.Label inline textColor='muted'>
+	                            <Form.Label inline textColor='muted'>  
 	                                <small>
 	                                    Källa
 	                                </small>
