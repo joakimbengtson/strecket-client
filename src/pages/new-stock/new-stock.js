@@ -1,7 +1,7 @@
 import React from "react";
 import Request from "rest-request";
 
-import {Form, Button, Container, Row, Col, Dropdown, Card, Tag, Pill, Alert} from 'react-bootify';
+import {Form, Input, Button, Container, Row, Col, Dropdown, Card, Tag, Pill, Alert} from 'react-bootify';
 
 require("./new-stock.less");
 var config = require('../config.js');
@@ -464,55 +464,55 @@ module.exports = class Home extends React.Component {
                             </Form.Col>
                         </Form.Group>
                         <Form.Group row>
-                            <Form.Col sm={1} textAlign='right' >
-                                <Form.Label inline textColor='muted'>
+                            <Form.Col sm={1} text='left'>
+                                <Form.Label inline text='muted'>
                                     <small>Ticker</small>
                                 </Form.Label>
                             </Form.Col>
                             <Form.Col sm={11}>
-                                <Form.Input autoFocus={this.state.focus=='stockticker'} disabled={_stockID != undefined} value={this.state.inputs.stockticker} padding={{bottom:1}} type="text" id="stockticker" placeholder="Kortnamn för aktien" onChange={this.onTextChange.bind(this)} onKeyPress={this.handleKeyPress.bind(this)}/>
+                                <Input autoFocus={this.state.focus=='stockticker'} disabled={_stockID != undefined} value={this.state.inputs.stockticker} padding={{bottom:1}} type="text" id="stockticker" placeholder="Kortnamn för aktien" onChange={this.onTextChange.bind(this)} onKeyPress={this.handleKeyPress.bind(this)}/>
 							    <Alert show={this.state.showAlert} dismiss={this.dismissAlert.bind(this)} color='warning'>
 							        Hittar inte denna ticker.
 							    </Alert>                                                            
                             </Form.Col>
                         </Form.Group>
                         <Form.Group row>
-                            <Form.Col sm={1} textAlign='right' >
-                                <Form.Label inline textColor='muted'>
+                            <Form.Col sm={1} text='left' >
+                                <Form.Label inline text='muted'>
                                     <small>Namn</small>
                                 </Form.Label>
                             </Form.Col>
                             <Form.Col sm={11}>
-                                <Form.Input value={this.state.inputs.stockname} padding={{bottom:1}} type="text" id="stockname" placeholder="Namnet på aktien" onChange={this.onTextChange.bind(this)}/>
+                                <Input value={this.state.inputs.stockname} padding={{bottom:1}} type="text" id="stockname" placeholder="Namnet på aktien" onChange={this.onTextChange.bind(this)}/>
                             </Form.Col>
                         </Form.Group>
 
                         <Form.Group row>
-                            <Form.Col sm={1} textAlign='right' >
-                                <Form.Label inline textColor='muted'>
+                            <Form.Col sm={1} text='left' >
+                                <Form.Label inline text='muted'>
                                     <small>Kurs</small>
                                 </Form.Label>
                             </Form.Col>
                             <Form.Col sm={11}>
-                                <Form.Input autoFocus={this.state.focus=='stockprice'} value={this.state.inputs.stockprice} padding={{bottom:1}} type="text" id="stockprice" placeholder="Köpt till kursen?"  onChange={this.onTextChange.bind(this)}/>
+                                <Input autoFocus={this.state.focus=='stockprice'} value={this.state.inputs.stockprice} padding={{bottom:1}} type="text" id="stockprice" placeholder="Köpt till kursen?"  onChange={this.onTextChange.bind(this)}/>
                             </Form.Col>
                         </Form.Group>
 
                         <Form.Group row>
-                            <Form.Col sm={1} textAlign='right' >
-                                <Form.Label inline textColor='muted'>
+                            <Form.Col sm={1} text='left' >
+                                <Form.Label inline text='muted'>
                                     <small>Antal</small>
                                 </Form.Label>
                             </Form.Col>
                             <Form.Col sm={11}>
-                                <Form.Input value={this.state.inputs.stockcount} padding={{bottom:1}} type="text" id="stockcount" placeholder="Antal aktier"  onChange={this.onTextChange.bind(this)}/>
+                                <Input value={this.state.inputs.stockcount} padding={{bottom:1}} type="text" id="stockcount" placeholder="Antal aktier"  onChange={this.onTextChange.bind(this)}/>
                             </Form.Col>
                         </Form.Group>
 
                         <Form.Group row>
                         
-	                        <Form.Col sm={1} textAlign='right' >
-	                            <Form.Label inline textColor='muted'>  
+	                        <Form.Col sm={1} text='left' >
+	                            <Form.Label inline text='muted'>  
 	                                <small>
 	                                    Källa
 	                                </small>
@@ -543,32 +543,32 @@ module.exports = class Home extends React.Component {
 	                                    <Card.Body>
 	                                    
 										<Form inline padding={{vertical:1}}>                                    	
-		                                    <Form.Radio value="radioATR" checked={this.state.selectedOption === "radioATR"} onChange={this.handleOptionChange}>
+		                                    <Input.Radio value="radioATR" checked={this.state.selectedOption === "radioATR"} onChange={this.handleOptionChange}>
 		                                        Släpande
-		                                    </Form.Radio>
+		                                    </Input.Radio>
 		
-		                                    <Form.Input value={this.state.inputs.atrmultiple} margin={{left:2, right:2}} type="text" ref="atrmultiple" id="atrmultiple" placeholder="x ATR?" onChange={this.onTextChange.bind(this)}/>
+		                                    <Input value={this.state.inputs.atrmultiple} margin={{left:2, right:2}} type="text" ref="atrmultiple" id="atrmultiple" placeholder="x ATR?" onChange={this.onTextChange.bind(this)}/>
 		                                </Form>
 	
 										<Form inline padding={{vertical:1}}>                                    	
-		                                    <Form.Radio value="radioQuote" checked={this.state.selectedOption === "radioQuote"} onChange={this.handleOptionChange}>
+		                                    <Input.Radio value="radioQuote" checked={this.state.selectedOption === "radioQuote"} onChange={this.handleOptionChange}>
 		                                        Under kurs
-		                                    </Form.Radio>
+		                                    </Input.Radio>
 		
-		                                    <Form.Input value={this.state.inputs.stoplossquote} margin={{bottom:0, left:2, right:2}} type="text" ref="stoplossquote" id="stoplossquote" placeholder="Kurs?" onChange={this.onTextChange.bind(this)}/>
+		                                    <Input value={this.state.inputs.stoplossquote} margin={{bottom:0, left:2, right:2}} type="text" ref="stoplossquote" id="stoplossquote" placeholder="Kurs?" onChange={this.onTextChange.bind(this)}/>
 		                                </Form>
 		                                                                
 										<Form inline padding={{vertical:1}}>                                    	
-		                                    <Form.Radio value="radioPercent" checked={this.state.selectedOption === "radioPercent"} onChange={this.handleOptionChange}>
+		                                    <Input.Radio value="radioPercent" checked={this.state.selectedOption === "radioPercent"} onChange={this.handleOptionChange}>
 		                                        Släpande under procent
-		                                    </Form.Radio>
-		                                    <Form.Input  value={this.state.inputs.stoplosspercentage} margin={{left:2, right:2}} type="text" ref="stoplosspercentage" id="stoplosspercentage" placeholder="%" onChange={this.onTextChange.bind(this)}/>
+		                                    </Input.Radio>
+		                                    <Input  value={this.state.inputs.stoplosspercentage} margin={{left:2, right:2}} type="text" ref="stoplosspercentage" id="stoplosspercentage" placeholder="%" onChange={this.onTextChange.bind(this)}/>
 										</Form>
 
 										<Form inline padding={{vertical:1}}>                                    	
-		                                    <Form.Radio value="radioSMA" checked={this.state.selectedOption === "radioSMA"} onChange={this.handleOptionChange}>
+		                                    <Input.Radio value="radioSMA" checked={this.state.selectedOption === "radioSMA"} onChange={this.handleOptionChange}>
 		                                        Släpande under SMA20
-		                                    </Form.Radio>
+		                                    </Input.Radio>
 		                                    <span className={_stockQuote > _sma20 ? 'badge badge-success' : 'badge badge-danger'} style={{margin: '4px 4px'}}>{_sma20 == 0 ? '-' : _sma20}</span>
 										</Form>
 										
