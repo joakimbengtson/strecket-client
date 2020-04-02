@@ -280,7 +280,7 @@ module.exports = class StockChart extends React.Component {
                 <div style = {style}>
 	                <ReactHighstock config={this.state.config}></ReactHighstock>
 	                <InfoBox symbol={this.props.symbol} sectors={this.props.sectors} atr={this.state.atr} drops={this.state.drops}></InfoBox>
-	                <Form><Form.Group textAlign='center'>
+	                <Form><Form.Group text='center'>
 	                <Button size='lg' onClick={this.onClick}>Kandidat</Button>
 	                </Form.Group></Form>
                 </div>

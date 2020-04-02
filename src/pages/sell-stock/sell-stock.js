@@ -104,8 +104,8 @@ module.exports = class Home extends React.Component {
                         </Form.Group>
 
                         <Form.Group row>
-                            <Form.Col sm={1} textAlign='right' >
-                                <Form.Label inline textColor='muted'>
+                            <Form.Col sm={1} text='right' >
+                                <Form.Label inline text='muted'>
                                     <small>Datum</small>
                                 </Form.Label>
                             </Form.Col>
@@ -115,8 +115,8 @@ module.exports = class Home extends React.Component {
                         </Form.Group>
                         
                         <Form.Group row>
-                            <Form.Col sm={1} textAlign='right' >
-                                <Form.Label inline textColor='muted'>
+                            <Form.Col sm={1} text='right' >
+                                <Form.Label inline text='muted'>
                                     <small>Pris</small>
                                 </Form.Label>
                             </Form.Col> 
@@ -126,8 +126,8 @@ module.exports = class Home extends React.Component {
                         </Form.Group>
 
                         <Form.Group row>
-                            <Form.Col sm={1} textAlign='right' >
-                                <Form.Label inline textColor='muted'>
+                            <Form.Col sm={1} text='right' >
+                                <Form.Label inline text='muted'>
                                     <small>Sålt antal</small>
                                 </Form.Label>
                             </Form.Col>
