@@ -30,9 +30,17 @@ module.exports = class Home extends React.Component {
     constructor(props) {
         super(props);
         
+		var query = new URLSearchParams(props.location.search);
+
+		_stockID = query.get('id');
+		_stockQuote = query.get('senaste');
+        _stockAmount = query.get('antal');
+        
+        /*
         _stockID = props.location.query.id;        
         _stockQuote = props.location.query.senaste;
         _stockAmount = props.location.query.antal;
+		*/
 
         this.url = "http://app-o.se:3000";
         this.api = new Request(this.url);
