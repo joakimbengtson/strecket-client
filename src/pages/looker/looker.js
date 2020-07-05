@@ -18,7 +18,7 @@ module.exports = class Home extends React.Component {
     fetch(symbol) {
         return new Promise((resolve, reject) => {
 
-            var request = new Request("http://app-o.se:3000");
+            var request = new Request("http://85.24.185.150:3000");
 
             request
                 .get("/rawdump/" + symbol)
@@ -35,7 +35,7 @@ module.exports = class Home extends React.Component {
     
     componentDidMount() {
         var self = this;
-        var request = new Request('http://app-o.se:3000');
+        var request = new Request('http://85.24.185.150:3000');
         var query = {};
         var stocks;
         const increaseLimit = 0.20;

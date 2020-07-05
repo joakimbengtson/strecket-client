@@ -81,7 +81,7 @@ module.exports = class Home extends React.Component {
         var request = require("client-request");
 
         var options = {
-            uri: "http://app-o.se:3000/sources",
+            uri: "http://85.24.185.150:3000/sources",
             method: "GET",
             json: true,
             headers: {
@@ -103,7 +103,7 @@ module.exports = class Home extends React.Component {
 		        if (_stockID != undefined) {
 		
 		            options = {
-		                uri: "http://app-o.se:3000/stock/" + _stockID,
+		                uri: "http://85.24.185.150:3000/stock/" + _stockID,
 		                method: "GET",
 		                json: true,
 		                headers: {
@@ -218,7 +218,7 @@ module.exports = class Home extends React.Component {
         rec.SMA20 = _sma20;
 
         var options = {
-            uri: "http://app-o.se:3000/save",
+            uri: "http://85.24.185.150:3000/save",
             method: "POST",
             body: rec,
             timeout: 3000,
@@ -332,7 +332,7 @@ module.exports = class Home extends React.Component {
             var ticker = target.currentTarget.value;
 
             var options = {
-                uri: "http://app-o.se:3000/company/" + ticker,
+                uri: "http://85.24.185.150:3000/company/" + ticker,
                 method: "GET",
                 timeout: 1000,
                 json: true,

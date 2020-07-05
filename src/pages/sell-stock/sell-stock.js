@@ -36,7 +36,7 @@ module.exports = class Home extends React.Component {
 		_stockQuote = query.get('senaste');
         _stockAmount = query.get('antal');
         
-        this.url = "http://app-o.se:3000";
+        this.url = "http://85.24.185.150:3000";
         this.api = new Request(this.url);
         
         this.state = {};
@@ -65,7 +65,7 @@ module.exports = class Home extends React.Component {
 		var amount = ReactDOM.findDOMNode(self.refs.sellamount).value;
 
         var options = {
-            uri: "http://app-o.se:3000/stocks/" + _stockID + "/date/" + date + "/price/" + price + "/amount/" + amount,
+            uri: "http://85.24.185.150:3000/stocks/" + _stockID + "/date/" + date + "/price/" + price + "/amount/" + amount,
             method: "DELETE",
             timeout: 3000,
             json: true,

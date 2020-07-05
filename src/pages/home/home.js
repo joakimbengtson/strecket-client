@@ -78,7 +78,7 @@ module.exports = class Home extends React.Component {
         var request = require("client-request");
 
         var options = {
-            uri: "http://app-o.se:3000/stocks",
+            uri: "http://85.24.185.150:3000/stocks",
             method: "GET",
             json: true,
             headers: {

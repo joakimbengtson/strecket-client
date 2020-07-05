@@ -32,7 +32,7 @@ module.exports = class StockChart extends React.Component {
 
     generate() {
         // Deklarera en request som går direkt till Munch (slipper då MySQL-anrop)
-        var request = new Request('http://app-o.se:3012');
+        var request = new Request('http://85.24.185.150:3000');
 
         // Nu och då
         var now = new Date();

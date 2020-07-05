@@ -88,7 +88,7 @@ module.exports = class Home extends React.Component {
 
         this.state = {stocks: ["MSFT", "AAPL"]};
 
-        this.url = "http://app-o.se:3000";
+        this.url = "http://85.24.185.150:3000";
         this.api = new Request(this.url);
     }
 
