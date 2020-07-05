@@ -35,7 +35,7 @@ module.exports = class Home extends React.Component {
     
     componentDidMount() {
         var self = this;
-        var request = new Request('http://app-o.se:3012');
+        var request = new Request('http://app-o.se:3000');
         var query = {};
         var stocks;
         const increaseLimit = 0.20;
