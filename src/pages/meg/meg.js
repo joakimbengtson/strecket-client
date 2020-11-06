@@ -154,7 +154,8 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	
 	componentDidMount() {
 
-		this.getFearAndGreed().then(numbers => {
+		//this.getFearAndGreed().then(numbers => {
+			var numbers = [33,44,55,66];
 			this.setState({fearandgreed:numbers});
 			this.getDates().then(dates => {
 		        this.setState({dates:dates});
@@ -184,11 +185,11 @@ class NagotSomFunkarBattreOmNagotBlirFel extends React.Component {
 	            console.log(error);
 	            this.setState({error:error});
 	        })
-	    })
+/*	    })
         .catch(error => {
             console.log(error);
             this.setState({error:error});
-        })
+        })*/
     }
     
     getTopSectors() {

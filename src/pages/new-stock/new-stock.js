@@ -1,14 +1,12 @@
 import React from "react";
 import Request from "rest-request";
-
 import {Form, Button, Container, Row, Col, Dropdown, Card, Tag, Pill, Alert} from 'react-bootify';
 
 require("./new-stock.less");
 var config = require('../config.js');
 
 
-
-const _portfolioSize = 4890000;
+const _portfolioSize = 5000000;
 const _maxBuyAmount = 400000;
 const _risc = 0.25;
 var _perc = 0.0;
@@ -17,12 +15,13 @@ var _ATR;
 var _stockID;
 var _stockQuote;
 var _sma20 = 0;
-var _xrate = 9.72;
-
+var _xrate = config.rates.rateUSD;
+var _fxTicker = ""; 
 
 function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
+
 
 function pad(n) {
     return n < 10 ? "0" + n : n;
@@ -49,6 +48,34 @@ function roundUp(num, precision) {
 		
 	return Math.ceil(num / precision) * precision;
 }	
+
+
+function unvalidDate(dString) {
+	// dString -> YYYY-MM-DD
+	
+	if (dString.length != 10)
+		return true;
+		
+	var day   = dString.substr(8, 2);
+	var month = dString.substr(5, 2);
+	var year  = dString.substr(0, 4);
+	
+	if (!isNumeric(day) || day < 1) 
+    	return true;
+    	
+	if (!isNumeric(month) || (month < 1) || (month > 12)) 
+    	return true;
+    	
+	if (!isNumeric(year) || (year < 1900) || (year > 2100))
+		return true;
+
+	var lastDayOfMonth = new Date(year, parseInt(month) + 1, -1).getDate();
+		
+	if (day > lastDayOfMonth)
+		return true;
+		
+	return false;
+}
 
 
 module.exports = class Home extends React.Component {
@@ -113,11 +140,12 @@ module.exports = class Home extends React.Component {
 		
 		            var req = request(options, function(err, response, body) {
 		                if (!err) {
-							self.state.inputs.stockticker = body[0].ticker;  		
-							self.state.inputs.stockname   = body[0].namn;  		                    
-							self.state.inputs.stockprice  = body[0].kurs;
-							self.state.inputs.stockcount  = body[0].antal;
-							_sma20                        = body[0].SMA20; 		
+							self.state.inputs.stockticker  = body[0].ticker;  		
+							self.state.inputs.stockname    = body[0].namn;  		                    
+							self.state.inputs.stockprice   = body[0].kurs;
+							self.state.inputs.stockcount   = body[0].antal;
+							self.state.inputs.stockbuydate = (body[0].köpt_datum).substring(0, 10);							
+							_sma20                         = body[0].SMA20; 		
 		
 		                    if (body[0].stoplossTyp == config.stoplossType.StoplossTypeATR) {
 								self.state.inputs.atrmultiple = body[0].ATRMultipel;
@@ -181,6 +209,13 @@ module.exports = class Home extends React.Component {
 
 		if (this.state.inputs.stockcount != undefined && this.state.inputs.stockcount.length == 0)
 			return true;
+
+		// Kolla datum
+		if (this.state.inputs.stockbuydate == undefined)
+			return true;
+			
+		if (unvalidDate(this.state.inputs.stockbuydate))
+			return true;
 	    
 		// Dropdown vald
 	    if (!isNumeric(this.state.sourceID))
@@ -191,15 +226,15 @@ module.exports = class Home extends React.Component {
 
     onSave() {
         var rec = {};
-        var today = new Date();
         var request = require("client-request");
 
-        rec.ticker = this.state.inputs.stockticker.toUpperCase();
-        rec.namn = this.state.inputs.stockname;
-        rec.kurs = this.state.inputs.stockprice;
-        rec.maxkurs = this.state.inputs.stockprice;        
-        rec.antal = this.state.inputs.stockcount;
-        rec.källa = this.state.sourceID;
+        rec.ticker     = this.state.inputs.stockticker.toUpperCase();
+        rec.namn       = this.state.inputs.stockname;
+        rec.kurs       = this.state.inputs.stockprice;
+        rec.maxkurs    = this.state.inputs.stockprice;        
+        rec.antal      = this.state.inputs.stockcount;
+        rec.köpt_datum = (new Date(this.state.inputs.stockbuydate)).toISOString().substr(0, 10); // Dra ut YYYY-MM-DD
+        rec.källa      = this.state.sourceID;
 
         if (this.state.selectedOption == "radioATR") {
             rec.stoplossTyp = config.stoplossType.StoplossTypeATR;
@@ -351,17 +386,25 @@ module.exports = class Home extends React.Component {
 	                        var helpQuote;
 	        
 							inputs.stockname = body.price.shortName;
-	
-							if (body.price.currency == 'USD')
-								_xrate = 9.66;
-							else if (body.price.currency == 'CAD')
-								_xrate = 7.27;
-							else if (body.price.currency == 'EUR')
-								_xrate = 10.58;
-							else if (body.price.currency == 'SEK')
-								_xrate = 1;
 							
-							console.log("_xrate=", _xrate);
+							if (body.price.currency == 'USD') {
+								_xrate = config.rates.rateUSD;
+								_fxTicker = " (USD)";								
+							}
+							else if (body.price.currency == 'CAD') {
+								_xrate = config.rates.rateCAD;
+								_fxTicker = " (CAD)";																
+							}
+							else if (body.price.currency == 'EUR') {
+								_xrate = config.rates.rateEUR;
+								_fxTicker = " (EUR)";	
+							}
+							else if (body.price.currency == 'SEK') {
+								_xrate = 1;							
+								_fxTicker = " (SEK)";									
+							}
+	
+							console.log("handleKeyPress._xrate=", _xrate);
 							
 							self.setState({inputs:inputs});
 	
@@ -420,6 +463,17 @@ module.exports = class Home extends React.Component {
 	    	
 	    return amountTxt;
     }
+    
+    getRate () {	
+	    var rate = _xrate;
+console.log("getRate._xrate=", _xrate);	    
+	    if (_xrate == 1)
+	    	rate = "";
+	    else
+	    	rate = rate.toFixed(2);
+	    	    
+	    return rate + _fxTicker;
+    }
     	    
     getBuyNumber() {
 	    var countTxt = '-';
@@ -450,6 +504,7 @@ module.exports = class Home extends React.Component {
 	dismissAlert() {
 		this.setState({showAlert:!this.state.showAlert});
 	}    
+        
         
     render() {
         return (
@@ -508,6 +563,18 @@ module.exports = class Home extends React.Component {
                                 <Form.Input value={this.state.inputs.stockcount} padding={{bottom:1}} type="text" id="stockcount" placeholder="Antal aktier"  onChange={this.onTextChange.bind(this)}/>
                             </Form.Col>
                         </Form.Group>
+
+                        <Form.Group row>
+                            <Form.Col sm={1} textAlign='right' >
+                                <Form.Label inline textColor='muted'>
+                                    <small>Datum</small>
+                                </Form.Label>
+                            </Form.Col>
+                            <Form.Col sm={11}>
+                                 <Form.Input value={this.state.inputs.stockbuydate} padding={{bottom:1}} type="text" id="stockbuydate" placeholder="Datum för köp" onChange={this.onTextChange.bind(this)}/>
+                            </Form.Col>
+                        </Form.Group>
+
 
                         <Form.Group row>
                         
@@ -592,7 +659,7 @@ module.exports = class Home extends React.Component {
 										            <Container.Col text="info text-right font-weight-light">ATR</Container.Col>
 										            <Container.Col>{this.state.helpATR}</Container.Col>
 										            <Container.Col text="info text-right font-weight-light">Risk</Container.Col>
-										            <Container.Col>{this.state.helpPercentage > 0 ? "-" + this.state.helpPercentage : this.state.helpPercentage}</Container.Col>										            
+										            <Container.Col>{this.state.helpPercentage > 0 ? "-" + this.state.helpPercentage : this.state.helpPercentage}</Container.Col>							
 										        </Container.Row>
 										        <Container.Row>
 										            <Container.Col text="info text-right font-weight-light">Köpesumma</Container.Col>
@@ -600,6 +667,13 @@ module.exports = class Home extends React.Component {
 										            <Container.Col text="info text-right font-weight-light">Antal</Container.Col>
 										            <Container.Col>{this.getBuyNumber()}</Container.Col>										            
 										        </Container.Row>
+										        <Container.Row>
+										            <Container.Col text="info text-right font-weight-light"><small>Valuta</small></Container.Col>
+										            <Container.Col><small>{this.getRate()}</small></Container.Col>
+										            <Container.Col text="info text-right font-weight-light"></Container.Col>
+										            <Container.Col></Container.Col>										            
+										        </Container.Row>
+										        
 										    </Container>	                                    
 	                                    </Card.Body>
 	                                </Card>
@@ -632,11 +706,3 @@ module.exports = class Home extends React.Component {
         );
     }
 };
-
-
-/*
-											            <Container.Col text="info text-right font-weight-light">Köpesumma</Container.Col>
-										            <Container.Col>{Math.trunc((_risc*_portfolioSize)/(Math.abs(_perc))) > _portfolioSize? _portfolioSize.toLocaleString() : Math.trunc((_risc*_portfolioSize)/(Math.abs(_perc))).toLocaleString()}</Container.Col>
-										            <Container.Col text="info text-right font-weight-light">Antal</Container.Col>
-										            <Container.Col>{Math.trunc(((_risc*_portfolioSize)/(Math.abs(_perc))/_xrate)/_stockQuote).toLocaleString()}</Container.Col>										            
-*/

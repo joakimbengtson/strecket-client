@@ -109,6 +109,9 @@ module.exports = class Home extends React.Component {
                             <span>{stock.max}%</span>
                         </td>
                         <td style={{textAlign: "right"}}>
+                            <span>{stock.maxdays}</span>
+                        </td>
+                        <td style={{textAlign: "right"}}>
                             <span>{stock.min}%</span>
                         </td>
                         <td style={{textAlign: "right"}}>
@@ -156,6 +159,7 @@ module.exports = class Home extends React.Component {
                             <th>Ticker</th>
                             <th style={{textAlign: "right"}}>P/L</th>
                             <th style={{textAlign: "right"}}>Max</th>
+                            <th style={{textAlign: "right"}}>d(max)</th>                            
                             <th style={{textAlign: "right"}}>Min</th>                            
                             <th style={{textAlign: "right"}}>Om behållt</th>
                             <th>Senaste 30</th>

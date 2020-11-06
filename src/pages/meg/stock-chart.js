@@ -68,6 +68,7 @@ module.exports = class StockChart extends React.Component {
             var drops = [];
             var drop;
 			var atr = 0;
+			var previousValue = 0;
             
             const atrPeriod = 14; // ATR calculated for 14 days
 
@@ -124,7 +125,38 @@ module.exports = class StockChart extends React.Component {
 
 			  chart: {
 			    height: (9 / 16 * 100) + '%',
-			    panning: false
+			    panning: false, 
+			    
+				 events: {
+		            click: function (event) {
+			            if (previousValue != 0) {
+							var label = this.renderer.label(
+				            	((event.yAxis[0].value/previousValue - 1)*100).toFixed(2) + '%',
+			                    event.xAxis[0].axis.toPixels(event.xAxis[0].value),
+			                    event.yAxis[0].axis.toPixels(event.yAxis[0].value)					            
+			                )
+			                    .attr({
+			                        fill: '#82B5E6',
+			                        padding: 10,
+			                        r: 5,
+			                        zIndex: 8
+			                    })
+			                    .css({
+			                        color: '#FFFFFF'
+			                    })
+			                    .add();
+			
+			                setTimeout(function () {
+			                    label.fadeOut();
+			                }, 2000);	
+			            }
+		                
+				        previousValue = event.yAxis[0].value;		            
+			            
+		            }
+				        
+				},			    
+			    
 			  },
 
 			  rangeSelector: {

@@ -6,3 +6,10 @@ config.stoplossType = {
     StoplossTypePercent : 3,
     StoplossTypeSMA20 : 4
 }
+
+config.rates = {
+	rateUSD : 1,
+	rateCAD : 1,
+	rateEUR : 1
+}
+

@@ -36,6 +36,7 @@ function dayDiff(d) {
     var dt1 = new Date(d);
     var dt2 = new Date();
     
+    
     if (d == null) return "n/a";    
     
     return Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate())) / (1000 * 60 * 60 * 24));
@@ -265,25 +266,17 @@ module.exports = class Home extends React.Component {
             }
         }); 
 
-/*
-                        {dayDiffPosix(stock.earningsDate[0]) > 5 ? (
-							<td>{getSweDate(stock.earningsDate[0])}</td>
-                        ) : ( {}
-							<td style={{color: "red"}}>{getSweDate(stock.earningsDate[0])}</td>
-							<td>{getSweDate(stock.earningsDate[0])}</td>
-                        )}
-
-                        {dayDiffPosix(stock.earningsDate[0]) < 5 ? (
-							<td style={{color: "red"}}>{getSweDate(stock.earningsDate[0])}</td>
-                        ) : (
-							<td>{getSweDate(stock.earningsDate[0])}</td>
-                        )}
-*/                        
-
-        
-//                                 <Button size="sm" className="btn btn-secondary" onClick={self.deleteStock.bind(self, stock.id)}>
-
         var rates = this.state.stocks.map(function(stock, index) {
+	        
+	        if (stock.namn == "USD")
+	        	config.rates.rateUSD = stock.senaste;
+	        	
+	        if (stock.namn == "CAD")
+	        	config.rates.rateCAD = stock.senaste;
+	        	
+	        if (stock.namn == "EUR")
+	        	config.rates.rateEUR = stock.senaste;
+	        
             if (stock.antal == -1) {
                 return (
                     <tr key={index}>
