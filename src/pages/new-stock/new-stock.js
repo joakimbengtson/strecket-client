@@ -15,6 +15,7 @@ var _ATR;
 var _stockID;
 var _stockQuote;
 var _sma20 = 0;
+var _maxkurs = 0;
 var _xrate = config.rates.rateUSD;
 var _fxTicker = ""; 
 
@@ -145,6 +146,7 @@ module.exports = class Home extends React.Component {
 							self.state.inputs.stockprice   = body[0].kurs;
 							self.state.inputs.stockcount   = body[0].antal;
 							self.state.inputs.stockbuydate = (body[0].köpt_datum).substring(0, 10);							
+							_maxkurs                       = body[0].maxkurs; 		
 							_sma20                         = body[0].SMA20; 		
 		
 		                    if (body[0].stoplossTyp == config.stoplossType.StoplossTypeATR) {
@@ -231,7 +233,7 @@ module.exports = class Home extends React.Component {
         rec.ticker     = this.state.inputs.stockticker.toUpperCase();
         rec.namn       = this.state.inputs.stockname;
         rec.kurs       = this.state.inputs.stockprice;
-        rec.maxkurs    = this.state.inputs.stockprice;        
+        rec.maxkurs    = Math.max(this.state.inputs.stockprice, _maxkurs);
         rec.antal      = this.state.inputs.stockcount;
         rec.köpt_datum = (new Date(this.state.inputs.stockbuydate)).toISOString().substr(0, 10); // Dra ut YYYY-MM-DD
         rec.källa      = this.state.sourceID;
