@@ -1,6 +1,6 @@
 import React from "react";
 import Highcharts from 'highcharts';
-import ReactHighcharts from "react-highcharts";
+import HighchartsReact from 'highcharts-react-official';
 
 import {Table, Alert, Spinner, Form, Checkbox, Button} from "react-bootify";
 
@@ -337,15 +337,15 @@ module.exports = class InfoBox extends React.Component {
                             </tr>
                             <tr>
                                 <td colSpan="3" className="text-center">
-									<ReactHighcharts
+									<HighchartsReact
 									    highcharts={Highcharts}
-									    config={configEarnings}
+									    options={configEarnings}
 									  />                                
 								</td>
                                 <td colSpan="3" className="text-center">
-									<ReactHighcharts
+									<HighchartsReact
 									    highcharts={Highcharts}
-									    config={configRevenue}
+									    options={configRevenue}
 									  />                                
 								</td>
                             </tr>

@@ -1,8 +1,8 @@
 import React from "react";
 import {Popover, Button, Container, Table, Row, Col} from 'react-bootify';
-import {isArray} from 'yow/is';
 import {Sparklines, SparklinesLine, SparklinesReferenceLine, SparklinesBars} from 'react-sparklines';
 import {BarChart, Bar, Tooltip} from 'recharts';
+import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 require("./home.less");
@@ -366,8 +366,8 @@ module.exports = class Home extends React.Component {
                     </Container.Row>
 
                     <Container.Row>
-                        <Button margin={{left:1, right:1}} color="success" size="lg" href="#new-stock">
-                            Nytt köp
+                        <Button margin={{left:1, right:1}} color="success" size="lg">
+                        <Link to='/new-stock'>Nytt köp</Link>
                         </Button>
                         <span>{' '}</span>
                         <Button margin={{left:1, right:1}} className="btn-warning" size="lg" href="#meg">
@@ -380,6 +380,10 @@ module.exports = class Home extends React.Component {
                         <span>{' '}</span>
                         <Button margin={{left:1, right:1}} className="btn-danger" size="lg" href="#looker">
                             Leta
+                        </Button>
+                        <span>{'       '}</span>
+                        <Button margin={{left:1, right:1}} className="btn-warning" size="lg" href="#candidates">
+                            Bubbles
                         </Button>
                         
                     </Container.Row>

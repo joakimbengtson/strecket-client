@@ -1,128 +1,221 @@
-import React from "react";
-import Request from "rest-request";
-import Highcharts from "highcharts/highstock";
-import HighchartsReact from "highcharts-react-official";
+import React from 'react';
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
+import HighchartsMore from 'highcharts/highcharts-more';
 
-require("./candidates.less");
+if (typeof Highcharts === 'object')
+	HighchartsMore(Highcharts);
+else
+	console.log("Highcharts är inte ett objekt");
+	
+	
+require('./candidates.less');
 
-const ReactDOM = require("react-dom");
+const colRealEstate            = '#bbe1fa';
+const colServices              = '#f0ece2';
+const colTechnology            = '#a7d129';
+const colUtilities             = '#ff8ba0';
+const colFinancialServices     = '#f6e9e9';
+const colFinancial             = '#ede68a';
+const colEnergy                = '#a3f7bf';
+const colBasicMaterials        = '#b9d2d2';
+const colCommunicationServices = '#5fb9b0';
+const colConsumerCyclical      = '#eeeeee';
+const colConsumerDefensive     = '#77abb7';
+const colHealthcare            = '#B88BF4';
+const colIndustrials           = '#F2A365';
+
+
+var series = [];
+var _pointer = 1;
+
 
 var options = {
+
+	chart: {
+        type: 'bubble',
+        backgroundColor: '#121212',
+        
+        animation: {
+	        duration: 2500,
+	        easing: 'easeInOutQuint'	        
+        }        
+    },
+    
     title: {
-        text: "NISSE "
-    },
+      text: '',
+      style: {
+      	color: 'white',
+	  	fontWeight: 'bold',
+	  	fontSize: 350,
+	  	opacity: 0.09
 
-    chart: {
-        //height: (9 / 16 * 100) + '%',
-        height: 200,
-        width: 400,
-        panning: false
+      },
+      align: 'center',
+      verticalAlign: 'middle'
+    },	         
+    
+    plotOptions: {
+        bubble: {
+            minSize: 20,
+            maxSize: 90
+        }
+    },    
+        
+	// Hide stuff   
+    legend: {
+		enabled: false    
     },
-
-    rangeSelector: {
+    xAxis: {
+		visible: false	
+    },
+    yAxis: {
+		visible: false		
+    },
+    credits: {
         enabled: false
     },
-
-    navigator: {
-        enabled: false
-    },
-
     tooltip: {
         enabled: false
-    },
+    },    
+    // End hide
 
-    plotOptions: {
-        ohlc: {
-            color: "red",
-            upColor: "green",
-            lineWidth: 2
-        }
-    },
-
-    xAxis: {
-        type: "datetime",
-
-        dateTimeLabelFormats: {
-            second: "%Y-%m-%d<br/>%H:%M:%S",
-            minute: "%Y-%m-%d<br/>%H:%M",
-            hour: "%Y-%m-%d<br/>%H:%M",
-            day: "%Y<br/>%m-%d",
-            week: "%Y<br/>%m-%d",
-            month: "%Y-%m",
-            year: "%Y"
-        }
-    },
-
-    series: [
-        {
-            type: "ohlc",
-
-            data: [[1533114500000, 106.03, 106.45, 105.42, 106.28], [1533200900000, 105.4, 108.09, 104.84, 107.57], [1533287300000, 107.8, 108.05, 106.82, 108.04]]
-        }
-    ]
+    series: [{
+	    
+        dataLabels: {
+            enabled: true,
+            format: '{point.id}',
+            color: 'white',
+			textOutline: '0px',
+			allowOverlap: true,
+            opacity: '10%',
+			style: {
+		   		fontSize: 9
+			}            
+        },
+        
+        animation: {
+	        duration: 2500,
+	        easing: 'easeInOutQuint'	        
+        },
+                
+    }]
 };
 
-/*
-const App = () => <div>
-  <HighchartsReact
-    highcharts={Highcharts}
-    constructorType={'stockChart'}
-    options={options}
-  />
-</div>
-*/
-
-/*
-				<div>
-				  <HighchartsReact
-				    highcharts={Highcharts}
-				    constructorType={'stockChart'}
-				    options={options}
-				  />
-				</div>
-				*/
+function setIntervalImmediately(func, interval) {
+  func();
+  return setInterval(func, interval);
+}
 
 module.exports = class Home extends React.Component {
+	
+	getSectors() {
+				
+        return new Promise((resolve, reject) => {	
+	        var request = require("client-request");
+	
+	        var options = {
+	            uri: "http://85.24.185.150:3000/sectors",
+	            method: "GET",
+	            json: true,
+	            headers: {
+	                "content-type": "application/json"
+	            }
+	        };
+	
+	        var req = request(options, function(err, response, body) {
+	            if (!err) {
+	                resolve(body);
+	            } else {
+	            	console.log("Err: getSectors:", err);
+	                reject(err);
+	            }
+	        });
+		});		
+		
+	}	
+	
     constructor(props) {
         super(props);
-
-        this.state = {stocks: ["MSFT", "AAPL"]};
-
-        this.url = "http://85.24.185.150:3000";
-        this.api = new Request(this.url);
+        
+		this.state = {loadingFlag: true};
+        
     }
-
-    // Virtuell function som anropas då sidan visas
-    componentDidMount() {
+    
+	afterChartCreated(chart) {
         var self = this;
-    }
+        		
+		this.internalChart = chart;
+				
+        setIntervalImmediately(function () {
+			var copyOfSeries;
+			
+			if (!self.state.loadingFlag) {
+				        
+				copyOfSeries = JSON.parse(JSON.stringify(series[_pointer][1]));
+				
+				var d = series[_pointer][0].date;
+				
+				self.internalChart.setTitle({text: d.substr(d.length - 2)}, { text: ''}, false);			
 
+				self.internalChart.series[0].setData(copyOfSeries);
+				
+				++_pointer;
+				
+			  	if (_pointer >= series.length) {
+				  	
+			  		_pointer = 1;				  	
+			  	}
+
+			}
+		  		
+        }, 2500);
+        
+	}    
+
+    componentDidMount() {
+	    var self = this;
+	    
+        setIntervalImmediately(function () {
+			self.getSectors().then(sectorData => {
+				series = sectorData.reverse();
+				console.log("series", series);
+				self.setState({loadingFlag: false});			
+		    })
+	        .catch(error => {
+	            console.log("ERR:getSectors", error);
+	        })
+				  		
+        }, 1000 * 60 * 60 * 24);
+	    
+    }
+    
     onCancel() {
         window.history.back();
     }
 
     renderGraphs() {
-        var self = this;
-
-        var graphs = this.state.stocks.map(function(stock, index) {
-            return (
-                <div>
-                    <HighchartsReact highcharts={Highcharts} constructorType={"stockChart"} options={options} />
-                </div>
-            );
-        });
-
-        return <div>{graphs}</div>;
+        
+        return (
+	        <div id="container">
+	            <HighchartsReact containerProps={{ style: { height: "100%" } }} highcharts={Highcharts} options={options} callback={this.afterChartCreated}/>
+	        </div>
+        );
     }
 
     render() {
-        return (
-            <div>
-                <h1 align="center">HEADER 2018-08-21</h1>
-                <br />
-                {this.renderGraphs()}
-            </div>
-        );
+        var self = this;
+        var image = require('../candidates/images/spinner.gif')
+        var imgStyle = {marginLeft: 'auto', marginRight: 'auto', display: 'block'};
+                
+        if (this.state.loadingFlag)	    
+		    return (<div style={{position:'absolute', width:'100%',  height:'100%'}}><img style={imgStyle} src={image}></img></div>);
+	    else
+	        return (
+	            <div id="container">
+					{this.renderGraphs()}
+	            </div>
+	        )	    
     }
 };
 

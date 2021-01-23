@@ -1,6 +1,6 @@
 import React from "react";
 import {Popover, Button, Container, Table, Row, Col} from 'react-bootify';
-import {isArray} from 'yow/is';
+import isArray from 'yow/isArray';
 import {Sparklines, SparklinesLine, SparklinesReferenceLine, SparklinesBars} from 'react-sparklines';
 import {BarChart, Bar, Tooltip} from 'recharts';
 import PropTypes from 'prop-types';

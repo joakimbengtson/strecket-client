@@ -32,18 +32,16 @@
     "babelify": "^7.3.0",
     "client-request": "^1.1.0",
     "cssify": "^1.0.3",
-    "highcharts": "^6.1.4",
-    "highcharts-react-official": "^2.2.2",
+    "highcharts": "^8.2.2",
+    "highcharts-react-official": "^3.0.0",
     "imgurify": "^2.0.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.1",
     "node-lessify": "^0.1.4",
-    "react": "16.5.2",
+    "react": "^17.0.1",
     "react-bootify": "0.0.270",
-    "react-confirm-alert": "^2.5.1",
+    "react-confirm-alert": "^2.6.2",
     "react-dom": "16.5.2",
-    "react-highcharts": "^16.1.0",
-    "react-router": "^5.1.2",
-    "react-router-dom": "^5.1.2",
+    "react-router-dom": "^5.2.0",
     "react-sparklines": "^1.7.0",
     "react-spinkit": "^1.1.10",
     "recharts": "^1.8.5",
@@ -51,6 +49,6 @@
     "uglify-js": "^2.7.3",
     "urify": "^2.0.2",
     "yahoo-finance": "^0.2.14",
-    "yow": "^1.0.95"
+    "yow": "^1.0.108"
   }
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import {Popover, Button, Container, Table, Row, Col, Badge} from 'react-bootify';
-import {isArray} from 'yow/is';
+import isArray from 'yow/isArray';
 import PropTypes from 'prop-types';
 import Request from "yow/request";
 

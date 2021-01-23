@@ -1,10 +1,10 @@
 import React from 'react';
-import ReactHighcharts from 'react-highcharts';
-import ReactHighstock from 'react-highcharts/ReactHighstock';
+import Highcharts from 'highcharts/highstock';
+import HighchartsReact from 'highcharts-react-official';
 import Indicators from 'highcharts/indicators/indicators';
 import {Button, Form} from 'react-bootify';
 
-Indicators(ReactHighstock.Highcharts);
+Indicators(Highcharts);
 
 import Request from 'yow/request';
 import sprintf from 'yow/sprintf';
@@ -310,7 +310,7 @@ module.exports = class StockChart extends React.Component {
 
             return (
                 <div style = {style}>
-	                <ReactHighstock config={this.state.config}></ReactHighstock>
+	                <HighchartsReact highcharts={Highcharts} options={this.state.config}></HighchartsReact>
 	                <InfoBox symbol={this.props.symbol} sectors={this.props.sectors} atr={this.state.atr} drops={this.state.drops}></InfoBox>
 	                <Form><Form.Group textAlign='center'>
 	                <Button size='lg' onClick={this.onClick}>Kandidat</Button>
