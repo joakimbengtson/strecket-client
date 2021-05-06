@@ -32,7 +32,7 @@
     "babelify": "^7.3.0",
     "client-request": "^1.1.0",
     "cssify": "^1.0.3",
-    "highcharts": "^8.2.2",
+    "highcharts": "^9.0.0",
     "highcharts-react-official": "^3.0.0",
     "imgurify": "^2.0.0",
     "moment": "^2.29.1",
