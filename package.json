@@ -35,7 +35,7 @@
     "highcharts": "^8.2.2",
     "highcharts-react-official": "^3.0.0",
     "imgurify": "^2.0.0",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "node-lessify": "^0.1.4",
     "react": "^17.0.1",
     "react-bootify": "0.0.270",
